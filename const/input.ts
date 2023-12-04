@@ -1,9 +1,5 @@
 import { TextInputProps } from 'react-native';
-import {
-  TattooColor,
-  TattooStyle,
-} from '@graphql/types';
-import { PickerSelectItem } from '@components/FormSelectInput';
+import { TattooColor, TattooStyle } from '@graphql/types';
 
 export const defaultTextInputStyle: TextInputProps['style'] = {
   fontSize: 16,
@@ -13,7 +9,7 @@ export const defaultTextInputStyle: TextInputProps['style'] = {
 
 export const textInputPlaceholderTextColor = '#999999';
 
-export const tattooColorOptions: PickerSelectItem[] = [
+export const tattooColorOptions: any[] = [
   {
     label: 'Black & Grey',
     value: TattooColor.BlackAndGrey,
@@ -24,7 +20,7 @@ export const tattooColorOptions: PickerSelectItem[] = [
   },
 ];
 
-export const tattooStyleOptions: PickerSelectItem[] = [
+export const tattooStyleOptions: any[] = [
   {
     label: 'Blackwork',
     value: TattooStyle.Blackwork,
@@ -58,4 +54,3 @@ export const tattooStyleOptions: PickerSelectItem[] = [
     value: TattooStyle.Dotwork,
   },
 ];
-

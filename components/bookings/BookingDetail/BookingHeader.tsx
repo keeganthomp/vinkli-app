@@ -20,7 +20,7 @@ export default function BookingHeader({ booking }: Props) {
   const appointmentDate = useMemo(() => {
     if (!booking?.date) return null;
     const bookingDateObj = new Date(booking.date);
-    return moment(bookingDateObj).calendar();
+    return moment(bookingDateObj).format('LLLL');
   }, [booking?.date]);
 
   if (!customer) return null;
@@ -28,13 +28,12 @@ export default function BookingHeader({ booking }: Props) {
     <View
       style={{
         borderRadius: 6,
-        paddingTop: 8,
-        paddingHorizontal: 12,
+        paddingTop: 12,
       }}
     >
       <Text
         style={{
-          fontSize: 30,
+          fontSize: 32,
           fontWeight: 'bold',
         }}
       >
@@ -43,7 +42,7 @@ export default function BookingHeader({ booking }: Props) {
       {appointmentDate && (
         <View
           style={{
-            paddingTop: 5,
+            paddingTop: 10,
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
@@ -52,7 +51,7 @@ export default function BookingHeader({ booking }: Props) {
           <Feather name="calendar" size={18} color="black" />
           <Text
             style={{
-              fontSize: 18,
+              fontSize: 17,
               marginLeft: 5,
             }}
           >
@@ -62,7 +61,7 @@ export default function BookingHeader({ booking }: Props) {
       )}
       <View
         style={{
-          paddingTop: 8,
+          paddingTop: 12,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
@@ -78,7 +77,7 @@ export default function BookingHeader({ booking }: Props) {
         />
         <Text
           style={{
-            fontSize: 18,
+            fontSize: 17,
             marginLeft: 7,
           }}
         >

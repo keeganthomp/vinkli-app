@@ -4,7 +4,6 @@ import { useQuery } from '@apollo/client';
 import { GetUserQuery } from '@graphql/types';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { View, Text } from 'react-native';
 import ErrorCard from '@components/ErrorCard';
 
 /**
@@ -23,9 +22,10 @@ export default function AppInit() {
         id: session?.user.id,
       },
       skip: !session,
-      fetchPolicy: 'cache-first',
     },
   );
+
+  console.log('in aoo init', userData);
 
   useEffect(() => {
     const directUser = async () => {

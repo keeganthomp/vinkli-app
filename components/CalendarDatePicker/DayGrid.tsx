@@ -43,8 +43,8 @@ const CalendarDay = ({ date, onPress, isSelected }: DayProps) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            width: '60%',
-            height: '60%',
+            width: 28,
+            height: 28,
             borderRadius: 100,
             backgroundColor: isSelected ? '#333' : 'transparent',
           }}

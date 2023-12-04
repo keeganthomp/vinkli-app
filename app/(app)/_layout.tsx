@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import ErrorCard from '@components/ErrorCard';
+import Toast from 'react-native-toast-message';
+import { toastConfig } from '@utils/toast';
 
 /**
  * We can defer the initialization of the app until we have the user
@@ -55,12 +57,15 @@ export default function AppLayout() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
-      <Slot />
-    </View>
+    <>
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
+        <Slot />
+      </View>
+      <Toast topOffset={55} config={toastConfig} />
+    </>
   );
 }

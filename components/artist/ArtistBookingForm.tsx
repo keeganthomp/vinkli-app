@@ -1,250 +1,134 @@
-import { View, ActivityIndicator, Text, Pressable } from 'react-native';
-import {
-  ArtistCreateBookingInput,
-  TattooColor,
-  TattooStyle,
-} from '@graphql/types';
+import { View, ActivityIndicator, Keyboard, Text } from 'react-native';
+import { ArtistCreateBookingInput } from '@graphql/types';
 import { useForm } from 'react-hook-form';
 import FormTextInput from '@components/FormTextInput';
-import FormSelectInput from '@components/FormSelectInput';
 import FormImageInput from '@components/FormImageInput';
 import Button from '@components/Button';
-import { tattooColorOptions, tattooStyleOptions } from '@const/input';
+import { tattooColorMap, tattooStyleMap } from '@const/maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CalendarPicker from '@components/CalendarDatePicker';
-import Label from '@components/InputLabel';
 import theme from '@theme';
-import { useMemo, useRef, useCallback, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
+import BottomSheet from '@gorhom/bottom-sheet';
 import moment from 'moment';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetBackdropProps,
-} from '@gorhom/bottom-sheet';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import FormModalInput from '@components/FormModalInput';
+import PickerModal from '@components/PickerModal';
+import Modal from '@components/Modal';
 
+export type ArtistBookingFromValues = ArtistCreateBookingInput & {
+  time: {
+    hours: number;
+    minutes: number;
+  };
+};
 type Props = {
-  onSubmit: (data: ArtistCreateBookingInput) => void;
+  onSubmit: (data: ArtistBookingFromValues) => void;
 };
 
-enum PickerModal {
-  DATE = 'DATE',
-  TATTOO_COLOR = 'TATTOO_COLOR',
-  TATTOO_STYLE = 'TATTOO_STYLE',
-}
+const tattooStyleOptions = Object.entries(tattooStyleMap).map(
+  ([key, value]) => ({ label: value, value: key }),
+);
+const tattooColorOptions = Object.entries(tattooColorMap).map(
+  ([key, value]) => ({ label: value, value: key }),
+);
 
-const ModalDoneButton = ({ onPress }: { onPress: () => void }) => {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 38,
-        backgroundColor: '#333',
-        borderRadius: 6,
-        position: 'absolute',
-        bottom: 0,
-      }}
-    >
-      <Text
-        style={{
-          color: '#fff',
-          fontWeight: '500',
-        }}
-      >
-        Done
-      </Text>
-    </Pressable>
-  );
-};
+export default function ArtistBookingForm({ onSubmit }: Props) {
+  const tattooColorModalRef = useRef<BottomSheet>(null);
+  const tattooStyleModalRef = useRef<BottomSheet>(null);
+  const dateModalRef = useRef<BottomSheet>(null);
+  const timeModalRef = useRef<BottomSheet>(null);
 
-const PickerField = ({
-  value,
-  placeholder,
-}: {
-  value?: string | null;
-  placeholder: string;
-}) => {
-  return (
-    <Text
-      style={{
-        fontSize: 16,
-        fontWeight: '300',
-        color: value ? '#333' : '#999',
-      }}
-    >
-      {value || placeholder}
-    </Text>
-  );
-};
+  const openTattooColorPicker = useCallback(() => {
+    tattooColorModalRef.current?.expand();
+    Keyboard.dismiss();
+  }, []);
 
-export default function ArtistBookingCreate({ onSubmit }: Props) {
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const [pickerModalType, setPickerModalType] = useState<PickerModal | null>(
-    null,
-  );
+  const openTattooStylePicker = useCallback(() => {
+    tattooStyleModalRef.current?.expand();
+    Keyboard.dismiss();
+  }, []);
+
+  const openDatePicker = useCallback(() => {
+    dateModalRef.current?.expand();
+    Keyboard.dismiss();
+  }, []);
+
+  const openTimePicker = useCallback(() => {
+    timeModalRef.current?.expand();
+    Keyboard.dismiss();
+  }, []);
+
   const {
     control,
     handleSubmit,
     setValue,
     watch,
     formState: { isValid, isSubmitting },
-  } = useForm<ArtistCreateBookingInput>({
+  } = useForm<ArtistBookingFromValues>({
     defaultValues: {
       customerEmail: '',
       title: '',
       date: undefined,
+      time: {
+        hours: undefined,
+        minutes: undefined,
+      },
     },
   });
 
-  const [selectedDate, tattooColor, tattooStyle] = watch([
+  const [selectedDate, selectedTime, tattooColor, tattooStyle] = watch([
     'date',
+    'time',
     'tattoo.tattooColor',
     'tattoo.tattooStyle',
   ]);
-  const canSubmit = isValid && selectedDate;
+  const canSubmit = selectedDate && selectedTime && isValid && !isSubmitting;
 
-  const pickerModalSnaps = useMemo(() => {
-    switch (pickerModalType) {
-      case PickerModal.DATE:
-        return ['46%'];
-      case PickerModal.TATTOO_COLOR:
-        return ['15%'];
-      case PickerModal.TATTOO_STYLE:
-        return ['26%'];
-      default:
-        // random default value - correltes to date picker size - have to have one
-        return ['46%'];
-    }
-  }, [pickerModalType]);
-
-  const openPickerModal = (pickerModalType: PickerModal) => {
-    setPickerModalType(pickerModalType);
-    bottomSheetRef.current?.expand();
-  };
-  const closeDatePicker = useCallback(() => {
-    bottomSheetRef.current?.close();
-    setPickerModalType(null);
-  }, []);
-  const renderModalBackdrop = useCallback((props: BottomSheetBackdropProps) => {
-    return (
-      <BottomSheetBackdrop
-        {...props}
-        opacity={0.6}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    );
-  }, []);
-  const checkShowModalDoneButton = () => {
-    if (pickerModalType !== PickerModal.DATE) return false;
-    return !!selectedDate;
-  };
-
-  const handleDateChange = (date: Date) => {
-    const isAlreadySelected =
-      selectedDate && date.toDateString() === selectedDate.toDateString();
-    const newDate = isAlreadySelected ? undefined : date;
+  const handleDateChange = (incomingDate: Date) => {
+    const isAlreadySelected = moment(selectedDate).isSame(incomingDate, 'day');
+    const newDate = isAlreadySelected ? null : incomingDate;
     setValue('date', newDate);
+  };
+
+  const handleTimeChange = (incomingDate: Date) => {
+    const hours = incomingDate.getHours();
+    const minutes = incomingDate.getMinutes();
+    setValue('time.hours', hours);
+    setValue('time.minutes', minutes);
   };
 
   const dateToShow = useMemo(() => {
     if (!selectedDate) return null;
-    return moment(selectedDate).format('LLL');
+    const dayOfWeek = moment(selectedDate).format('dddd');
+    return `${dayOfWeek}, ${moment(selectedDate).format('LL')}`;
   }, [selectedDate]);
 
-  const SPACING = 26;
+  const displayTime = useMemo(() => {
+    const hasSelectedHours = typeof selectedTime.hours === 'number';
+    const hasSelectedMinutes = typeof selectedTime.minutes === 'number';
+    if (!hasSelectedHours || !hasSelectedMinutes) return null;
+    const dateObj = new Date();
+    dateObj.setHours(selectedTime.hours);
+    dateObj.setMinutes(selectedTime.minutes);
+    return moment(dateObj).format('LT');
+  }, [selectedTime?.hours, selectedTime?.minutes]);
 
-  const renderPickerContent = () => {
-    switch (pickerModalType) {
-      case PickerModal.DATE:
-        return (
-          <CalendarPicker
-            selectedDates={selectedDate}
-            onDateSelected={handleDateChange}
-          />
-        );
-      case PickerModal.TATTOO_COLOR:
-        return (
-          <View>
-            <Pressable
-              onPress={() => {
-                setValue('tattoo.tattooColor', TattooColor.BlackAndGrey);
-                closeDatePicker();
-              }}
-              style={{
-                paddingVertical: 10,
-              }}
-            >
-              <Text>Black & Gray</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setValue('tattoo.tattooColor', TattooColor.Color);
-                closeDatePicker();
-              }}
-              style={{
-                paddingVertical: 10,
-              }}
-            >
-              <Text>Color</Text>
-            </Pressable>
-          </View>
-        );
-      case PickerModal.TATTOO_STYLE:
-        return (
-          <View>
-            <Pressable
-              onPress={() => {
-                setValue('tattoo.tattooStyle', TattooStyle.Realism);
-                closeDatePicker();
-              }}
-              style={{
-                paddingVertical: 10,
-              }}
-            >
-              <Text>Realism</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setValue('tattoo.tattooStyle', TattooStyle.Blackwork);
-                closeDatePicker();
-              }}
-              style={{
-                paddingVertical: 10,
-              }}
-            >
-              <Text>Blackwork</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setValue('tattoo.tattooStyle', TattooStyle.Dotwork);
-                closeDatePicker();
-              }}
-              style={{
-                paddingVertical: 10,
-              }}
-            >
-              <Text>Dotwork</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setValue('tattoo.tattooStyle', TattooStyle.TraditionalAmerican);
-                closeDatePicker();
-              }}
-              style={{
-                paddingVertical: 10,
-              }}
-            >
-              <Text>Traditional</Text>
-            </Pressable>
-          </View>
-        );
-      default:
-        return null;
+  const selectedTimeDateObj = useMemo(() => {
+    const hasSelectedHours = typeof selectedTime.hours === 'number';
+    const hasSelectedMinutes = typeof selectedTime.minutes === 'number';
+    const dateObj = new Date();
+    if (!hasSelectedHours || !hasSelectedMinutes) {
+      dateObj.setHours(0);
+      dateObj.setMinutes(0);
+      return dateObj;
     }
-  };
+    dateObj.setHours(selectedTime.hours);
+    dateObj.setMinutes(selectedTime.minutes);
+    return dateObj;
+  }, [selectedTime?.hours, selectedTime?.minutes]);
+
+  const SPACING = 22;
 
   return (
     <>
@@ -261,91 +145,78 @@ export default function ArtistBookingCreate({ onSubmit }: Props) {
             <KeyboardAwareScrollView
               showsVerticalScrollIndicator={false}
               extraScrollHeight={75}
+              keyboardShouldPersistTaps="handled"
               contentContainerStyle={{
                 paddingTop: 20,
                 paddingBottom: 125,
                 paddingHorizontal: 14,
               }}
             >
-              <View
-                style={{
+              <FormTextInput
+                control={control}
+                autoCapitalize="none"
+                name="customerEmail"
+                label="Customer Email"
+                placeholder="jane@email.com"
+                keyboardType="email-address"
+                returnKeyType="done"
+                rules={{
+                  required: 'Customer Email is required',
+                }}
+                containerStyle={{
                   paddingBottom: SPACING,
                 }}
-              >
-                <FormTextInput
-                  control={control}
-                  autoCapitalize="none"
-                  name="customerEmail"
-                  label="Customer Email"
-                  placeholder="jane@email.com"
-                  keyboardType="email-address"
-                  returnKeyType="done"
-                  rules={{
-                    required: 'Customer Email is required',
-                  }}
-                />
-              </View>
-              <View
-                style={{
+              />
+              <FormModalInput
+                openPicker={openDatePicker}
+                label="Date"
+                placeholder="Select a date"
+                value={dateToShow}
+                containerStyle={{
                   paddingBottom: SPACING,
                 }}
-              >
-                <Label label="Date" />
-                <Pressable onPress={() => openPickerModal(PickerModal.DATE)}>
-                  <PickerField value={dateToShow} placeholder="Select a date" />
-                </Pressable>
-              </View>
-              <View
-                style={{
+              />
+              <FormModalInput
+                openPicker={openTimePicker}
+                label="Time"
+                placeholder="Select a time"
+                value={displayTime}
+                containerStyle={{
                   paddingBottom: SPACING,
                 }}
-              >
-                <FormTextInput
-                  control={control}
-                  name="tattoo.description"
-                  label="Tattoo Description"
-                  placeholder="Description"
-                  multiline
-                />
-              </View>
-              <View
-                style={{
+              />
+              <FormTextInput
+                control={control}
+                name="tattoo.description"
+                label="Tattoo Description"
+                placeholder="Description"
+                multiline
+                containerStyle={{
                   paddingBottom: SPACING,
-                  display: 'flex',
-                  flexDirection: 'row',
                 }}
-              >
-                <View
-                  style={{
-                    width: '50%',
-                  }}
-                >
-                  <Label label="Tattoo Color" />
-                  <Pressable
-                    onPress={() => openPickerModal(PickerModal.TATTOO_COLOR)}
-                  >
-                    <PickerField
-                      value={tattooColor}
-                      placeholder="Color or Black and Gray"
-                    />
-                  </Pressable>
-                </View>
-                <View
-                  style={{
-                    width: '50%',
-                  }}
-                >
-                  <Label label="Tattoo Style" />
-                  <Pressable
-                    onPress={() => openPickerModal(PickerModal.TATTOO_STYLE)}
-                  >
-                    <PickerField
-                      value={tattooStyle}
-                      placeholder="Tattoo Style"
-                    />
-                  </Pressable>
-                </View>
-              </View>
+              />
+              <FormModalInput
+                openPicker={openTattooColorPicker}
+                placeholder="Color or Black & Grey"
+                label="Tattoo Color"
+                value={
+                  tattooColorMap[tattooColor as keyof typeof tattooColorMap]
+                }
+                containerStyle={{
+                  paddingBottom: SPACING,
+                }}
+              />
+              <FormModalInput
+                openPicker={openTattooStylePicker}
+                placeholder="Select the style of tattoo"
+                label="Tattoo Style"
+                value={
+                  tattooStyleMap[tattooStyle as keyof typeof tattooStyleMap]
+                }
+                containerStyle={{
+                  paddingBottom: SPACING,
+                }}
+              />
               <View
                 style={{
                   paddingBottom: SPACING,
@@ -379,26 +250,51 @@ export default function ArtistBookingCreate({ onSubmit }: Props) {
           </>
         )}
       </View>
-      {/* Picker modal */}
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        enablePanDownToClose
-        snapPoints={pickerModalSnaps}
-        detached
-        backdropComponent={renderModalBackdrop}
-        // add bottom inset to elevate the sheet
-        bottomInset={75}
-        style={{
-          margin: 10,
-          padding: 10,
-        }}
+      {/* Modals */}
+      <PickerModal
+        ref={tattooColorModalRef}
+        control={control as any}
+        name="tattoo.tattooColor"
+        options={tattooColorOptions}
+        modalHeight={120}
+      />
+      <PickerModal
+        ref={tattooStyleModalRef}
+        control={control as any}
+        name="tattoo.tattooStyle"
+        options={tattooStyleOptions}
+        modalHeight={380}
+      />
+      <Modal
+        ref={dateModalRef}
+        modalHeight={350}
+        showDoneButton={!!selectedDate}
       >
-        {renderPickerContent()}
-        {checkShowModalDoneButton() && (
-          <ModalDoneButton onPress={closeDatePicker} />
+        <CalendarPicker
+          selectedDates={selectedDate}
+          onDateSelected={handleDateChange}
+        />
+      </Modal>
+      <Modal ref={timeModalRef} modalHeight={225} showDoneButton>
+        {dateToShow && (
+          <Text
+            style={{
+              textAlign: 'center',
+            }}
+          >
+            {dateToShow}
+          </Text>
         )}
-      </BottomSheet>
+        <DateTimePicker
+          mode="time"
+          display="spinner"
+          textColor="#000"
+          value={selectedTimeDateObj}
+          onChange={(event, date) => {
+            if (date) handleTimeChange(date);
+          }}
+        />
+      </Modal>
     </>
   );
 }

@@ -8,7 +8,7 @@ import { useMutation } from '@apollo/client';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import FormTextInput from '@components/FormTextInput';
-import FormSelectInput from '@components/FormSelectInput';
+import FormSelectInput from '@components/FormModalInput';
 import FormImageInput from '@components/FormImageInput';
 import { useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';

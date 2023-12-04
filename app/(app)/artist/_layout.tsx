@@ -11,7 +11,6 @@ export default function ArtistLayout() {
   );
 
   const fetchTerminalTokenProvider = async () => {
-    
     const { data } = await fetchTerminalToken();
     return data?.stripeTerminalConnectionToken as string;
   };

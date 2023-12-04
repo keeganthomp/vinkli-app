@@ -18,13 +18,7 @@ const generatePathName = (
   const imageExtension = image.uri.split('.').pop() || 'jpeg';
   // random id in case of duplicate file names
   const randomId = Math.random().toString(36).substring(5);
-  const orignalFileName = image?.fileName || '';
-  // remove all special characters, replace spaces with underscores, and lowercase
-  const formattedFilename = orignalFileName
-    .replace(/[^\w\s]/gi, '')
-    .replace(/\s+/g, '_')
-    .toLowerCase();
-  const imageId = `${randomId}_${formattedFilename}`;
+  const imageId = randomId;
   return {
     path: `${imageId}.${imageExtension}`,
     extension: imageExtension,
@@ -43,6 +37,7 @@ export const uploadImages = async <
     image: ImagePickerAsset,
   ): Promise<string> => {
     const { path, extension: imageExtension } = generatePathName(image);
+    console.log('path', path)
     const { data, error } = await supabase.storage
       .from(storageBucket)
       .upload(path, decode(image.base64 as string), {

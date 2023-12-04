@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, TextInputProps, View, Text } from 'react-native';
+import { TextInput, TextInputProps, View, Text, ViewStyle } from 'react-native';
 import { Control, useController, FieldValues, Path } from 'react-hook-form';
 import Label from './InputLabel';
 import {
@@ -14,6 +14,7 @@ type FormTextInputProps<TFieldValues extends FieldValues> = {
   rules?: object;
   label?: string;
   defaultValue?: TFieldValues[Path<TFieldValues>];
+  containerStyle?: ViewStyle;
 } & TextInputProps;
 
 function FormTextInput<TFieldValues extends FieldValues>({
@@ -23,6 +24,7 @@ function FormTextInput<TFieldValues extends FieldValues>({
   rules,
   label,
   defaultValue,
+  containerStyle = {},
   ...textInputProps
 }: FormTextInputProps<TFieldValues>) {
   const {
@@ -35,17 +37,24 @@ function FormTextInput<TFieldValues extends FieldValues>({
     defaultValue,
   });
 
+  const valueAsString = typeof value === 'number' ? value.toString() : value;
+
   return (
-    <View>
+    <View
+      style={{
+        ...containerStyle,
+      }}
+    >
       <Label label={label} />
       <TextInput
         onBlur={onBlur}
         onChangeText={onChange}
-        value={value}
+        value={valueAsString}
         placeholder={placeholder}
         style={defaultTextInputStyle}
         {...textInputProps}
         placeholderTextColor={textInputPlaceholderTextColor}
+        returnKeyType={textInputProps.multiline ? 'default' : 'done'}
       />
       {error && <Text style={{ color: 'red' }}>{error.message}</Text>}
     </View>

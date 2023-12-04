@@ -45,7 +45,11 @@ export default function ArtistBookingCollectPayment() {
           flex: 1,
         }}
       >
-        <ArtistHeader title="Collect Payment" onClosePress={goBack} modalHeader />
+        <ArtistHeader
+          title="Collect Payment"
+          onClosePress={goBack}
+          modalHeader
+        />
         <Text>WEEEE</Text>
       </View>
     </>

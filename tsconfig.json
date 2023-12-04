@@ -11,7 +11,8 @@
       "@theme": ["theme"],
       "@graphql/*": ["graphql/*"],
       "@utils/*": ["utils/*"],
-      "@const/*": ["const/*"]
+      "@const/*": ["const/*"],
+      "@hooks/*": ["hooks/*"],
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],

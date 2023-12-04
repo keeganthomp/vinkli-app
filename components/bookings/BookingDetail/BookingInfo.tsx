@@ -3,6 +3,7 @@ import { Booking, TattooStyle, TattooColor } from '@graphql/types';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { tattooColorMap, tattooStyleMap } from '@const/maps';
+import theme from '@theme';
 
 type Props = {
   booking: Booking;
@@ -21,7 +22,7 @@ const Info = ({
     <Text
       {...textProps}
       style={{
-        fontSize: 16,
+        fontSize: 17,
         ...style,
       }}
     >
@@ -46,7 +47,7 @@ const Tag = ({ value }: { value: string }) => {
     >
       <Text
         style={{
-          fontSize: 11,
+          fontSize: 13,
         }}
       >
         {value}
@@ -55,20 +56,27 @@ const Tag = ({ value }: { value: string }) => {
   );
 };
 
-const ImagePreview = ({ url }: { url: string }) => {
+const ImagePreview = ({ url, index }: { url: string, index: number }) => {
+  const isMiddle = index % 3 === 1;
   return (
-    <Image
-      style={{
-        width: 100,
-        height: 100,
-        borderRadius: 8,
-        marginRight: 8,
-        marginBottom: 8,
-      }}
-      source={{
-        uri: url,
-      }}
-    />
+    <Pressable style={{
+      width: '32%',
+      height: 120,
+      marginBottom: 8,
+      marginHorizontal: isMiddle ? 5 : 0,
+    }}>
+      <Image
+        cachePolicy="memory-disk"
+        style={{
+          flex: 1,
+          borderRadius: 4,
+        }}
+        contentFit="cover"
+        source={{
+          uri: url,
+        }}
+      />
+    </Pressable>
   );
 };
 
@@ -83,7 +91,11 @@ export default function BookingInfo({ booking }: Props) {
   const hasImages = tattoo.imageUrls.length > 0;
 
   return (
-    <View>
+    <View
+      style={{
+        paddingTop: 16,
+      }}
+    >
       <Pressable
         onPress={() => setIsViewingFullDescription(!isViewingFullDescription)}
       >
@@ -93,6 +105,7 @@ export default function BookingInfo({ booking }: Props) {
           }}
           style={{
             fontWeight: '300',
+            color: tattoo.description ? '#333' : theme.textGray,
           }}
           value={tattoo.description || 'No Description Provided'}
         />
@@ -121,14 +134,15 @@ export default function BookingInfo({ booking }: Props) {
       {hasImages && (
         <View
           style={{
-            paddingTop: 28,
+            width: '100%',
+            paddingTop: 20,
             display: 'flex',
             flexDirection: 'row',
             flexWrap: 'wrap',
           }}
         >
-          {tattoo.imageUrls.map((url) => (
-            <ImagePreview url={url} key={url} />
+          {tattoo.imageUrls.map((url, i) => (
+            <ImagePreview key={url} url={url} index={i} />
           ))}
         </View>
       )}

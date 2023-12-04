@@ -8,12 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import {
-  Control,
-  useController,
-  FieldValues,
-  Path,
-} from 'react-hook-form';
+import { Control, useController, FieldValues, Path } from 'react-hook-form';
 import { Image } from 'expo-image';
 import Label from './InputLabel';
 import { uploadImages, StorageBucket } from '@utils/image';
@@ -55,6 +50,34 @@ const ImagePreview = ({
         }}
       />
     </View>
+  );
+};
+
+const AddImageButton = ({
+  onPress,
+  isSelecting = false,
+}: {
+  onPress: () => void;
+  isSelecting?: boolean;
+}) => {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={isSelecting}
+      style={{
+        width: 75,
+        height: 100,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      {isSelecting ? (
+        <ActivityIndicator />
+      ) : (
+        <AntDesign name="pluscircle" size={28} color="black" />
+      )}
+    </Pressable>
   );
 };
 
@@ -102,18 +125,20 @@ function FormImageInput<TFieldValues extends FieldValues>({
     if (!result.canceled && result.assets) {
       const images = result.assets;
       const newImageUris = images.map((image) => image.uri);
-      setSelectedImages([...selectedImages, ...newImageUris]);
       // append to local state to show
       const imagePaths = await uploadImages(images, StorageBucket.TATTOOS);
       // update parent form value
       onChange(imagePaths);
+      setSelectedImages([...selectedImages, ...newImageUris]);
     }
     setIsSelecting(false);
   };
 
   const deselectImage = (imageUrl: string) => {
     const newImageUris = selectedImages.filter((uri) => uri !== imageUrl);
-    const newImagePaths = value.filter((path: string) => !path.includes(imageUrl));
+    const newImagePaths = value.filter(
+      (path: string) => !path.includes(imageUrl),
+    );
     onChange(newImagePaths);
     setSelectedImages(newImageUris);
   };
@@ -124,19 +149,30 @@ function FormImageInput<TFieldValues extends FieldValues>({
     return (
       <View>
         <Label label={label} />
-        <FlatList
-          data={selectedImages}
-          renderItem={({ item }) => (
-            <ImagePreview onRemove={deselectImage} imageUrl={item} />
-          )}
-          ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
-          keyExtractor={(item) => item}
-          horizontal
-          showsHorizontalScrollIndicator={false}
+        <View
           style={{
-            paddingTop: 6,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
           }}
-        />
+        >
+          <FlatList
+            data={selectedImages}
+            renderItem={({ item }) => (
+              <ImagePreview onRemove={deselectImage} imageUrl={item} />
+            )}
+            ListFooterComponent={() => (
+              <AddImageButton onPress={pickImage} isSelecting={isSelecting} />
+            )}
+            ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
+            keyExtractor={(item) => item}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              paddingTop: 6,
+            }}
+          />
+        </View>
       </View>
     );
   }

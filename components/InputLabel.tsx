@@ -6,8 +6,8 @@ const Label = ({ label }: { label?: string }) => {
     <Text
       style={{
         paddingBottom: 5,
-        fontWeight: '600',
-        fontSize: 15
+        fontWeight: '500',
+        fontSize: 16
       }}
     >
       {label}

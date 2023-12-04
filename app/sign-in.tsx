@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { View, TextInput, Pressable, Text } from 'react-native';
+import React from 'react';
+import { Pressable, Text } from 'react-native';
 import { supabase } from '@lib/supabase';
 import { useSession } from '@context/auth';
 import { router } from 'expo-router';
-import theme from '@theme';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-toast-message';
+import FormTextInput from '@components/FormTextInput';
+import { useForm } from 'react-hook-form';
+
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 const RegisterLink = () => {
   return (
@@ -16,7 +22,7 @@ const RegisterLink = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 16,
+        marginTop: 18,
       }}
     >
       <Text>Don't have an account? Register</Text>
@@ -25,37 +31,37 @@ const RegisterLink = () => {
 };
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const { setSession } = useSession();
 
-  const disabled = loading || !email || !password;
+  const {
+    handleSubmit,
+    control,
+    formState: { isValid, isSubmitting },
+  } = useForm<LoginForm>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  async function signInWithEmail() {
-    setLoading(true);
-    const authResponse = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+  async function signInWithEmail(data: LoginForm) {
+    const authResponse = await supabase.auth.signInWithPassword(data);
     if (authResponse?.error) {
       Toast.show({
         type: 'error',
         text1: 'Error signing in',
         text2: authResponse.error.message,
       });
-      setLoading(false);
       return;
     }
     const session = authResponse?.data?.session;
     if (session) {
       setSession(session);
       router.replace('/');
-      setLoading(false);
     }
   }
 
-  const SPACING = 16;
+  const SPACING = 18;
 
   return (
     <KeyboardAwareScrollView
@@ -67,59 +73,63 @@ export default function Login() {
         paddingHorizontal: 12,
       }}
     >
-      <View
+      <Text
         style={{
-          paddingBottom: SPACING,
+          fontSize: 32,
+          fontWeight: 'bold',
+          paddingBottom: 24,
         }}
       >
-        <TextInput
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-          placeholder="email@address.com"
-          autoCapitalize={'none'}
-          style={{
-            fontSize: 16,
-            borderBottomWidth: 1,
-            borderColor: theme.lightGray,
-            paddingBottom: 5,
-          }}
-        />
-      </View>
-      <View
-        style={{
+        Sign In
+      </Text>
+      <FormTextInput
+        name="email"
+        textContentType='oneTimeCode'
+        autoCapitalize="none"
+        keyboardType="email-address"
+        control={control}
+        label="Email"
+        placeholder="jane@email.com"
+        rules={{
+          required: 'Email is required',
+        }}
+        containerStyle={{
           paddingBottom: SPACING,
         }}
-      >
-        <TextInput
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          secureTextEntry={true}
-          placeholder="Password"
-          autoCapitalize={'none'}
-          style={{
-            fontSize: 16,
-            borderBottomWidth: 1,
-            borderColor: theme.lightGray,
-            paddingBottom: 5,
-          }}
-        />
-      </View>
+      />
+      <FormTextInput
+        name="password"
+        secureTextEntry={true}
+        autoCapitalize="none"
+        control={control}
+        label="Password"
+        placeholder="password123!"
+        rules={{
+          required: 'Password is required',
+        }}
+        containerStyle={{
+          paddingBottom: SPACING,
+        }}
+      />
       <Pressable
         style={{
-          backgroundColor: loading ? 'lightgray' : '#000',
-          height: 36,
+          marginTop: 20,
+          backgroundColor: isSubmitting || !isValid ? 'lightgray' : '#000',
+          height: 44,
           borderRadius: 4,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         }}
-        disabled={disabled}
-        onPress={signInWithEmail}
+        disabled={isSubmitting || !isValid}
+        onPress={handleSubmit(signInWithEmail)}
       >
         <Text
           style={{
             color: '#fff',
             textAlign: 'center',
+            fontWeight: '500',
+            fontSize: 18,
           }}
         >
           Sign in

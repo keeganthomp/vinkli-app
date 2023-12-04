@@ -50,6 +50,12 @@
           "bluetoothPeripheralPermission": "Bluetooth access is required in order to connect to supported bluetooth card readers.",
           "bluetoothAlwaysUsagePermission": "This app uses Bluetooth to connect to supported card readers."
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.vinkli.app"
+        }
       ]
     ],
     "experiments": {

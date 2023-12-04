@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Link } from 'expo-router';
-import { Booking, BookingStatus } from '@graphql/types';
+import { Booking, BookingStatus, BookingType } from '@graphql/types';
 import moment from 'moment';
 import theme from '@theme';
 import { Feather } from '@expo/vector-icons';
@@ -10,6 +10,11 @@ import { Octicons } from '@expo/vector-icons';
 type Props = {
   booking: Booking;
   href: string;
+};
+
+const bookingTypeMap: Record<BookingType, string> = {
+  [BookingType.TattooSession]: 'Tattoo',
+  [BookingType.Consultation]: 'Consultation',
 };
 
 const Status = ({ status }: { status: BookingStatus }) => {
@@ -63,7 +68,6 @@ export default function BookingCard({ booking, href }: Props) {
       >
         <View
           style={{
-            paddingBottom: 2,
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'flex-start',
@@ -76,10 +80,10 @@ export default function BookingCard({ booking, href }: Props) {
             style={{
               flex: 1,
               fontWeight: 'bold',
-              fontSize: 16,
+              fontSize: 18,
             }}
           >
-            {booking.type}
+            {bookingTypeMap[booking.type]}
           </Text>
           <Status status={booking.status} />
         </View>
@@ -96,7 +100,7 @@ export default function BookingCard({ booking, href }: Props) {
               marginLeft: 4,
             }}
           >
-            {booking.date ? moment(booking.date).format('LLL') : 'No Date Set'}
+            {booking.date ? moment(booking.date).calendar() : 'No Date Set'}
           </Text>
         </View>
         {customer && (

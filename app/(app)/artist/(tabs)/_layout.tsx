@@ -59,6 +59,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           tabBarLabel: 'Profile',
+          lazy: false,
         }}
       />
     </Tabs>

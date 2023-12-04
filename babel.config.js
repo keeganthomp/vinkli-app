@@ -18,6 +18,7 @@ module.exports = function (api) {
             '@graphql': './graphql',
             '@utils': './utils',
             '@const': './const',
+            '@hooks': './hooks',
           },
         },
       ],

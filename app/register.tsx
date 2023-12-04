@@ -89,7 +89,7 @@ export default function Signup() {
     }
   };
 
-  const SPACING = 16;
+  const SPACING = 18;
 
   return (
     <KeyboardAwareScrollView
@@ -101,77 +101,72 @@ export default function Signup() {
         paddingHorizontal: 12,
       }}
     >
-      <View
+      <Text
         style={{
-          paddingBottom: SPACING,
+          fontSize: 32,
+          fontWeight: 'bold',
+          paddingBottom: 24,
         }}
       >
-        <FormTextInput
-          control={control}
-          name="firstName"
-          label="First Name"
-          placeholder="Jane"
-          rules={{
-            required: 'First Name is required',
-          }}
-        />
-      </View>
-      <View
-        style={{
+        Register
+      </Text>
+      <FormTextInput
+        control={control}
+        name="firstName"
+        label="First Name"
+        placeholder="Jane"
+        rules={{
+          required: 'First Name is required',
+        }}
+        containerStyle={{
           paddingBottom: SPACING,
         }}
-      >
-        <FormTextInput
-          control={control}
-          name="lastName"
-          label="Last Name"
-          placeholder="Doe"
-          rules={{
-            required: 'Last Name is required',
-          }}
-        />
-      </View>
-      <View
-        style={{
+      />
+      <FormTextInput
+        control={control}
+        name="lastName"
+        label="Last Name"
+        placeholder="Doe"
+        rules={{
+          required: 'Last Name is required',
+        }}
+        containerStyle={{
           paddingBottom: SPACING,
         }}
-      >
-        <FormTextInput
-          control={control}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          name="email"
-          label="Email"
-          placeholder="janedoe@email.com"
-          rules={{
-            required: 'Email is required',
-          }}
-        />
-      </View>
-      <View
-        style={{
+      />
+      <FormTextInput
+        control={control}
+        autoCapitalize="none"
+        textContentType='oneTimeCode'
+        keyboardType="email-address"
+        placeholder="jane@email.com"
+        name="email"
+        label="Email"
+        rules={{
+          required: 'Email is required',
+        }}
+        containerStyle={{
           paddingBottom: SPACING,
         }}
-      >
-        <FormTextInput
-          control={control}
-          secureTextEntry={true}
-          autoCapitalize="none"
-          name="password"
-          label="Password"
-          placeholder="password"
-          rules={{
-            required: 'Password is required',
-          }}
-        />
-      </View>
+      />
+      <FormTextInput
+        control={control}
+        secureTextEntry={true}
+        autoCapitalize="none"
+        name="password"
+        label="Password"
+        placeholder="password123!"
+        rules={{
+          required: 'Password is required',
+        }}
+        containerStyle={{
+          paddingBottom: SPACING + 5,
+        }}
+      />
       <View
         style={{
           paddingBottom: SPACING,
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
         }}
       >
         <Pressable
@@ -203,11 +198,30 @@ export default function Signup() {
           </Text>
         </Pressable>
       </View>
-      <Button
-        label="Sign up"
+      <Pressable
+        style={{
+          marginTop: 20,
+          backgroundColor: isSubmitting || !isValid ? 'lightgray' : '#000',
+          height: 44,
+          borderRadius: 4,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        disabled={isSubmitting || !isValid}
         onPress={handleSubmit(handleSignup)}
-        disabled={!isValid || isSubmitting}
-      />
+      >
+        <Text
+          style={{
+            color: '#fff',
+            textAlign: 'center',
+            fontWeight: '500',
+            fontSize: 18,
+          }}
+        >
+          Sign up
+        </Text>
+      </Pressable>
       <SigninLink />
     </KeyboardAwareScrollView>
   );

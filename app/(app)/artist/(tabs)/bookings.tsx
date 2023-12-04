@@ -95,7 +95,6 @@ export default function ArtistBookings() {
             style={{
               marginTop: 20,
             }}
-            size="large"
             color="black"
           />
         </View>

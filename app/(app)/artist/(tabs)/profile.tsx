@@ -9,14 +9,17 @@ import { useMutation } from '@apollo/client';
 import { GEN_STRIPE_CONNECT_ONBOARDING_LINK } from '@graphql/mutations/user';
 import {
   GenerateStripeConnectOnboardingLinkMutation,
-  GetUserQuery,
+  ArtistQuery,
 } from '@graphql/types';
+import { useEffect } from 'react';
 import * as Linking from 'expo-linking';
-import { GET_USER } from '@graphql/queries/user';
+import { GET_ARTIST } from '@graphql/queries/user';
 import { useQuery } from '@apollo/client';
 import ErrorCard from '@components/ErrorCard';
 import { AntDesign } from '@expo/vector-icons';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useIsFocused } from '@react-navigation/native';
+import ArtistRatesForm from '@components/artist/ArtistRatesForm';
 
 export default function ArtistProfile() {
   const insets = useSafeAreaInsets();
@@ -27,10 +30,19 @@ export default function ArtistProfile() {
       GEN_STRIPE_CONNECT_ONBOARDING_LINK,
     );
   const {
-    data: userData,
+    data: artistData,
     error: errorFetchingUser,
     loading: fetchingUser,
-  } = useQuery<GetUserQuery>(GET_USER);
+    refetch,
+  } = useQuery<ArtistQuery>(GET_ARTIST);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      refetch();
+    }
+  }, [isFocused]);
 
   const logout = () => {
     supabase.auth.signOut();
@@ -93,7 +105,7 @@ export default function ArtistProfile() {
     return <ErrorCard message="Error fetching user" />;
   }
 
-  const user = userData?.user;
+  const user = artistData?.artist;
   const hasOnboarded = user?.hasOnboardedToStripe;
 
   return (
@@ -122,6 +134,7 @@ export default function ArtistProfile() {
       {!hasOnboarded && (
         <Button title="Stripe Connect" onPress={goStripeConnect} />
       )}
+      <ArtistRatesForm artist={user} />
     </View>
   );
 }

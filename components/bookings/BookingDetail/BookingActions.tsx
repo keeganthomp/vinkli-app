@@ -48,18 +48,19 @@ const ActionButton = ({
       onPress={handlePress}
       style={{
         width: '100%',
-        height: 37,
+        height: 40,
         borderRadius: 6,
-        backgroundColor: '#dddddd',
+        backgroundColor: '#333',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 8,
       }}
     >
       <Text
         style={{
-          fontSize: 15,
+          fontSize: 14,
+          color: '#fff',
+          fontWeight: '500',
         }}
       >
         {statusFormatMap[currentStatus]}
@@ -111,11 +112,10 @@ const BookingActions = ({ booking, openPaymentModal }: Props) => {
   return (
     <View
       style={{
-        paddingHorizontal: 12,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingTop: 16,
+        paddingTop: 12,
       }}
     >
       <ActionButton

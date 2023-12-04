@@ -1,8 +1,5 @@
 import { View } from 'react-native';
-import {
-  ArtistCreateBookingInput,
-  ArtistCreateBookingMutation,
-} from '@graphql/types';
+import { ArtistCreateBookingMutation } from '@graphql/types';
 import { CREATE_ARTIST_BOOKING } from '@graphql/mutations/booking';
 import { useMutation } from '@apollo/client';
 import { router } from 'expo-router';
@@ -12,14 +9,10 @@ import theme from '@theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AritstHeader from '@components/artist/ArtistHeader';
 import Toast from 'react-native-toast-message';
-import { useCallback } from 'react';
+import { ArtistBookingFromValues } from '@components/artist/ArtistBookingForm';
 
 export default function ArtistBookingCreate() {
   const insets = useSafeAreaInsets();
-
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
 
   const [createBooking] = useMutation<ArtistCreateBookingMutation>(
     CREATE_ARTIST_BOOKING,
@@ -41,12 +34,15 @@ export default function ArtistBookingCreate() {
     },
   );
 
-  const handleCreateBooking = async (data: ArtistCreateBookingInput) => {
-    const { date: selectedDate, ...bookingFormValues } = data;
+  const handleCreateBooking = async (data: ArtistBookingFromValues) => {
+    const { date: selectedDate, time, ...bookingFormValues } = data;
     try {
+      const selectedDateObj = new Date(selectedDate);
+      selectedDateObj.setHours(time.hours);
+      selectedDateObj.setMinutes(time.minutes);
       const createFormInput = {
         ...bookingFormValues,
-        date: selectedDate ? new Date(selectedDate).getTime() : undefined,
+        date: selectedDate ? selectedDateObj.getTime() : undefined,
       };
       const { data: newBookingData } = await createBooking({
         variables: {
@@ -54,7 +50,12 @@ export default function ArtistBookingCreate() {
         },
       });
       const newBooking = newBookingData?.artistCreateBooking;
-      router.replace(`/artist/bookings`);
+      Toast.show({
+        type: 'success',
+        text1: 'Created new booking!',
+        text2: `You can access the booking in your bookings list`,
+      });
+      router.replace(`/artist/booking/${newBooking?.id}`);
     } catch (error: any) {
       Toast.show({
         type: 'error',
