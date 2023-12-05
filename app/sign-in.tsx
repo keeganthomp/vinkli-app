@@ -45,19 +45,27 @@ export default function Login() {
   });
 
   async function signInWithEmail(data: LoginForm) {
-    const authResponse = await supabase.auth.signInWithPassword(data);
-    if (authResponse?.error) {
+    try {
+      const authResponse = await supabase.auth.signInWithPassword(data);
+      if (authResponse?.error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error signing in',
+          text2: authResponse.error.message,
+        });
+        return;
+      }
+      const session = authResponse?.data?.session;
+      if (session) {
+        setSession(session);
+        router.replace('/');
+      }
+    } catch (error: any) {
       Toast.show({
         type: 'error',
         text1: 'Error signing in',
-        text2: authResponse.error.message,
+        text2: error?.message || 'Something went wrong',
       });
-      return;
-    }
-    const session = authResponse?.data?.session;
-    if (session) {
-      setSession(session);
-      router.replace('/');
     }
   }
 
@@ -84,7 +92,7 @@ export default function Login() {
       </Text>
       <FormTextInput
         name="email"
-        textContentType='oneTimeCode'
+        textContentType="oneTimeCode"
         autoCapitalize="none"
         keyboardType="email-address"
         control={control}

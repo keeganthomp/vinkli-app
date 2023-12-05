@@ -1,4 +1,4 @@
-import { ScrollView, ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useForm } from 'react-hook-form';
 import FormTextInput from '@components/FormTextInput';
 import Button from '@components/Button';
@@ -6,10 +6,12 @@ import { useMutation } from '@apollo/client';
 import { UPDATE_ARTIST_RATES } from '@graphql/mutations/user';
 import { Artist, UpdateArtistRatesMutation } from '@graphql/types';
 import Toast from 'react-native-toast-message';
+import FormDollarInput from '@components/FormDollarInput';
+import { useState } from 'react';
 
 type RatesFormValues = {
-  hourlyRate: number;
-  consultationFee?: number;
+  hourlyRate?: string;
+  consultationFee?: string;
 };
 
 type Props = {
@@ -25,8 +27,10 @@ const ArtistRatesForm = ({ artist }: Props) => {
     formState: { isValid, isSubmitting },
   } = useForm<RatesFormValues>({
     defaultValues: {
-      hourlyRate: artist?.hourlyRate || 0,
-      consultationFee: artist?.consultationFee || 0,
+      hourlyRate: artist?.hourlyRate ? artist.hourlyRate?.toString() : '0',
+      consultationFee: artist?.consultationFee
+        ? artist.consultationFee?.toString()
+        : '0',
     },
   });
 
@@ -61,7 +65,7 @@ const ArtistRatesForm = ({ artist }: Props) => {
   };
 
   return (
-    <ScrollView>
+    <View>
       {isSubmitting ? (
         <View
           style={{
@@ -74,7 +78,7 @@ const ArtistRatesForm = ({ artist }: Props) => {
         </View>
       ) : (
         <>
-          <FormTextInput
+          <FormDollarInput
             control={control}
             label="Consultation Fee"
             name="consultationFee"
@@ -84,7 +88,7 @@ const ArtistRatesForm = ({ artist }: Props) => {
               paddingBottom: 24,
             }}
           />
-          <FormTextInput
+          <FormDollarInput
             control={control}
             label="Hourly Rate"
             name="hourlyRate"
@@ -97,7 +101,7 @@ const ArtistRatesForm = ({ artist }: Props) => {
           <Button label="Save" onPress={handleSubmit(handleUpdateRates)} />
         </>
       )}
-    </ScrollView>
+    </View>
   );
 };
 

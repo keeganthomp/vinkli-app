@@ -1,4 +1,10 @@
-import { View, Button, ActivityIndicator, Pressable } from 'react-native';
+import {
+  View,
+  Button,
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+} from 'react-native';
 import ArtistHeader from '@components/artist/ArtistHeader';
 import { useSession } from '@context/auth';
 import { router } from 'expo-router';
@@ -11,7 +17,7 @@ import {
   GenerateStripeConnectOnboardingLinkMutation,
   ArtistQuery,
 } from '@graphql/types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as Linking from 'expo-linking';
 import { GET_ARTIST } from '@graphql/queries/user';
 import { useQuery } from '@apollo/client';
@@ -20,10 +26,12 @@ import { AntDesign } from '@expo/vector-icons';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import ArtistRatesForm from '@components/artist/ArtistRatesForm';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function ArtistProfile() {
   const insets = useSafeAreaInsets();
   const { showActionSheetWithOptions } = useActionSheet();
+  const [refreshing, setRefreshing] = useState(false);
   const { setSession } = useSession();
   const [genStripeConnectOnboardingLink] =
     useMutation<GenerateStripeConnectOnboardingLinkMutation>(
@@ -43,6 +51,12 @@ export default function ArtistProfile() {
       refetch();
     }
   }, [isFocused]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
 
   const logout = () => {
     supabase.auth.signOut();
@@ -111,8 +125,8 @@ export default function ArtistProfile() {
   return (
     <View
       style={{
-        flex: 1,
         paddingTop: insets.top,
+        flex: 1,
       }}
     >
       <ArtistHeader
@@ -131,10 +145,17 @@ export default function ArtistProfile() {
           </Pressable>
         }
       />
-      {!hasOnboarded && (
-        <Button title="Stripe Connect" onPress={goStripeConnect} />
-      )}
-      <ArtistRatesForm artist={user} />
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      >
+        {!hasOnboarded && (
+          <Button title="Setup Payments" onPress={goStripeConnect} />
+        )}
+        {hasOnboarded && <ArtistRatesForm artist={user} />}
+      </KeyboardAwareScrollView>
     </View>
   );
 }
