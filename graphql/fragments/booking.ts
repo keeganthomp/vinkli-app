@@ -12,7 +12,8 @@ export const BOOKING_FRAGMENT = gql`
     title
     description
     status
-    date
+    startDate
+    endDate
     type
   }
 `;

@@ -5,6 +5,7 @@ export const defaultTextInputStyle: TextInputProps['style'] = {
   fontSize: 16,
   paddingTop: 0,
   fontWeight: '300',
+  color: '#333',
 };
 
 export const textInputPlaceholderTextColor = '#999999';

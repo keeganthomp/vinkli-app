@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import FormTextInput from '@components/FormTextInput';
 import FormImageInput from '@components/FormImageInput';
 import Button from '@components/Button';
-import { tattooColorMap, tattooStyleMap } from '@const/maps';
+import { tattooColorMap, tattooStyleMap, bookingTypeMap } from '@const/maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CalendarPicker from '@components/CalendarDatePicker';
 import theme from '@theme';
@@ -15,12 +15,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import FormModalInput from '@components/FormModalInput';
 import PickerModal from '@components/PickerModal';
 import Modal from '@components/Modal';
+import FormNumberInput from '@components/FormNumberInput';
 
 export type ArtistBookingFromValues = ArtistCreateBookingInput & {
-  time: {
+  startTime: {
     hours: number;
     minutes: number;
   };
+  duration: number; // in hours
 };
 type Props = {
   onSubmit: (data: ArtistBookingFromValues) => void;
@@ -32,12 +34,51 @@ const tattooStyleOptions = Object.entries(tattooStyleMap).map(
 const tattooColorOptions = Object.entries(tattooColorMap).map(
   ([key, value]) => ({ label: value, value: key }),
 );
+const bookingTypeOptions = Object.entries(bookingTypeMap).map(
+  ([key, value]) => ({ label: value, value: key }),
+);
 
 export default function ArtistBookingForm({ onSubmit }: Props) {
   const tattooColorModalRef = useRef<BottomSheet>(null);
   const tattooStyleModalRef = useRef<BottomSheet>(null);
-  const dateModalRef = useRef<BottomSheet>(null);
+  const startDateModalRef = useRef<BottomSheet>(null);
   const timeModalRef = useRef<BottomSheet>(null);
+  const appointmentTypeModalRef = useRef<BottomSheet>(null);
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { isValid, isSubmitting },
+  } = useForm<ArtistBookingFromValues>({
+    defaultValues: {
+      customerEmail: '',
+      title: '',
+      startDate: undefined,
+      endDate: undefined,
+      startTime: {
+        hours: undefined,
+        minutes: undefined,
+      },
+    },
+  });
+
+  const [selectedStartDate, startTime, tattooColor, tattooStyle, bookingType] =
+    watch([
+      'startDate',
+      'startTime',
+      'tattoo.tattooColor',
+      'tattoo.tattooStyle',
+      'type',
+    ]);
+  const canSubmit =
+    selectedStartDate && startTime && bookingType && isValid && !isSubmitting;
+
+  const openAppointmentTypePicker = useCallback(() => {
+    appointmentTypeModalRef.current?.expand();
+    Keyboard.dismiss();
+  }, []);
 
   const openTattooColorPicker = useCallback(() => {
     tattooColorModalRef.current?.expand();
@@ -50,83 +91,64 @@ export default function ArtistBookingForm({ onSubmit }: Props) {
   }, []);
 
   const openDatePicker = useCallback(() => {
-    dateModalRef.current?.expand();
+    startDateModalRef.current?.expand();
     Keyboard.dismiss();
   }, []);
 
   const openTimePicker = useCallback(() => {
+    if (!startTime?.hours) {
+      setValue('startTime.hours', 12);
+      setValue('startTime.minutes', 0);
+    }
     timeModalRef.current?.expand();
     Keyboard.dismiss();
   }, []);
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { isValid, isSubmitting },
-  } = useForm<ArtistBookingFromValues>({
-    defaultValues: {
-      customerEmail: '',
-      title: '',
-      date: undefined,
-      time: {
-        hours: undefined,
-        minutes: undefined,
-      },
-    },
-  });
-
-  const [selectedDate, selectedTime, tattooColor, tattooStyle] = watch([
-    'date',
-    'time',
-    'tattoo.tattooColor',
-    'tattoo.tattooStyle',
-  ]);
-  const canSubmit = selectedDate && selectedTime && isValid && !isSubmitting;
-
-  const handleDateChange = (incomingDate: Date) => {
-    const isAlreadySelected = moment(selectedDate).isSame(incomingDate, 'day');
+  const handleStartDateChage = (incomingDate: Date) => {
+    const isAlreadySelected = moment(selectedStartDate).isSame(
+      incomingDate,
+      'day',
+    );
     const newDate = isAlreadySelected ? null : incomingDate;
-    setValue('date', newDate);
+    setValue('startDate', newDate);
   };
 
   const handleTimeChange = (incomingDate: Date) => {
     const hours = incomingDate.getHours();
     const minutes = incomingDate.getMinutes();
-    setValue('time.hours', hours);
-    setValue('time.minutes', minutes);
+    setValue('startTime.hours', hours);
+    setValue('startTime.minutes', minutes);
   };
 
-  const dateToShow = useMemo(() => {
-    if (!selectedDate) return null;
-    const dayOfWeek = moment(selectedDate).format('dddd');
-    return `${dayOfWeek}, ${moment(selectedDate).format('LL')}`;
-  }, [selectedDate]);
+  const displayStartDate = useMemo(() => {
+    if (!selectedStartDate) return null;
+    const dayOfWeek = moment(selectedStartDate).format('dddd');
+    return `${dayOfWeek}, ${moment(selectedStartDate).format('LL')}`;
+  }, [selectedStartDate]);
 
   const displayTime = useMemo(() => {
-    const hasSelectedHours = typeof selectedTime.hours === 'number';
-    const hasSelectedMinutes = typeof selectedTime.minutes === 'number';
+    const hasSelectedHours = typeof startTime.hours === 'number';
+    const hasSelectedMinutes = typeof startTime.minutes === 'number';
     if (!hasSelectedHours || !hasSelectedMinutes) return null;
     const dateObj = new Date();
-    dateObj.setHours(selectedTime.hours);
-    dateObj.setMinutes(selectedTime.minutes);
+    dateObj.setHours(startTime.hours);
+    dateObj.setMinutes(startTime.minutes);
     return moment(dateObj).format('LT');
-  }, [selectedTime?.hours, selectedTime?.minutes]);
+  }, [startTime?.hours, startTime?.minutes]);
 
-  const selectedTimeDateObj = useMemo(() => {
-    const hasSelectedHours = typeof selectedTime.hours === 'number';
-    const hasSelectedMinutes = typeof selectedTime.minutes === 'number';
+  const startTimeDateObj = useMemo(() => {
+    const hasSelectedHours = typeof startTime.hours === 'number';
+    const hasSelectedMinutes = typeof startTime.minutes === 'number';
     const dateObj = new Date();
     if (!hasSelectedHours || !hasSelectedMinutes) {
-      dateObj.setHours(0);
+      dateObj.setHours(12);
       dateObj.setMinutes(0);
       return dateObj;
     }
-    dateObj.setHours(selectedTime.hours);
-    dateObj.setMinutes(selectedTime.minutes);
+    dateObj.setHours(startTime.hours);
+    dateObj.setMinutes(startTime.minutes);
     return dateObj;
-  }, [selectedTime?.hours, selectedTime?.minutes]);
+  }, [startTime?.hours, startTime?.minutes]);
 
   const SPACING = 22;
 
@@ -168,23 +190,62 @@ export default function ArtistBookingForm({ onSubmit }: Props) {
                 }}
               />
               <FormModalInput
-                openPicker={openDatePicker}
-                label="Date"
-                placeholder="Select a date"
-                value={dateToShow}
+                openPicker={openAppointmentTypePicker}
+                placeholder="Select appointment type"
+                label="Appointment Type"
+                value={
+                  bookingTypeMap[bookingType as keyof typeof bookingTypeMap]
+                }
                 containerStyle={{
                   paddingBottom: SPACING,
                 }}
               />
               <FormModalInput
-                openPicker={openTimePicker}
-                label="Time"
-                placeholder="Select a time"
-                value={displayTime}
+                openPicker={openDatePicker}
+                label="Date"
+                placeholder="Select date"
+                value={displayStartDate}
                 containerStyle={{
                   paddingBottom: SPACING,
                 }}
               />
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingBottom: SPACING,
+                }}
+              >
+                <View
+                  style={{
+                    width: 115,
+                  }}
+                >
+                  <FormModalInput
+                    openPicker={openTimePicker}
+                    label="Start Time"
+                    placeholder="Select time"
+                    value={displayTime}
+                  />
+                </View>
+                <View
+                  style={{
+                    width: 130,
+                    marginLeft: 10,
+                  }}
+                >
+                  <FormNumberInput
+                    name="duration"
+                    control={control}
+                    label="Duration (hours)"
+                    placeholder="Hours"
+                    rules={{
+                      required: 'Duration is required',
+                    }}
+                  />
+                </View>
+              </View>
               <FormTextInput
                 control={control}
                 name="tattoo.description"
@@ -265,31 +326,40 @@ export default function ArtistBookingForm({ onSubmit }: Props) {
         options={tattooStyleOptions}
         modalHeight={380}
       />
+      <PickerModal
+        ref={appointmentTypeModalRef}
+        control={control as any}
+        name="type"
+        options={bookingTypeOptions}
+        modalHeight={120}
+      />
       <Modal
-        ref={dateModalRef}
+        ref={startDateModalRef}
         modalHeight={350}
-        showDoneButton={!!selectedDate}
+        showDoneButton={!!selectedStartDate}
       >
         <CalendarPicker
-          selectedDates={selectedDate}
-          onDateSelected={handleDateChange}
+          selectedDates={selectedStartDate}
+          onDateSelected={handleStartDateChage}
         />
       </Modal>
       <Modal ref={timeModalRef} modalHeight={225} showDoneButton>
-        {dateToShow && (
+        {displayStartDate && (
           <Text
             style={{
               textAlign: 'center',
             }}
           >
-            {dateToShow}
+            {displayStartDate}
           </Text>
         )}
         <DateTimePicker
           mode="time"
           display="spinner"
-          textColor="#000"
-          value={selectedTimeDateObj}
+          textColor="#333"
+          accentColor="#333"
+          minuteInterval={15}
+          value={startTimeDateObj}
           onChange={(event, date) => {
             if (date) handleTimeChange(date);
           }}

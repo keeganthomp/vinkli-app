@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, TextInputProps, View, Text, ViewStyle } from 'react-native';
+import { TextInput, TextInputProps, ViewStyle, View } from 'react-native';
 import { Control, useController, FieldValues, Path } from 'react-hook-form';
 import Label from './InputLabel';
 import {
@@ -10,7 +10,7 @@ import InputAccessory from './InputAccessory';
 
 const genRandomId = () => Math.random().toString(36).substring(7);
 
-type FormTextInputProps<TFieldValues extends FieldValues> = {
+type FormNumberInputProps<TFieldValues extends FieldValues> = {
   name: Path<TFieldValues>;
   control: Control<TFieldValues>;
   placeholder?: string;
@@ -20,7 +20,7 @@ type FormTextInputProps<TFieldValues extends FieldValues> = {
   containerStyle?: ViewStyle;
 } & TextInputProps;
 
-function FormTextInput<TFieldValues extends FieldValues>({
+function FormNumberInput<TFieldValues extends FieldValues>({
   name,
   control,
   placeholder = '',
@@ -29,10 +29,12 @@ function FormTextInput<TFieldValues extends FieldValues>({
   defaultValue,
   containerStyle = {},
   ...textInputProps
-}: FormTextInputProps<TFieldValues>) {
+}: FormNumberInputProps<TFieldValues>) {
   const inputAccessoryViewID = genRandomId();
+  const maxAmount = 100000;
+
   const {
-    field: { onChange, onBlur, value },
+    field: { onChange, value },
     fieldState: { error },
   } = useController({
     name,
@@ -41,31 +43,36 @@ function FormTextInput<TFieldValues extends FieldValues>({
     defaultValue,
   });
 
-  const valueAsString = typeof value === 'number' ? value.toString() : value;
+  const handleChange = (text: string) => {
+    // Ensure only numeric values are allowed
+    const numericValue = text.replace(/[^0-9]/g, '');
+
+    // Convert to number and check against maxAmount
+    const numeric = parseInt(numericValue, 10);
+    if (!isNaN(numeric) && numeric <= maxAmount) {
+      onChange(numericValue);
+    } else if (isNaN(numeric)) {
+      onChange('');
+    }
+  };
 
   return (
-    <View
-      style={{
-        ...containerStyle,
-      }}
-    >
+    <View style={{ ...containerStyle }}>
       <Label label={label} />
       <TextInput
         inputAccessoryViewID={inputAccessoryViewID}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={valueAsString}
-        placeholder={placeholder}
+        value={value}
+        onChangeText={handleChange}
+        keyboardType="numeric"
+        placeholder={placeholder || 'Enter number'}
         style={defaultTextInputStyle}
-        {...textInputProps}
         placeholderTextColor={textInputPlaceholderTextColor}
-        returnKeyType={textInputProps.multiline ? 'default' : 'done'}
+        returnKeyType="done"
+        {...textInputProps}
       />
-      {error && <Text style={{ color: 'red' }}>{error.message}</Text>}
-      {/* Bar above keyboard */}
       <InputAccessory id={inputAccessoryViewID} />
     </View>
   );
 }
 
-export default FormTextInput;
+export default FormNumberInput;

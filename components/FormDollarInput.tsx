@@ -6,6 +6,9 @@ import {
 import { TextInput, TextInputProps, ViewStyle, View } from 'react-native';
 import { Control, useController, FieldValues, Path } from 'react-hook-form';
 import Label from './InputLabel';
+import InputAccessory from './InputAccessory';
+
+const genRandomId = () => Math.random().toString(36).substring(7);
 
 type FormDollarInputProps<TFieldValues extends FieldValues> = {
   name: Path<TFieldValues>;
@@ -27,6 +30,7 @@ function FormDollarInputProps<TFieldValues extends FieldValues>({
   containerStyle = {},
   ...textInputProps
 }: FormDollarInputProps<TFieldValues>) {
+  const inputAccessoryViewID = genRandomId();
   const maxAmount = 100000;
 
   const {
@@ -56,10 +60,10 @@ function FormDollarInputProps<TFieldValues extends FieldValues>({
       onChange('');
       return;
     }
-  
+
     // Remove all non-numeric characters and convert to number
     const numericValue = parseInt(text.replace(/[^0-9]/g, ''), 10);
-  
+
     // Check if the numeric value is within the max amount
     if (!isNaN(numericValue) && numericValue <= maxAmount) {
       onChange(numericValue.toString()); // Pass the numeric value as a string to onChange
@@ -77,6 +81,7 @@ function FormDollarInputProps<TFieldValues extends FieldValues>({
     >
       <Label label={label} />
       <TextInput
+        inputAccessoryViewID={inputAccessoryViewID}
         value={formatCurrency(value)}
         onChangeText={handleChange}
         keyboardType="numeric"
@@ -86,6 +91,7 @@ function FormDollarInputProps<TFieldValues extends FieldValues>({
         returnKeyType="done"
         {...textInputProps}
       />
+      <InputAccessory id={inputAccessoryViewID} />
     </View>
   );
 }

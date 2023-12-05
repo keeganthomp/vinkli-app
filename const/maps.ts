@@ -1,4 +1,4 @@
-import { TattooColor, TattooStyle } from '@graphql/types';
+import { TattooColor, TattooStyle, BookingType } from '@graphql/types';
 
 export const tattooColorMap: Record<TattooColor, string> = {
   [TattooColor.BlackAndGrey]: 'Black & Grey',
@@ -14,4 +14,9 @@ export const tattooStyleMap: Record<TattooStyle, string> = {
   [TattooStyle.Tribal]: 'Tribal',
   [TattooStyle.NewSchool]: 'New School',
   [TattooStyle.Dotwork]: 'Dotwork',
+};
+
+export const bookingTypeMap: Record<BookingType, string> = {
+  [BookingType.TattooSession]: 'Session',
+  [BookingType.Consultation]: 'Consultation',
 };

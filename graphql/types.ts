@@ -35,10 +35,12 @@ export type Artist = {
 
 export type ArtistCreateBookingInput = {
   customerEmail: Scalars['String']['input'];
-  date: Scalars['Date']['input'];
+  endDate: Scalars['Date']['input'];
+  startDate: Scalars['Date']['input'];
   tattoo?: InputMaybe<TattooForBookingInput>;
   tattooId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<BookingType>;
 };
 
 export type ArtistCreateTattooInput = {
@@ -112,9 +114,10 @@ export type Booking = {
   artistId?: Maybe<Scalars['ID']['output']>;
   createdAt?: Maybe<Scalars['Date']['output']>;
   customer?: Maybe<User>;
-  date?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  endDate?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
+  startDate?: Maybe<Scalars['Date']['output']>;
   status: BookingStatus;
   tattoo?: Maybe<Tattoo>;
   tattooId: Scalars['ID']['output'];
@@ -355,9 +358,11 @@ export enum TattooStyle {
 
 export type UpdateBookingInput = {
   artistId?: InputMaybe<Scalars['ID']['input']>;
-  date?: InputMaybe<Scalars['Date']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<BookingType>;
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -382,7 +387,7 @@ export enum UserType {
   Customer = 'CUSTOMER'
 }
 
-export type BookingFragmentFragment = { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType };
+export type BookingFragmentFragment = { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType };
 
 export type ChargeFragmentFragment = { __typename?: 'Charge', id: string, amount: number, createdAt: any, paid: boolean, paymentType?: PaymentType | null, description?: string | null };
 
@@ -403,14 +408,14 @@ export type CustomerCreateBookingMutationVariables = Exact<{
 }>;
 
 
-export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType } };
+export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType } };
 
 export type ArtistCreateBookingMutationVariables = Exact<{
   input: ArtistCreateBookingInput;
 }>;
 
 
-export type ArtistCreateBookingMutation = { __typename?: 'Mutation', artistCreateBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType } };
+export type ArtistCreateBookingMutation = { __typename?: 'Mutation', artistCreateBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType } };
 
 export type ArtistUpdateBookingStatusMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -418,12 +423,12 @@ export type ArtistUpdateBookingStatusMutationVariables = Exact<{
 }>;
 
 
-export type ArtistUpdateBookingStatusMutation = { __typename?: 'Mutation', artistUpdateBookingStatus: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType } };
+export type ArtistUpdateBookingStatusMutation = { __typename?: 'Mutation', artistUpdateBookingStatus: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType } };
 
 export type CustomerTattoosQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CustomerTattoosQuery = { __typename?: 'Query', customerTattoos: Array<{ __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string>, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, consultation?: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null } | null, sessions?: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }> | null }> };
+export type CustomerTattoosQuery = { __typename?: 'Query', customerTattoos: Array<{ __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string>, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, consultation?: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null } | null, sessions?: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }> | null }> };
 
 export type GenerateStripeConnectOnboardingLinkMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -443,28 +448,28 @@ export type CustomerBookingsQueryVariables = Exact<{
 }>;
 
 
-export type CustomerBookingsQuery = { __typename?: 'Query', customerBookings: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null }> };
+export type CustomerBookingsQuery = { __typename?: 'Query', customerBookings: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null }> };
 
 export type CustomerBookingQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type CustomerBookingQuery = { __typename?: 'Query', customerBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null } };
+export type CustomerBookingQuery = { __typename?: 'Query', customerBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null } };
 
 export type ArtistBookingsQueryVariables = Exact<{
   status?: InputMaybe<BookingStatus>;
 }>;
 
 
-export type ArtistBookingsQuery = { __typename?: 'Query', artistBookings: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null }> };
+export type ArtistBookingsQuery = { __typename?: 'Query', artistBookings: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null }> };
 
 export type ArtistBookingQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type ArtistBookingQuery = { __typename?: 'Query', artistBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, date?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null } };
+export type ArtistBookingQuery = { __typename?: 'Query', artistBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, title?: string | null, description?: string | null, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, firstName?: string | null, lastName?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, tattooStyle?: TattooStyle | null, tattooColor?: TattooColor | null, imageUrls: Array<string> } | null } };
 
 export type ArtistFinancialsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -497,7 +502,8 @@ export const BookingFragmentFragmentDoc = gql`
   title
   description
   status
-  date
+  startDate
+  endDate
   type
 }
     `;

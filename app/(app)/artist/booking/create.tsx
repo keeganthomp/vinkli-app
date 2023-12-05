@@ -35,14 +35,22 @@ export default function ArtistBookingCreate() {
   );
 
   const handleCreateBooking = async (data: ArtistBookingFromValues) => {
-    const { date: selectedDate, time, ...bookingFormValues } = data;
+    const {
+      startDate: selectedDate,
+      startTime: time,
+      duration,
+      ...bookingFormValues
+    } = data;
     try {
       const selectedDateObj = new Date(selectedDate);
       selectedDateObj.setHours(time.hours);
       selectedDateObj.setMinutes(time.minutes);
+      const endDateObj = new Date(selectedDateObj);
+      endDateObj.setHours(endDateObj.getHours() + duration);
       const createFormInput = {
         ...bookingFormValues,
-        date: selectedDate ? selectedDateObj.getTime() : undefined,
+        startDate: selectedDate ? selectedDateObj.getTime() : undefined,
+        endDate: endDateObj ? endDateObj.getTime() : undefined,
       };
       const { data: newBookingData } = await createBooking({
         variables: {
