@@ -1,9 +1,9 @@
 import { View, Text, Pressable, ViewStyle } from 'react-native';
-import Label from '@components/InputLabel';
+import Label from '@components/inputs/InputLabel';
 
 type Props = {
   openPicker: () => void;
-  value?: string | null,
+  value?: string | null;
   label?: string;
   placeholder?: string;
   containerStyle?: ViewStyle;

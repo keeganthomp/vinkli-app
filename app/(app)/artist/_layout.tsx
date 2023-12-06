@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { StripeTerminalProvider } from '@stripe/stripe-terminal-react-native';
 import { GET_STRIPE_TERMINAL_TOKEN } from '@graphql/queries/payments';
 import { useLazyQuery } from '@apollo/client';
-import ErrorCard from '@components/ErrorCard';
+import ErrorCard from '@components/Error';
 import { StripeTerminalConnectionTokenQuery } from '@graphql/types';
 
 export default function ArtistLayout() {
@@ -26,7 +26,12 @@ export default function ArtistLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="booking/create" />
+        <Stack.Screen
+          name="booking/create"
+          options={{
+            presentation: 'modal',
+          }}
+        />
         <Stack.Screen name="booking/[bookingId]/index" />
         <Stack.Screen
           name="booking/[bookingId]/collect-payment"

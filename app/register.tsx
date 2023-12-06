@@ -4,7 +4,7 @@ import { supabase } from '@lib/supabase';
 import { UserType } from '@graphql/types';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import FormTextInput from '@components/FormTextInput';
+import FormTextInput from '@components/inputs/FormTextInput';
 import Toast from 'react-native-toast-message';
 import Button from '@components/Button';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -137,7 +137,7 @@ export default function Signup() {
       <FormTextInput
         control={control}
         autoCapitalize="none"
-        textContentType='oneTimeCode'
+        textContentType="oneTimeCode"
         keyboardType="email-address"
         placeholder="jane@email.com"
         name="email"

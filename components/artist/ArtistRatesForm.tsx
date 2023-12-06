@@ -1,12 +1,12 @@
 import { ActivityIndicator, View } from 'react-native';
 import { useForm } from 'react-hook-form';
-import FormTextInput from '@components/FormTextInput';
+import FormTextInput from '@components/inputs/FormTextInput';
 import Button from '@components/Button';
 import { useMutation } from '@apollo/client';
 import { UPDATE_ARTIST_RATES } from '@graphql/mutations/user';
 import { Artist, UpdateArtistRatesMutation } from '@graphql/types';
 import Toast from 'react-native-toast-message';
-import FormDollarInput from '@components/FormDollarInput';
+import FormDollarInput from '@components/inputs/FormDollarInput';
 import { useState } from 'react';
 
 type RatesFormValues = {

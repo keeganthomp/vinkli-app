@@ -7,7 +7,6 @@ import { StatusBar } from 'react-native';
 import apolloClient from '@lib/apolloClient';
 import * as SplashScreen from 'expo-splash-screen';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useEffect } from 'react';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import Toast from 'react-native-toast-message';
@@ -33,8 +32,7 @@ export default function RootLayout() {
           merchantIdentifier={EXPO_PUBLIC_MERCHANT_ID as string}
           // urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
         > */}
-          <BottomSheetModalProvider>
-            <ActionSheetProvider>
+          <ActionSheetProvider>
               <SafeAreaProvider
                 style={{
                   flex: 1,
@@ -43,8 +41,7 @@ export default function RootLayout() {
               >
                 <Slot />
               </SafeAreaProvider>
-            </ActionSheetProvider>
-          </BottomSheetModalProvider>
+          </ActionSheetProvider>
           {/* </StripeProvider> */}
         </SessionProvider>
       </ApolloProvider>

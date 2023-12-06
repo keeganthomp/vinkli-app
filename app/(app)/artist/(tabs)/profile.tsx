@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import * as Linking from 'expo-linking';
 import { GET_ARTIST } from '@graphql/queries/user';
 import { useQuery } from '@apollo/client';
-import ErrorCard from '@components/ErrorCard';
+import ErrorCard from '@components/Error';
 import { AntDesign } from '@expo/vector-icons';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useIsFocused } from '@react-navigation/native';

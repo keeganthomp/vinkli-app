@@ -3,7 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { GET_CUSTOMER_BOOKING } from '@graphql/queries/booking';
 import { useQuery } from '@apollo/client';
 import { Booking, CustomerBookingQuery } from '@graphql/types';
-import Label from '@components/InputLabel';
+import Label from '@components/inputs/InputLabel';
 import { Image } from 'expo-image';
 
 export default function CustomerBookingDetail() {

@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client';
 import { GetUserQuery } from '@graphql/types';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import ErrorCard from '@components/ErrorCard';
+import ErrorCard from '@components/Error';
 
 /**
  * This entry point is used to initialize the app

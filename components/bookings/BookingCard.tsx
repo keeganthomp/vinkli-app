@@ -100,7 +100,7 @@ export default function BookingCard({ booking, href }: Props) {
               marginLeft: 4,
             }}
           >
-            {booking.date ? moment(booking.date).calendar() : 'No Date Set'}
+            {booking.startDate ? moment(booking.startDate).calendar() : 'No Date Set'}
           </Text>
         </View>
         {customer && (

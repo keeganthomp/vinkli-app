@@ -18,10 +18,18 @@ export default function BookingHeader({ booking }: Props) {
   const customer = booking.customer;
 
   const appointmentDate = useMemo(() => {
-    if (!booking?.date) return null;
-    const bookingDateObj = new Date(booking.date);
+    if (!booking?.startDate) return null;
+    const bookingDateObj = new Date(booking.startDate);
     return moment(bookingDateObj).format('LLLL');
-  }, [booking?.date]);
+  }, [booking?.startDate]);
+
+  const endDate = useMemo(() => {
+    if (!booking?.endDate) return null;
+    const bookingDateObj = new Date(booking.endDate);
+    return moment(bookingDateObj).format('LLLL');
+  }, [booking?.endDate]);
+
+
 
   if (!customer) return null;
   return (
@@ -56,6 +64,26 @@ export default function BookingHeader({ booking }: Props) {
             }}
           >
             {appointmentDate}
+          </Text>
+        </View>
+      )}
+      {endDate && (
+        <View
+          style={{
+            paddingTop: 10,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <Feather name="calendar" size={18} color="black" />
+          <Text
+            style={{
+              fontSize: 17,
+              marginLeft: 5,
+            }}
+          >
+            {endDate}
           </Text>
         </View>
       )}

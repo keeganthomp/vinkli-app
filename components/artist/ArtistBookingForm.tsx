@@ -1,8 +1,8 @@
 import { View, ActivityIndicator, Keyboard, Text } from 'react-native';
 import { ArtistCreateBookingInput } from '@graphql/types';
 import { useForm } from 'react-hook-form';
-import FormTextInput from '@components/FormTextInput';
-import FormImageInput from '@components/FormImageInput';
+import FormTextInput from '@components/inputs/FormTextInput';
+import FormImageInput from '@components/inputs/FormImageInput';
 import Button from '@components/Button';
 import { tattooColorMap, tattooStyleMap, bookingTypeMap } from '@const/maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -12,10 +12,10 @@ import { useCallback, useMemo, useRef } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import FormModalInput from '@components/FormModalInput';
-import PickerModal from '@components/PickerModal';
-import Modal from '@components/Modal';
-import FormNumberInput from '@components/FormNumberInput';
+import FormModalInput from '@components/inputs/FormModalInput';
+import PickerModal from '@components/modals/PickerModal';
+import Modal from '@components/modals/Modal';
+import FormNumberInput from '@components/inputs/FormNumberInput';
 
 export type ArtistBookingFromValues = ArtistCreateBookingInput & {
   startTime: {

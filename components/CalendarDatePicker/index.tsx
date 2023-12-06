@@ -31,11 +31,7 @@ const CalendarPicker = ({ onDateSelected, selectedDates, hideMonthNav }: Props) 
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
+    <>
       <MonthBar
         hideMonthNav={hideMonthNav}
         currentMonth={currentMonth}
@@ -49,7 +45,7 @@ const CalendarPicker = ({ onDateSelected, selectedDates, hideMonthNav }: Props) 
         onDateSelected={onDateSelected}
         selectedDates={selectedDates}
       />
-    </View>
+    </>
   );
 };
 

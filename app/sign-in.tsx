@@ -5,7 +5,7 @@ import { useSession } from '@context/auth';
 import { router } from 'expo-router';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-toast-message';
-import FormTextInput from '@components/FormTextInput';
+import FormTextInput from '@components/inputs/FormTextInput';
 import { useForm } from 'react-hook-form';
 
 type LoginForm = {

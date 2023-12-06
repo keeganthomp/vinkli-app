@@ -1,8 +1,8 @@
 import { Text, Pressable } from 'react-native';
 import { useCallback, useMemo, forwardRef } from 'react';
 import { Control, useController, FieldValues, Path } from 'react-hook-form';
-import BottomSheet from '@gorhom/bottom-sheet';
-import Modal, { ModalProps } from '@components/Modal';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import Modal, { ModalProps } from '@components/modals/Modal';
 
 export type PickerOption<T> = {
   label: string;
@@ -50,9 +50,9 @@ const PickerRow = <T,>({ item, onPress, isLast }: PickerRowT<T>) => {
   );
 };
 
-const PickerModal = forwardRef<BottomSheet, Props<any>>(
+const PickerModal = forwardRef<BottomSheetModal, Props<any>>(
   (
-    { control, name, options, modalHeight = 250, showDoneButton = false },
+    { control, name, options, showDoneButton = false },
     ref,
   ) => {
     const {
@@ -82,7 +82,6 @@ const PickerModal = forwardRef<BottomSheet, Props<any>>(
     return (
       <Modal
         ref={ref}
-        modalHeight={modalHeight}
         showDoneButton={shouldShowConfirmButton}
       >
         {options.map((option: PickerOption<any>, i) => (

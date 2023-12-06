@@ -1,16 +1,24 @@
-import { Pressable, Text, ViewStyle } from 'react-native';
+import { Pressable, Text, ViewStyle, View } from 'react-native';
 
 export type ButtonProps = {
   label: string;
   onPress: () => void;
+  icon?: React.ReactNode;
   disabled?: boolean;
   style?: ViewStyle;
 };
 
-const Button = ({ onPress, label, disabled = false, style = {} }: ButtonProps) => {
+const Button = ({
+  onPress,
+  label,
+  disabled = false,
+  style = {},
+  icon,
+}: ButtonProps) => {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       style={{
         width: '100%',
         height: 46,
@@ -25,11 +33,21 @@ const Button = ({ onPress, label, disabled = false, style = {} }: ButtonProps) =
       <Text
         style={{
           color: '#fff',
-          fontWeight: 'bold',
+          fontWeight: '500',
         }}
       >
         {label}
       </Text>
+      {icon && (
+        <View
+          style={{
+            position: 'absolute',
+            right: 10,
+          }}
+        >
+          {icon}
+        </View>
+      )}
     </Pressable>
   );
 };

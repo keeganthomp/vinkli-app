@@ -6,9 +6,7 @@ import { router, Slot } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
-import ErrorCard from '@components/ErrorCard';
-import Toast from 'react-native-toast-message';
-import { toastConfig } from '@utils/toast';
+import ErrorCard from '@components/Error';
 
 /**
  * We can defer the initialization of the app until we have the user
@@ -65,7 +63,6 @@ export default function AppLayout() {
       >
         <Slot />
       </View>
-      <Toast topOffset={55} config={toastConfig} />
     </>
   );
 }
