@@ -1,5 +1,4 @@
 import { View, Keyboard, Text } from 'react-native';
-import { ArtistCreateBookingInput } from '@graphql/types';
 import { useFormContext } from 'react-hook-form';
 import { bookingTypeMap } from '@const/maps';
 import CalendarPicker from '@components/CalendarDatePicker';
@@ -27,6 +26,7 @@ export default function ArtistBookingAppointmentInfo() {
   const appointmentTypeModalRef = useRef<BottomSheetModal>(null);
 
   const goToTattooInfo = () => {
+    Keyboard.dismiss();
     router.push('/artist/booking/create/tattooInfo');
   };
 
@@ -44,12 +44,6 @@ export default function ArtistBookingAppointmentInfo() {
       hasSelectedStartDate && hasSelectedStartTime && hasSelectedBookingType
     );
   }, [selectedStartDate, startTime?.hours, bookingType]);
-
-  console.log({
-    selectedStartDate,
-    startTime,
-    bookingType,
-  });
 
   const openAppointmentTypePicker = useCallback(() => {
     appointmentTypeModalRef.current?.present();
@@ -121,6 +115,15 @@ export default function ArtistBookingAppointmentInfo() {
   return (
     <>
       <View>
+        <Text
+          style={{
+            fontSize: 31,
+            fontWeight: 'bold',
+            paddingBottom: 18,
+          }}
+        >
+          Appointment Info
+        </Text>
         <FormModalInput
           openPicker={openAppointmentTypePicker}
           placeholder="Select appointment type"

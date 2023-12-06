@@ -118,7 +118,7 @@ const ArtistHeader = ({
           ellipsizeMode="tail"
           style={{
             flex: 1,
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: modalHeader ? '600' : 'bold',
             paddingHorizontal: 8,
             textAlign: 'center',

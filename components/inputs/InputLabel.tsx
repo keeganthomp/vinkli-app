@@ -7,7 +7,7 @@ const Label = ({ label }: { label?: string }) => {
       style={{
         paddingBottom: 5,
         fontWeight: '500',
-        fontSize: 16
+        fontSize: 15
       }}
     >
       {label}

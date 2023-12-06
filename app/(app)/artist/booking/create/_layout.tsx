@@ -48,7 +48,7 @@ export default function ArtistBookingCreateLayout() {
             screenOptions={{
               header: () => null,
               contentStyle: {
-                paddingTop: 20,
+                paddingTop: 14,
                 paddingHorizontal: 12,
               },
             }}

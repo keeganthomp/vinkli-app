@@ -1,4 +1,4 @@
-import { View, Keyboard, ActivityIndicator } from 'react-native';
+import { View, Keyboard, ActivityIndicator, Text } from 'react-native';
 import FormTextInput from '@components/inputs/FormTextInput';
 import FormImageInput from '@components/inputs/FormImageInput';
 import { tattooColorMap, tattooStyleMap } from '@const/maps';
@@ -77,11 +77,14 @@ export default function ArtistBookingTattooInfo() {
       ...bookingFormValues
     } = data;
     try {
+      Keyboard.dismiss();
       const startDateObj = new Date(startDate);
       startDateObj.setHours(time.hours);
       startDateObj.setMinutes(time.minutes);
-      const endDateObj = new Date(startDateObj);
-      endDateObj.setHours(endDateObj.getHours() + duration);
+      const durationInMilliseconds = (duration || 0) * 60 * 60 * 1000; // convert duration from hours to milliseconds
+      const endDateObj = new Date(
+        startDateObj.getTime() + durationInMilliseconds,
+      ); // add duration to selectedDateObj
       const createFormInput = {
         ...bookingFormValues,
         startDate: startDate ? startDateObj.getTime() : undefined,
@@ -135,6 +138,15 @@ export default function ArtistBookingTattooInfo() {
               paddingBottom: 40,
             }}
           >
+            <Text
+              style={{
+                fontSize: 31,
+                fontWeight: 'bold',
+                paddingBottom: 18,
+              }}
+            >
+              Tattoo Info
+            </Text>
             <FormTextInput
               control={control}
               name="tattoo.description"

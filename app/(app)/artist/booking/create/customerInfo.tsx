@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { View, Text, Keyboard } from 'react-native';
 import { router } from 'expo-router';
 import { useFormContext } from 'react-hook-form';
 import FormTextInput from '@components/inputs/FormTextInput';
@@ -8,11 +8,21 @@ import { ArtistBookingFromValues } from './_layout';
 const ArtistBookingCustomerInfo = () => {
   const { control, watch } = useFormContext<ArtistBookingFromValues>();
   const goToAppointmentInfo = () => {
+    Keyboard.dismiss();
     router.push('/artist/booking/create/appointmentInfo');
   };
   const email = watch('customerEmail');
   return (
     <View>
+      <Text
+        style={{
+          fontSize: 31,
+          fontWeight: 'bold',
+          paddingBottom: 18,
+        }}
+      >
+        Customer Info
+      </Text>
       <FormTextInput
         control={control}
         autoCapitalize="none"

@@ -67,26 +67,6 @@ export default function BookingHeader({ booking }: Props) {
           </Text>
         </View>
       )}
-      {endDate && (
-        <View
-          style={{
-            paddingTop: 10,
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <Feather name="calendar" size={18} color="black" />
-          <Text
-            style={{
-              fontSize: 17,
-              marginLeft: 5,
-            }}
-          >
-            {endDate}
-          </Text>
-        </View>
-      )}
       <View
         style={{
           paddingTop: 12,
