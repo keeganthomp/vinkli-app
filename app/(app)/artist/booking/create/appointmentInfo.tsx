@@ -9,7 +9,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import FormModalInput from '@components/inputs/FormModalInput';
 import PickerModal from '@components/modals/PickerModal';
 import Modal from '@components/modals/Modal';
-import FormNumberInput from '@components/inputs/FormNumberInput';
 import NextButton from '@components/NextButton';
 import { router } from 'expo-router';
 import { ArtistBookingFromValues } from './_layout';
@@ -162,21 +161,6 @@ export default function ArtistBookingAppointmentInfo() {
               value={displayTime}
             />
           </View>
-          {selectedStartDate && startTime?.hours && (
-            <View
-              style={{
-                width: 132,
-                marginLeft: 10,
-              }}
-            >
-              <FormNumberInput
-                name="duration"
-                control={control}
-                label="Duration (hours)"
-                placeholder="1 Hour"
-              />
-            </View>
-          )}
         </View>
         <NextButton
           label="Tattoo Info"

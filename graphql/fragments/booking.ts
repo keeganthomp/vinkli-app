@@ -9,11 +9,12 @@ export const BOOKING_FRAGMENT = gql`
     artistId
     userId
     tattooId
-    title
-    description
     status
     startDate
     endDate
     type
+    completedAt
+    duration
+    cost
   }
 `;

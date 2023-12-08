@@ -1,12 +1,12 @@
 import { Text, View, Pressable, TextStyle, TextProps } from 'react-native';
-import { Booking, TattooStyle, TattooColor } from '@graphql/types';
+import { TattooStyle, TattooColor, Tattoo } from '@graphql/types';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { tattooColorMap, tattooStyleMap } from '@const/maps';
 import theme from '@theme';
 
 type Props = {
-  booking: Booking;
+  tattoo?: Tattoo | null;
 };
 
 const Info = ({
@@ -56,20 +56,22 @@ const Tag = ({ value }: { value: string }) => {
   );
 };
 
-const ImagePreview = ({ url, index }: { url: string, index: number }) => {
+const ImagePreview = ({ url, index }: { url: string; index: number }) => {
   const isMiddle = index % 3 === 1;
   return (
-    <Pressable style={{
-      width: '32%',
-      height: 120,
-      marginBottom: 8,
-      marginHorizontal: isMiddle ? 5 : 0,
-    }}>
+    <Pressable
+      style={{
+        width: '32%',
+        height: 120,
+        marginBottom: 8,
+        marginHorizontal: isMiddle ? 5 : 0,
+      }}
+    >
       <Image
         cachePolicy="memory-disk"
         style={{
           flex: 1,
-          borderRadius: 4,
+          borderRadius: 6,
         }}
         contentFit="cover"
         source={{
@@ -80,11 +82,9 @@ const ImagePreview = ({ url, index }: { url: string, index: number }) => {
   );
 };
 
-export default function BookingInfo({ booking }: Props) {
+export default function TattooInfo({ tattoo }: Props) {
   const [isViewingFullDescription, setIsViewingFullDescription] =
     useState(false);
-
-  const tattoo = booking.tattoo;
 
   if (!tattoo) return null;
 
@@ -93,7 +93,7 @@ export default function BookingInfo({ booking }: Props) {
   return (
     <View
       style={{
-        paddingTop: 16,
+        paddingTop: 18,
       }}
     >
       <Pressable
@@ -110,7 +110,7 @@ export default function BookingInfo({ booking }: Props) {
           value={tattoo.description || 'No Description Provided'}
         />
       </Pressable>
-      {(tattoo.tattooStyle || tattoo.tattooColor) && (
+      {(tattoo.style || tattoo.color) && (
         <View
           style={{
             paddingTop: 8,
@@ -118,15 +118,11 @@ export default function BookingInfo({ booking }: Props) {
             flexDirection: 'row',
           }}
         >
-          {tattoo.tattooStyle && (
-            <Tag
-              value={tattooStyleMap[tattoo.tattooStyle as TattooStyle] || 'N/A'}
-            />
+          {tattoo.style && (
+            <Tag value={tattooStyleMap[tattoo.style as TattooStyle]} />
           )}
-          {tattoo.tattooColor && (
-            <Tag
-              value={tattooColorMap[tattoo.tattooColor as TattooColor] || 'N/A'}
-            />
+          {tattoo.color && (
+            <Tag value={tattooColorMap[tattoo.color as TattooColor]} />
           )}
         </View>
       )}

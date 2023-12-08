@@ -6,8 +6,7 @@ export const USER_FRAGMENT = gql`
     createdAt
     updatedAt
     email
-    firstName
-    lastName
+    name
     userType
     hasOnboardedToStripe
     hourlyRate
@@ -21,8 +20,7 @@ export const ARTIST_FRAGMENT = gql`
     createdAt
     updatedAt
     email
-    firstName
-    lastName
+    name
     stripeAccountId
     hasOnboardedToStripe
     hourlyRate

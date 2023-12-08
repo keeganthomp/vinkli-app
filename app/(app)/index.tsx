@@ -25,8 +25,6 @@ export default function AppInit() {
     },
   );
 
-  console.log('in aoo init', userData);
-
   useEffect(() => {
     const directUser = async () => {
       const currentUser = userData?.user;

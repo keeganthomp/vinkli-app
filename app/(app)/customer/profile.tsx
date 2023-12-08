@@ -50,7 +50,7 @@ export default function CustomerProfile() {
   };
 
   const user = userData?.user;
-  const name = user?.firstName ? `${user?.firstName} ${user?.lastName}` : '';
+  const name = user?.name || '';
 
   return (
     <View

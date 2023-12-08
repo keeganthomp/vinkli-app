@@ -34,8 +34,8 @@ export default function ArtistBookingTattooInfo() {
   const tattooStyleModalRef = useRef<BottomSheetModal>(null);
 
   const [tattooColor, tattooStyle, startDate] = watch([
-    'tattoo.tattooColor',
-    'tattoo.tattooStyle',
+    'tattoo.color',
+    'tattoo.style',
     'startDate',
   ]);
 
@@ -150,8 +150,18 @@ export default function ArtistBookingTattooInfo() {
             <FormTextInput
               control={control}
               name="tattoo.description"
-              label="Tattoo Description"
-              placeholder="Description"
+              label="Description"
+              placeholder="owl, snake and dagger, clock, etc."
+              multiline
+              containerStyle={{
+                paddingBottom: SPACING,
+              }}
+            />
+            <FormTextInput
+              control={control}
+              name="tattoo.placement"
+              label="Placement"
+              placeholder="upper right arm, left calf, etc."
               multiline
               containerStyle={{
                 paddingBottom: SPACING,
@@ -159,8 +169,8 @@ export default function ArtistBookingTattooInfo() {
             />
             <FormModalInput
               openPicker={openTattooColorPicker}
-              placeholder="Color or Black & Grey"
-              label="Tattoo Color"
+              label="Color"
+              placeholder="color/black/grey"
               value={tattooColorMap[tattooColor as keyof typeof tattooColorMap]}
               containerStyle={{
                 paddingBottom: SPACING,
@@ -168,8 +178,8 @@ export default function ArtistBookingTattooInfo() {
             />
             <FormModalInput
               openPicker={openTattooStylePicker}
-              placeholder="Select the style of tattoo"
-              label="Tattoo Style"
+              label="Style"
+              placeholder="select style"
               value={tattooStyleMap[tattooStyle as keyof typeof tattooStyleMap]}
               containerStyle={{
                 paddingBottom: SPACING,
@@ -191,8 +201,9 @@ export default function ArtistBookingTattooInfo() {
               disabled={!isValid || isSubmitting}
               onPress={handleSubmit(handleCreateBooking)}
               style={{
+                marginTop: 5,
                 borderRadius: 4,
-                height: 36,
+                height: 38,
               }}
             />
           </KeyboardAwareScrollView>
@@ -202,13 +213,13 @@ export default function ArtistBookingTattooInfo() {
       <PickerModal
         ref={tattooColorModalRef}
         control={control as any}
-        name="tattoo.tattooColor"
+        name="tattoo.color"
         options={tattooColorOptions}
       />
       <PickerModal
         ref={tattooStyleModalRef}
         control={control as any}
-        name="tattoo.tattooStyle"
+        name="tattoo.style"
         options={tattooStyleOptions}
       />
     </>

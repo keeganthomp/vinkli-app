@@ -21,7 +21,7 @@ const Button = ({
       disabled={disabled}
       style={{
         width: '100%',
-        height: 46,
+        height: 40,
         backgroundColor: disabled ? '#999999' : '#000',
         borderRadius: 6,
         display: 'flex',

@@ -5,3 +5,9 @@ export const GET_STRIPE_TERMINAL_TOKEN = gql`
     stripeTerminalConnectionToken
   }
 `;
+
+export const GET_PAYMENT_LINK = gql`
+  query getPaymentLink($bookingId: ID!) {
+    getPaymentLink(bookingId: $bookingId)
+  }
+`;

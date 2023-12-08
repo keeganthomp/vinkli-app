@@ -73,6 +73,7 @@ export default function Login() {
 
   return (
     <KeyboardAwareScrollView
+      keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
         display: 'flex',
@@ -100,6 +101,10 @@ export default function Login() {
         placeholder="jane@email.com"
         rules={{
           required: 'Email is required',
+          pattern: {
+            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            message: 'Please enter valid email',
+          },
         }}
         containerStyle={{
           paddingBottom: SPACING,
@@ -114,6 +119,10 @@ export default function Login() {
         placeholder="password123!"
         rules={{
           required: 'Password is required',
+          minLength: {
+            value: 6,
+            message: 'Password must be at least 6 characters',
+          },
         }}
         containerStyle={{
           paddingBottom: SPACING,

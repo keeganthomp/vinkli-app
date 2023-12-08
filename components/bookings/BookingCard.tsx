@@ -1,22 +1,17 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Link } from 'expo-router';
-import { Booking, BookingStatus, BookingType } from '@graphql/types';
+import { Booking, BookingStatus } from '@graphql/types';
 import moment from 'moment';
 import theme from '@theme';
 import { Feather } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
+import { bookingTypeMap } from '@const/maps';
 
 type Props = {
   booking: Booking;
   href: string;
 };
-
-const bookingTypeMap: Record<BookingType, string> = {
-  [BookingType.TattooSession]: 'Tattoo',
-  [BookingType.Consultation]: 'Consultation',
-};
-
 const Status = ({ status }: { status: BookingStatus }) => {
   return (
     <View
@@ -124,7 +119,7 @@ export default function BookingCard({ booking, href }: Props) {
                 marginLeft: 5,
               }}
             >
-              {customer.firstName} {customer.lastName}
+              {customer.name}
             </Text>
           </View>
         )}

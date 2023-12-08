@@ -6,15 +6,13 @@ import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import FormTextInput from '@components/inputs/FormTextInput';
 import Toast from 'react-native-toast-message';
-import Button from '@components/Button';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type SignUpForm = {
   email: string;
   password: string;
   userType: UserType;
-  firstName: string;
-  lastName: string;
+  name: string;
 };
 
 const SigninLink = () => {
@@ -43,8 +41,7 @@ export default function Signup() {
     formState: { isValid, isSubmitting },
   } = useForm<SignUpForm>({
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      name: '',
       email: '',
       password: '',
       userType: UserType.Customer,
@@ -61,15 +58,14 @@ export default function Signup() {
   };
 
   const handleSignup = async (data: SignUpForm) => {
-    const { firstName, lastName, ...signupFormValues } = data;
+    const { name, ...signupFormValues } = data;
     try {
       const { data: user, error } = await supabase.auth.signUp({
         ...signupFormValues,
         options: {
           data: {
             user_type: selectedUserType,
-            first_name: firstName,
-            last_name: lastName,
+            name,
           },
         },
       });
@@ -94,6 +90,7 @@ export default function Signup() {
   return (
     <KeyboardAwareScrollView
       showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
       contentContainerStyle={{
         display: 'flex',
         flex: 1,
@@ -112,23 +109,15 @@ export default function Signup() {
       </Text>
       <FormTextInput
         control={control}
-        name="firstName"
-        label="First Name"
-        placeholder="Jane"
+        name="name"
+        label="Name"
+        placeholder="Jane Doe"
         rules={{
-          required: 'First Name is required',
-        }}
-        containerStyle={{
-          paddingBottom: SPACING,
-        }}
-      />
-      <FormTextInput
-        control={control}
-        name="lastName"
-        label="Last Name"
-        placeholder="Doe"
-        rules={{
-          required: 'Last Name is required',
+          required: 'Name is required',
+          pattern: {
+            value: /^[A-Za-z]+(-[A-Za-z]+)? [A-Za-z]+(-[A-Za-z]+)?$/,
+            message: 'Please enter your first and last name',
+          },
         }}
         containerStyle={{
           paddingBottom: SPACING,
@@ -144,6 +133,10 @@ export default function Signup() {
         label="Email"
         rules={{
           required: 'Email is required',
+          pattern: {
+            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            message: 'Please enter valid email',
+          },
         }}
         containerStyle={{
           paddingBottom: SPACING,
@@ -158,6 +151,10 @@ export default function Signup() {
         placeholder="password123!"
         rules={{
           required: 'Password is required',
+          minLength: {
+            value: 6,
+            message: 'Password must be at least 6 characters',
+          },
         }}
         containerStyle={{
           paddingBottom: SPACING + 5,

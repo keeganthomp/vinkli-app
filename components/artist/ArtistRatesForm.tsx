@@ -1,13 +1,12 @@
 import { ActivityIndicator, View } from 'react-native';
 import { useForm } from 'react-hook-form';
-import FormTextInput from '@components/inputs/FormTextInput';
 import Button from '@components/Button';
 import { useMutation } from '@apollo/client';
 import { UPDATE_ARTIST_RATES } from '@graphql/mutations/user';
 import { Artist, UpdateArtistRatesMutation } from '@graphql/types';
 import Toast from 'react-native-toast-message';
 import FormDollarInput from '@components/inputs/FormDollarInput';
-import { useState } from 'react';
+import { useMemo } from 'react';
 
 type RatesFormValues = {
   hourlyRate?: string;
@@ -24,15 +23,34 @@ const ArtistRatesForm = ({ artist }: Props) => {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { isValid, isSubmitting },
   } = useForm<RatesFormValues>({
     defaultValues: {
-      hourlyRate: artist?.hourlyRate ? artist.hourlyRate?.toString() : '0',
+      hourlyRate: artist?.hourlyRate ? artist.hourlyRate?.toString() : '',
       consultationFee: artist?.consultationFee
         ? artist.consultationFee?.toString()
-        : '0',
+        : '',
     },
   });
+  const [newHourlyRate, newConsultationFee] = watch([
+    'hourlyRate',
+    'consultationFee',
+  ]);
+
+  const hasUpdatedRates = useMemo(() => {
+    const hasHourlyChanged =
+      newHourlyRate && artist?.hourlyRate !== Number(newHourlyRate);
+    const hasConsultationChanged =
+      newConsultationFee &&
+      artist?.consultationFee !== Number(newConsultationFee);
+    return hasHourlyChanged || hasConsultationChanged;
+  }, [
+    newHourlyRate,
+    newConsultationFee,
+    artist?.hourlyRate,
+    artist?.consultationFee,
+  ]);
 
   const handleUpdateRates = async (data: RatesFormValues) => {
     const { hourlyRate, consultationFee } = data;
@@ -98,7 +116,13 @@ const ArtistRatesForm = ({ artist }: Props) => {
               paddingBottom: 24,
             }}
           />
-          <Button label="Save" onPress={handleSubmit(handleUpdateRates)} />
+          {hasUpdatedRates && (
+            <Button
+              label="Save"
+              disabled={!isValid || isSubmitting}
+              onPress={handleSubmit(handleUpdateRates)}
+            />
+          )}
         </>
       )}
     </View>

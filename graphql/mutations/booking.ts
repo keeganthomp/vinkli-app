@@ -21,8 +21,12 @@ export const CREATE_ARTIST_BOOKING = gql`
 
 export const ARTIST_UPDATE_BOOKING_STATUS = gql`
   ${BOOKING_FRAGMENT}
-  mutation ArtistUpdateBookingStatus($id: ID!, $status: BookingStatus!) {
-    artistUpdateBookingStatus(id: $id, status: $status) {
+  mutation ArtistUpdateBookingStatus(
+    $id: ID!
+    $status: BookingStatus!
+    $duration: Int
+  ) {
+    artistUpdateBookingStatus(id: $id, status: $status, duration: $duration) {
       ...BookingFragment
     }
   }

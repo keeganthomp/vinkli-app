@@ -7,10 +7,11 @@ import {
 import { useMutation } from '@apollo/client';
 import { ARTIST_UPDATE_BOOKING_STATUS } from '@graphql/mutations/booking';
 import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
 
 type Props = {
   booking: Booking;
-  openPaymentModal: () => void;
+  onBookingComplete: () => void;
 };
 
 type PartialBookingStatusMap = {
@@ -18,10 +19,19 @@ type PartialBookingStatusMap = {
 };
 
 // map for label
-const statusFormatMap: PartialBookingStatusMap = {
+const buttonLabelStatusMap: PartialBookingStatusMap = {
   [BookingStatus.Pending]: 'Confirm',
+  [BookingStatus.Confirmed]: 'Mark Complete',
+  [BookingStatus.Completed]: 'Collect Payment',
   [BookingStatus.Cancelled]: 'Confirm',
-  [BookingStatus.Confirmed]: 'Collect Payment',
+};
+
+// map for verbiage
+const verbiageMap: PartialBookingStatusMap = {
+  [BookingStatus.Pending]: 'Peending',
+  [BookingStatus.Confirmed]: 'Confirmed',
+  [BookingStatus.Completed]: 'Completed',
+  [BookingStatus.Cancelled]: 'Cancelled',
 };
 
 // map to update status from current status
@@ -29,14 +39,14 @@ const actionStatusMap: PartialBookingStatusMap = {
   [BookingStatus.Cancelled]: BookingStatus.Confirmed,
   [BookingStatus.Rejected]: BookingStatus.Confirmed,
   [BookingStatus.Pending]: BookingStatus.Confirmed,
-  [BookingStatus.Completed]: BookingStatus.Completed,
+  [BookingStatus.Confirmed]: BookingStatus.Completed,
 };
 
 const ActionButton = ({
-  currentStatus,
+  status,
   onPress,
 }: {
-  currentStatus: BookingStatus;
+  status: BookingStatus;
   onPress: () => void;
 }) => {
   const handlePress = () => {
@@ -63,26 +73,35 @@ const ActionButton = ({
           fontWeight: '500',
         }}
       >
-        {statusFormatMap[currentStatus]}
+        {buttonLabelStatusMap[status]}
       </Text>
     </Pressable>
   );
 };
 
-const BookingActions = ({ booking, openPaymentModal }: Props) => {
+const BookingActions = ({ booking, onBookingComplete }: Props) => {
   const [updateBookingStatus] = useMutation<ArtistUpdateBookingStatusMutation>(
     ARTIST_UPDATE_BOOKING_STATUS,
   );
 
-  const handleUpdateBookingStatus = async () => {
+  const handleBookingAction = async () => {
     const currentStatus = booking.status;
 
-    if (currentStatus === BookingStatus.Confirmed) {
-      openPaymentModal();
+    // if currently complete go to collect payment
+    if (currentStatus === BookingStatus.Completed) {
+      router.push(`/artist/booking/${booking.id}/collect-payment`);
       return;
     }
 
     const newStatus = actionStatusMap[booking.status];
+
+    // if marking complete - open post booking form
+    if (newStatus === BookingStatus.Completed) {
+      onBookingComplete();
+      return;
+    }
+
+    // handle rest of status updates
     try {
       await updateBookingStatus({
         variables: {
@@ -94,7 +113,7 @@ const BookingActions = ({ booking, openPaymentModal }: Props) => {
         type: 'success',
         text1: 'Status updated',
         text2: `Booking status updated to ${
-          statusFormatMap[newStatus as BookingStatus]
+          verbiageMap[newStatus as BookingStatus]
         }`,
       });
     } catch (err) {
@@ -102,7 +121,7 @@ const BookingActions = ({ booking, openPaymentModal }: Props) => {
         type: 'error',
         text1: 'Error',
         text2: `Error updating status to ${
-          statusFormatMap[newStatus as BookingStatus]
+          verbiageMap[newStatus as BookingStatus]
         }`,
       });
       console.log('Error updating status', err);
@@ -118,10 +137,7 @@ const BookingActions = ({ booking, openPaymentModal }: Props) => {
         paddingTop: 12,
       }}
     >
-      <ActionButton
-        currentStatus={booking.status}
-        onPress={handleUpdateBookingStatus}
-      />
+      <ActionButton status={booking.status} onPress={handleBookingAction} />
     </View>
   );
 };

@@ -24,12 +24,14 @@ import { useQuery } from '@apollo/client';
 import ErrorCard from '@components/Error';
 import { AntDesign } from '@expo/vector-icons';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { useIsFocused } from '@react-navigation/native';
 import ArtistRatesForm from '@components/artist/ArtistRatesForm';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useFocusEffect } from '@react-navigation/native';
+import useAppInForeground from '@hooks/useAppInForeground';
 
 export default function ArtistProfile() {
   const insets = useSafeAreaInsets();
+  const isAppInForeground = useAppInForeground();
   const { showActionSheetWithOptions } = useActionSheet();
   const [refreshing, setRefreshing] = useState(false);
   const { setSession } = useSession();
@@ -40,17 +42,19 @@ export default function ArtistProfile() {
   const {
     data: artistData,
     error: errorFetchingUser,
-    loading: fetchingUser,
+    loading: isFetchingUser,
     refetch,
   } = useQuery<ArtistQuery>(GET_ARTIST);
 
-  const isFocused = useIsFocused();
+  useFocusEffect(() => {
+    refetch();
+  });
 
   useEffect(() => {
-    if (isFocused) {
+    if (isAppInForeground && !isFetchingUser) {
       refetch();
     }
-  }, [isFocused]);
+  }, [isAppInForeground]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -81,6 +85,7 @@ export default function ArtistProfile() {
             logout();
             break;
           case cancelButtonIndex:
+            break;
           // Canceled
         }
       },
@@ -101,7 +106,7 @@ export default function ArtistProfile() {
     }
   };
 
-  if (fetchingUser)
+  if (isFetchingUser && !artistData)
     return (
       <View
         style={{
@@ -146,6 +151,7 @@ export default function ArtistProfile() {
         }
       />
       <KeyboardAwareScrollView
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />

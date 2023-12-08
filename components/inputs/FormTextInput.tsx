@@ -1,6 +1,19 @@
 import React from 'react';
-import { TextInput, TextInputProps, View, Text, ViewStyle } from 'react-native';
-import { Control, useController, FieldValues, Path } from 'react-hook-form';
+import {
+  TextInput,
+  TextInputProps,
+  View,
+  Text,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import {
+  Control,
+  useController,
+  FieldValues,
+  Path,
+  RegisterOptions,
+} from 'react-hook-form';
 import Label from './InputLabel';
 import {
   defaultTextInputStyle,
@@ -14,10 +27,14 @@ type FormTextInputProps<TFieldValues extends FieldValues> = {
   name: Path<TFieldValues>;
   control: Control<TFieldValues>;
   placeholder?: string;
-  rules?: object;
+  rules?: Pick<
+    RegisterOptions<TFieldValues>,
+    'maxLength' | 'minLength' | 'validate' | 'required' | 'pattern'
+  >;
   label?: string;
   defaultValue?: TFieldValues[Path<TFieldValues>];
   containerStyle?: ViewStyle;
+  labelStyle?: TextStyle;
 } & TextInputProps;
 
 function FormTextInput<TFieldValues extends FieldValues>({
@@ -28,6 +45,7 @@ function FormTextInput<TFieldValues extends FieldValues>({
   label,
   defaultValue,
   containerStyle = {},
+  labelStyle = {},
   ...textInputProps
 }: FormTextInputProps<TFieldValues>) {
   const inputAccessoryViewID = genRandomId();
@@ -49,7 +67,7 @@ function FormTextInput<TFieldValues extends FieldValues>({
         ...containerStyle,
       }}
     >
-      <Label label={label} />
+      <Label label={label} style={labelStyle} />
       <TextInput
         inputAccessoryViewID={inputAccessoryViewID}
         onBlur={onBlur}

@@ -15,7 +15,7 @@ const NextButton = ({
       style={{
         marginTop: 20,
         borderRadius: 4,
-        height: 36,
+        height: 38,
       }}
       icon={
         <Entypo

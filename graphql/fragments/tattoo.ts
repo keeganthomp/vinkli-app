@@ -9,8 +9,9 @@ export const TATTOO_FRAGMENT = gql`
     customerId
     title
     description
-    tattooStyle
-    tattooColor
+    style
+    color
     imageUrls
+    placement
   }
 `;

@@ -1,5 +1,11 @@
 import React from 'react';
-import { TextInput, TextInputProps, ViewStyle, View } from 'react-native';
+import {
+  TextInput,
+  TextInputProps,
+  ViewStyle,
+  View,
+  TextStyle,
+} from 'react-native';
 import { Control, useController, FieldValues, Path } from 'react-hook-form';
 import Label from './InputLabel';
 import {
@@ -18,6 +24,8 @@ type FormNumberInputProps<TFieldValues extends FieldValues> = {
   label?: string;
   defaultValue?: TFieldValues[Path<TFieldValues>];
   containerStyle?: ViewStyle;
+  labelStyle?: TextStyle;
+  disabled?: boolean;
 } & TextInputProps;
 
 function FormNumberInput<TFieldValues extends FieldValues>({
@@ -28,6 +36,7 @@ function FormNumberInput<TFieldValues extends FieldValues>({
   label,
   defaultValue,
   containerStyle = {},
+  labelStyle = {},
   ...textInputProps
 }: FormNumberInputProps<TFieldValues>) {
   const inputAccessoryViewID = genRandomId();
@@ -58,7 +67,7 @@ function FormNumberInput<TFieldValues extends FieldValues>({
 
   return (
     <View style={{ ...containerStyle }}>
-      <Label label={label} />
+      <Label label={label} style={labelStyle} />
       <TextInput
         inputAccessoryViewID={inputAccessoryViewID}
         value={value}

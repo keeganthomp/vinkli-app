@@ -1,17 +1,13 @@
 import { Text, View } from 'react-native';
-import { Booking, BookingType } from '@graphql/types';
+import { Booking } from '@graphql/types';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import { useMemo } from 'react';
 import { Octicons } from '@expo/vector-icons';
+import { bookingTypeMap } from '@const/maps';
 
 type Props = {
   booking: Booking;
-};
-
-const bookingTypeMap: Record<BookingType, string> = {
-  [BookingType.TattooSession]: 'Tattoo',
-  [BookingType.Consultation]: 'Consultation',
 };
 
 export default function BookingHeader({ booking }: Props) {
@@ -22,13 +18,6 @@ export default function BookingHeader({ booking }: Props) {
     const bookingDateObj = new Date(booking.startDate);
     return moment(bookingDateObj).format('LLLL');
   }, [booking?.startDate]);
-
-  const endDate = useMemo(() => {
-    if (!booking?.endDate) return null;
-    const bookingDateObj = new Date(booking.endDate);
-    return moment(bookingDateObj).format('LLLL');
-  }, [booking?.endDate]);
-
 
 
   if (!customer) return null;
@@ -89,7 +78,7 @@ export default function BookingHeader({ booking }: Props) {
             marginLeft: 7,
           }}
         >
-          {customer.firstName} {customer.lastName}
+          {customer.name}
         </Text>
       </View>
     </View>

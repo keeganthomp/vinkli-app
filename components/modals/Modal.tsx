@@ -1,4 +1,4 @@
-import { Text, Pressable } from 'react-native';
+import { Text, Pressable, ViewStyle } from 'react-native';
 import { useCallback, useMemo, forwardRef } from 'react';
 import {
   BottomSheetBackdropProps,
@@ -12,6 +12,12 @@ export type ModalProps = {
   ref: React.RefObject<BottomSheetModal>;
   children: React.ReactNode;
   showDoneButton?: boolean;
+  enableDynamicSizing?: boolean;
+  detached?: boolean;
+  containerStyle?: ViewStyle;
+  contentContainerStyle?: ViewStyle;
+  height?: number;
+  bottomInset?: number;
 };
 
 type ConfirmButtonProps = {
@@ -46,7 +52,19 @@ const ModalDoneButton = ({ onPress }: ConfirmButtonProps) => {
 };
 
 const Modal = forwardRef<BottomSheetModal, ModalProps>(
-  ({ showDoneButton = false, children }, ref) => {
+  (
+    {
+      showDoneButton = false,
+      children,
+      enableDynamicSizing = true,
+      detached = false,
+      containerStyle = {},
+      height,
+      bottomInset,
+      contentContainerStyle = {},
+    },
+    ref,
+  ) => {
     const insets = useSafeAreaInsets();
 
     const renderBackdrop = useCallback(
@@ -70,17 +88,22 @@ const Modal = forwardRef<BottomSheetModal, ModalProps>(
       <BottomSheetModal
         ref={ref}
         enablePanDownToClose
-        enableDynamicSizing
+        enableDynamicSizing={enableDynamicSizing}
         backdropComponent={renderBackdrop}
+        detached={detached}
+        snapPoints={height ? [height] : undefined}
+        bottomInset={bottomInset}
         style={{
           backgroundColor: '#fff',
           borderRadius: 14,
+          ...containerStyle,
         }}
       >
         <BottomSheetView
           style={{
             paddingHorizontal: 14,
             paddingBottom: insets.bottom,
+            ...contentContainerStyle,
           }}
         >
           {children}

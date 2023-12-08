@@ -4,12 +4,17 @@ import { supabase } from '@lib/supabase';
 import { useSession } from '@context/auth';
 import apolloClient from '@lib/apolloClient';
 import { router } from 'expo-router';
+import { EvilIcons } from '@expo/vector-icons';
+
+type Props = {
+  message?: string;
+  onRefresh?: () => void;
+};
 
 const ErrorCard = ({
   message = 'Please try again later',
-}: {
-  message: string;
-}) => {
+  onRefresh,
+}: Props) => {
   const { setSession } = useSession();
 
   const logout = () => {
@@ -43,31 +48,69 @@ const ErrorCard = ({
       >
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: 'bold',
           }}
         >
           Something went wrong
         </Text>
+        <Text
+          style={{
+            paddingTop: 5,
+            fontSize: 15
+          }}
+        >
+          {message}
+        </Text>
         <View
           style={{
             height: 1,
-            backgroundColor: theme.accentGray,
+            backgroundColor: theme.lightGray,
             width: 50,
-            marginVertical: 8,
+            marginVertical: 14,
           }}
         />
-        <Text>{message}</Text>
         <View
           style={{
-            paddingTop: 16,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <Pressable onPress={logout}>
+          {onRefresh && (
+            <Pressable
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                marginBottom: 4,
+              }}
+              onPress={logout}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '500',
+                }}
+              >
+                Refresh
+              </Text>
+              <EvilIcons name="refresh" size={22} />
+            </Pressable>
+          )}
+          <Pressable
+            style={{
+              padding: 5,
+            }}
+            onPress={logout}
+          >
             <Text
               style={{
                 color: 'red',
-                fontSize: 12
+                fontSize: 13,
               }}
             >
               Logout
