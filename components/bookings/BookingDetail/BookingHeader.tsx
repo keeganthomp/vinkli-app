@@ -5,6 +5,7 @@ import moment from 'moment';
 import { useMemo } from 'react';
 import { Octicons } from '@expo/vector-icons';
 import { bookingTypeMap } from '@const/maps';
+import { AntDesign } from '@expo/vector-icons';
 
 type Props = {
   booking: Booking;
@@ -16,7 +17,13 @@ export default function BookingHeader({ booking }: Props) {
   const appointmentDate = useMemo(() => {
     if (!booking?.startDate) return null;
     const bookingDateObj = new Date(booking.startDate);
-    return moment(bookingDateObj).format('LLLL');
+    return moment(bookingDateObj).format('LL');
+  }, [booking?.startDate]);
+
+  const appointmentTime = useMemo(() => {
+    if (!booking?.startDate) return null;
+    const bookingDateObj = new Date(booking.startDate);
+    return moment(bookingDateObj).format('LT');
   }, [booking?.startDate]);
 
 
@@ -53,6 +60,26 @@ export default function BookingHeader({ booking }: Props) {
             }}
           >
             {appointmentDate}
+          </Text>
+        </View>
+      )}
+      {appointmentTime && (
+        <View
+          style={{
+            paddingTop: 10,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <AntDesign name="clockcircleo" size={18} color="black" />
+          <Text
+            style={{
+              fontSize: 17,
+              marginLeft: 5,
+            }}
+          >
+            {appointmentTime}
           </Text>
         </View>
       )}

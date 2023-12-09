@@ -20,7 +20,14 @@ export default function CustomerBookingDetail() {
 
   if (loading) {
     return (
-      <View>
+      <View
+        style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <ActivityIndicator />
       </View>
     );

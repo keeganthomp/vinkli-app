@@ -80,7 +80,7 @@ export default function ArtistBookingDetail() {
           paddingTop: insets.top,
         }}
       >
-        <ArtistHeader onBackPress={goBack} canGoBack />
+        <ArtistHeader title='Booking Detail' onBackPress={goBack} canGoBack />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
@@ -102,6 +102,7 @@ export default function ArtistBookingDetail() {
           <TattooInfo tattoo={booking?.tattoo} />
         </ScrollView>
       </View>
+      {/* Post Booking Form */}
       <Modal
         ref={postBookingFormModalRef}
         detached

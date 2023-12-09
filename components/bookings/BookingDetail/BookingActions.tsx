@@ -8,6 +8,8 @@ import { useMutation } from '@apollo/client';
 import { ARTIST_UPDATE_BOOKING_STATUS } from '@graphql/mutations/booking';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
+import { useMemo } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
   booking: Booking;
@@ -84,6 +86,10 @@ const BookingActions = ({ booking, onBookingComplete }: Props) => {
     ARTIST_UPDATE_BOOKING_STATUS,
   );
 
+  const isPaid = useMemo(() => {
+    return booking?.paymentReceived;
+  }, [booking?.paymentReceived]);
+
   const handleBookingAction = async () => {
     const currentStatus = booking.status;
 
@@ -137,7 +143,42 @@ const BookingActions = ({ booking, onBookingComplete }: Props) => {
         paddingTop: 12,
       }}
     >
-      <ActionButton status={booking.status} onPress={handleBookingAction} />
+      {isPaid ? (
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: '#333',
+            borderRadius: 6,
+            width: '100%',
+            justifyContent: 'center',
+            backgroundColor: '#333',
+            height: 40
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: '#fff',
+              fontWeight: '500',
+            }}
+          >
+            Payment Received
+          </Text>
+          <Ionicons
+            style={{
+              marginLeft: 12,
+            }}
+            name="checkmark-circle-sharp"
+            size={20}
+            color="#fff"
+          />
+        </View>
+      ) : (
+        <ActionButton status={booking.status} onPress={handleBookingAction} />
+      )}
     </View>
   );
 };

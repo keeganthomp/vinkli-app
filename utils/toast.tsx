@@ -1,10 +1,10 @@
 // App.jsx
-import Toast, { SuccessToast, ErrorToast } from 'react-native-toast-message';
+import Toast, { SuccessToast, ErrorToast, ToastConfig } from 'react-native-toast-message';
 
 /*
   1. Create the config
 */
-export const toastConfig = {
+export const toastConfig: ToastConfig = {
   /*
     Overwrite 'success' type,
     by modifying the existing `BaseToast` component

@@ -5,13 +5,14 @@ import CalendarPicker from '@components/CalendarDatePicker';
 import { useCallback, useMemo, useRef } from 'react';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import moment from 'moment';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import FormModalInput from '@components/inputs/FormModalInput';
 import PickerModal from '@components/modals/PickerModal';
-import Modal from '@components/modals/Modal';
+import Modal, { FlatListModal } from '@components/modals/Modal';
 import NextButton from '@components/NextButton';
 import { router } from 'expo-router';
 import { ArtistBookingFromValues } from './_layout';
+import TimePicker from '@components/TimePicker';
+import { TimeOption } from '@utils/time';
 
 const bookingTypeOptions = Object.entries(bookingTypeMap).map(
   ([key, value]) => ({ label: value, value: key }),
@@ -37,12 +38,12 @@ export default function ArtistBookingAppointmentInfo() {
 
   const canGoToTattooInfo = useMemo(() => {
     const hasSelectedStartDate = !!selectedStartDate;
-    const hasSelectedStartTime = !!startTime?.hours;
+    const hasSelectedStartTime = !!startTime;
     const hasSelectedBookingType = !!bookingType;
     return (
       hasSelectedStartDate && hasSelectedStartTime && hasSelectedBookingType
     );
-  }, [selectedStartDate, startTime?.hours, bookingType]);
+  }, [selectedStartDate, startTime, bookingType]);
 
   const openAppointmentTypePicker = useCallback(() => {
     appointmentTypeModalRef.current?.present();
@@ -54,14 +55,24 @@ export default function ArtistBookingAppointmentInfo() {
     Keyboard.dismiss();
   }, []);
 
+  const closeDatePicker = useCallback(() => {
+    startDateModalRef.current?.close();
+  }, []);
+
   const openTimePicker = useCallback(() => {
-    if (!startTime?.hours) {
-      setValue('startTime.hours', 12);
-      setValue('startTime.minutes', 0);
-    }
+    closeDatePicker();
     timeModalRef.current?.present();
     Keyboard.dismiss();
   }, []);
+
+  const closeTimePicker = useCallback(() => {
+    timeModalRef.current?.close();
+  }, []);
+
+  const handleDateConfirm = useCallback(() => {
+    closeDatePicker();
+    openTimePicker();
+  }, [startDateModalRef.current, timeModalRef.current]);
 
   const handleStartDateChage = (incomingDate: Date) => {
     const isAlreadySelected = moment(selectedStartDate).isSame(
@@ -72,11 +83,8 @@ export default function ArtistBookingAppointmentInfo() {
     setValue('startDate', newDate);
   };
 
-  const handleTimeChange = (incomingDate: Date) => {
-    const hours = incomingDate.getHours();
-    const minutes = incomingDate.getMinutes();
-    setValue('startTime.hours', hours);
-    setValue('startTime.minutes', minutes);
+  const handleTimeSelect = (incomingTime: TimeOption) => {
+    setValue('startTime', incomingTime);
   };
 
   const displayStartDate = useMemo(() => {
@@ -84,30 +92,6 @@ export default function ArtistBookingAppointmentInfo() {
     const dayOfWeek = moment(selectedStartDate).format('dddd');
     return `${dayOfWeek}, ${moment(selectedStartDate).format('LL')}`;
   }, [selectedStartDate]);
-
-  const displayTime = useMemo(() => {
-    const hasSelectedHours = typeof startTime.hours === 'number';
-    const hasSelectedMinutes = typeof startTime.minutes === 'number';
-    if (!hasSelectedHours || !hasSelectedMinutes) return null;
-    const dateObj = new Date();
-    dateObj.setHours(startTime.hours);
-    dateObj.setMinutes(startTime.minutes);
-    return moment(dateObj).format('LT');
-  }, [startTime?.hours, startTime?.minutes]);
-
-  const startTimeDateObj = useMemo(() => {
-    const hasSelectedHours = typeof startTime.hours === 'number';
-    const hasSelectedMinutes = typeof startTime.minutes === 'number';
-    const dateObj = new Date();
-    if (!hasSelectedHours || !hasSelectedMinutes) {
-      dateObj.setHours(12);
-      dateObj.setMinutes(0);
-      return dateObj;
-    }
-    dateObj.setHours(startTime.hours);
-    dateObj.setMinutes(startTime.minutes);
-    return dateObj;
-  }, [startTime?.hours, startTime?.minutes]);
 
   const SPACING = 22;
 
@@ -141,27 +125,17 @@ export default function ArtistBookingAppointmentInfo() {
             paddingBottom: SPACING,
           }}
         />
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingBottom: SPACING,
-          }}
-        >
-          <View
-            style={{
-              width: 115,
+        {selectedStartDate && (
+          <FormModalInput
+            openPicker={openTimePicker}
+            label="Start Time"
+            placeholder="Select time"
+            value={startTime?.displayTime || ''}
+            containerStyle={{
+              paddingBottom: 10,
             }}
-          >
-            <FormModalInput
-              openPicker={openTimePicker}
-              label="Start Time"
-              placeholder="Select time"
-              value={displayTime}
-            />
-          </View>
-        </View>
+          />
+        )}
         <NextButton
           label="Tattoo Info"
           onPress={goToTattooInfo}
@@ -175,34 +149,39 @@ export default function ArtistBookingAppointmentInfo() {
         name="type"
         options={bookingTypeOptions}
       />
-      <Modal ref={startDateModalRef} showDoneButton={!!selectedStartDate}>
+      <Modal
+        ref={startDateModalRef}
+        showDoneButton
+        doneButtonText="Confirm Date"
+        doneButtonDisabled={!selectedStartDate}
+        // onDoneButtonPress={handleDateConfirm}
+      >
         <CalendarPicker
           selectedDates={selectedStartDate}
-          onDateSelected={handleStartDateChage}
+          onDateSelect={handleStartDateChage}
         />
       </Modal>
-      <Modal ref={timeModalRef} showDoneButton>
+      <FlatListModal
+        ref={timeModalRef}
+        height={450}
+        enableDynamicSizing={false}
+      >
         {displayStartDate && (
           <Text
             style={{
               textAlign: 'center',
+              paddingBottom: 10,
             }}
           >
             {displayStartDate}
           </Text>
         )}
-        <DateTimePicker
-          mode="time"
-          display="spinner"
-          textColor="#333"
-          accentColor="#333"
-          minuteInterval={15}
-          value={startTimeDateObj}
-          onChange={(event, date) => {
-            if (date) handleTimeChange(date);
-          }}
+        <TimePicker
+          selectedTime={startTime}
+          onTimeSelect={handleTimeSelect}
+          closeModal={closeTimePicker}
         />
-      </Modal>
+      </FlatListModal>
     </>
   );
 }

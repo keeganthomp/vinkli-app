@@ -48,6 +48,15 @@ const apolloClient = new ApolloClient({
   link: from([authLink, errorLink, httpLink]),
   cache: new InMemoryCache({
     typePolicies: {
+      Booking: {
+        fields: {
+          totalDue: {
+            merge(existing, incoming) {
+              return incoming || existing;
+            },
+          },
+        },
+      },
       Query: {
         fields: {
           user: {

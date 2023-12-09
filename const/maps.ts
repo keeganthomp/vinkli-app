@@ -1,4 +1,10 @@
-import { TattooColor, TattooStyle, BookingType } from '@graphql/types';
+import {
+  TattooColor,
+  TattooStyle,
+  BookingType,
+  BookingStatus,
+  PaymentStatus,
+} from '@graphql/types';
 
 export const tattooColorMap: Record<TattooColor, string> = {
   [TattooColor.BlackAndGrey]: 'Black & Grey',
@@ -19,4 +25,18 @@ export const tattooStyleMap: Record<TattooStyle, string> = {
 export const bookingTypeMap: Record<BookingType, string> = {
   [BookingType.TattooSession]: 'Session',
   [BookingType.Consultation]: 'Consultation',
+};
+
+export const bookingStatusMap: Record<BookingStatus, string> = {
+  [BookingStatus.Pending]: 'Pending',
+  [BookingStatus.Completed]: 'Completed',
+  [BookingStatus.Cancelled]: 'Cancelled',
+  [BookingStatus.Confirmed]: 'Confirmed',
+  [BookingStatus.Rejected]: 'Rejected',
+};
+
+export const paymentStatusMap: Record<PaymentStatus, string> = {
+  [PaymentStatus.Pending]: 'Pending',
+  [PaymentStatus.Success]: 'Processed',
+  [PaymentStatus.Failed]: 'Failed',
 };

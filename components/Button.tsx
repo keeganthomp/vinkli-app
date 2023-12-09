@@ -42,7 +42,7 @@ const Button = ({
         <View
           style={{
             position: 'absolute',
-            right: 10,
+            right: 14,
           }}
         >
           {icon}

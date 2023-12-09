@@ -5,6 +5,7 @@ import {
   BottomSheetBackdrop,
   BottomSheetView,
   BottomSheetModal,
+  BottomSheetFlatList,
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,15 +19,25 @@ export type ModalProps = {
   contentContainerStyle?: ViewStyle;
   height?: number;
   bottomInset?: number;
+  doneButtonText?: string;
+  onDoneButtonPress?: () => void;
+  doneButtonDisabled?: boolean;
 };
 
 type ConfirmButtonProps = {
   onPress: () => void;
+  disabled?: boolean;
+  title?: string;
 };
 
-const ModalDoneButton = ({ onPress }: ConfirmButtonProps) => {
+export const ModalDoneButton = ({
+  onPress,
+  disabled,
+  title = 'Confirm',
+}: ConfirmButtonProps) => {
   return (
     <Pressable
+      disabled={disabled}
       onPress={onPress}
       style={{
         width: '100%',
@@ -34,7 +45,7 @@ const ModalDoneButton = ({ onPress }: ConfirmButtonProps) => {
         justifyContent: 'center',
         alignItems: 'center',
         height: 42,
-        backgroundColor: '#333',
+        backgroundColor: disabled ? '#999999' : '#333',
         borderRadius: 6,
       }}
     >
@@ -45,7 +56,7 @@ const ModalDoneButton = ({ onPress }: ConfirmButtonProps) => {
           fontSize: 15,
         }}
       >
-        Confirm
+        {title}
       </Text>
     </Pressable>
   );
@@ -62,6 +73,9 @@ const Modal = forwardRef<BottomSheetModal, ModalProps>(
       height,
       bottomInset,
       contentContainerStyle = {},
+      doneButtonText,
+      onDoneButtonPress,
+      doneButtonDisabled,
     },
     ref,
   ) => {
@@ -83,6 +97,13 @@ const Modal = forwardRef<BottomSheetModal, ModalProps>(
     const closeModal = useCallback(() => {
       (ref as React.RefObject<BottomSheetModal>).current?.close();
     }, []);
+
+    const handleDoneButtonPress = () => {
+      closeModal();
+      if (onDoneButtonPress) {
+        onDoneButtonPress();
+      }
+    };
 
     return (
       <BottomSheetModal
@@ -107,8 +128,60 @@ const Modal = forwardRef<BottomSheetModal, ModalProps>(
           }}
         >
           {children}
-          {showDoneButton && <ModalDoneButton onPress={closeModal} />}
+          {showDoneButton && (
+            <ModalDoneButton
+              title={doneButtonText}
+              onPress={handleDoneButtonPress}
+              disabled={doneButtonDisabled}
+            />
+          )}
         </BottomSheetView>
+      </BottomSheetModal>
+    );
+  },
+);
+
+export const FlatListModal = forwardRef<BottomSheetModal, ModalProps>(
+  (
+    {
+      children,
+      enableDynamicSizing = true,
+      detached = false,
+      containerStyle = {},
+      height,
+      bottomInset,
+    },
+    ref,
+  ) => {
+    const renderBackdrop = useCallback(
+      (props: any) => (
+        <BottomSheetBackdrop
+          {...props}
+          pressBehavior="close"
+          opacity={0.6}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+        />
+      ),
+      [],
+    );
+
+    return (
+      <BottomSheetModal
+        ref={ref}
+        // enablePanDownToClose={false}
+        enableDynamicSizing={enableDynamicSizing}
+        backdropComponent={renderBackdrop}
+        detached={detached}
+        snapPoints={height ? [height] : undefined}
+        bottomInset={bottomInset}
+        style={{
+          backgroundColor: '#fff',
+          borderRadius: 14,
+          ...containerStyle,
+        }}
+      >
+        {children}
       </BottomSheetModal>
     );
   },

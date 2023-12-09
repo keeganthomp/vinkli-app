@@ -21,9 +21,6 @@ export default function Layout() {
       />
       <Stack.Screen
         name="booking/create"
-        options={{
-          presentation: 'modal',
-        }}
       />
     </Stack>
   );

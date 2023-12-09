@@ -1,45 +1,22 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Link } from 'expo-router';
-import { Booking, BookingStatus } from '@graphql/types';
+import { Booking } from '@graphql/types';
 import moment from 'moment';
 import theme from '@theme';
 import { Feather } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 import { bookingTypeMap } from '@const/maps';
+import Tag from '@components/Tag';
 
 type Props = {
   booking: Booking;
   href: string;
 };
-const Status = ({ status }: { status: BookingStatus }) => {
-  return (
-    <View
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 4,
-        borderWidth: 1,
-        paddingVertical: 2,
-        paddingHorizontal: 8,
-        alignSelf: 'flex-start',
-      }}
-    >
-      <Text
-        style={{
-          textAlign: 'center',
-          fontSize: 11,
-        }}
-      >
-        {status}
-      </Text>
-    </View>
-  );
-};
 
 export default function BookingCard({ booking, href }: Props) {
   const customer = booking.customer;
+  const status = booking.paymentReceived ? 'Paid' : booking.status;
   return (
     <Link
       asChild
@@ -80,7 +57,7 @@ export default function BookingCard({ booking, href }: Props) {
           >
             {bookingTypeMap[booking.type]}
           </Text>
-          <Status status={booking.status} />
+          <Tag text={status} />
         </View>
         <View
           style={{

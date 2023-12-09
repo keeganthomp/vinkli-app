@@ -9,12 +9,11 @@ import {
 } from '@graphql/types';
 import ArtistHeader from '@components/artist/ArtistHeader';
 import { GET_PAYMENT_LINK } from '@graphql/queries/payments';
-import { bookingTypeMap } from '@const/maps';
-import QRCode from 'react-native-qrcode-svg';
-import moment from 'moment';
-import { formatCentsToDollars } from '@utils/money';
-
-const screenWidth = Dimensions.get('screen').width;
+import Toast from 'react-native-toast-message';
+import { toastConfig } from '@utils/toast';
+import CollectPaymentInfo from '@components/payments/CollectPaymentInfo';
+import PaymentReceived from '@components/payments/PaymentReceived';
+import Error from '@components/Error';
 
 export default function ArtistBookingCollectPayment() {
   const { bookingId } = useLocalSearchParams();
@@ -26,6 +25,9 @@ export default function ArtistBookingCollectPayment() {
     variables: {
       id: bookingId,
     },
+    // poll for success when opened
+    // TODO: conditionaly do this only when the booking is not paid
+    pollInterval: 2500,
   });
   const {
     data: paymentLinkData,
@@ -40,10 +42,6 @@ export default function ArtistBookingCollectPayment() {
 
   const booking = bookingData?.artistBooking as Booking;
   const paymentLink = paymentLinkData?.getPaymentLink;
-
-  console.log('cost', booking.cost);
-
-  const totalDueInCents = (booking?.cost || 0) * (booking.duration || 0);
 
   const goBack = () => {
     router.back();
@@ -64,6 +62,16 @@ export default function ArtistBookingCollectPayment() {
     );
   }
 
+  if (errorFetchingBooking || errorGettingPaymentLink) {
+    return (
+      <Error
+        message={
+          errorFetchingBooking?.message || errorGettingPaymentLink?.message
+        }
+      />
+    );
+  }
+
   return (
     <View
       style={{
@@ -71,88 +79,12 @@ export default function ArtistBookingCollectPayment() {
       }}
     >
       <ArtistHeader title="Collect Payment" onClosePress={goBack} modalHeader />
-      <View
-        style={{
-          paddingHorizontal: 16,
-          paddingTop: 16,
-        }}
-      >
-        <View>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '300',
-              textAlign: 'center',
-              paddingBottom: 5,
-            }}
-          >
-            {booking.duration} hour {bookingTypeMap[booking.type]}
-          </Text>
-          <Text
-            style={{
-              textAlign: 'center',
-              fontSize: 18,
-              fontWeight: '300',
-            }}
-          >
-            {moment(booking.startDate).format('LLL')}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            paddingTop: 28,
-            paddingBottom: 28,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 34,
-              fontWeight: 'bold',
-              paddingBottom: 10,
-            }}
-          >
-            {formatCentsToDollars(totalDueInCents)}
-          </Text>
-          <View
-            style={{
-              width: screenWidth * 0.65,
-              borderRadius: 8,
-              overflow: 'hidden',
-            }}
-          >
-            <QRCode
-              size={screenWidth * 0.65}
-              backgroundColor="transparent"
-              value={paymentLink}
-            />
-          </View>
-        </View>
-        <View>
-          <Text
-            style={{
-              fontSize: 16,
-              textAlign: 'center',
-              paddingBottom: 5,
-              fontWeight: '300',
-            }}
-          >
-            {booking.customer?.name}
-          </Text>
-          <Text
-            style={{
-              fontSize: 16,
-              textAlign: 'center',
-              fontWeight: '300',
-            }}
-          >
-            {booking.customer?.email}
-          </Text>
-        </View>
-      </View>
+      {!booking.paymentReceived ? (
+        <CollectPaymentInfo booking={booking} paymentLink={paymentLink || ''} />
+      ) : (
+        <PaymentReceived booking={booking} />
+      )}
+      <Toast topOffset={25} config={toastConfig} />
     </View>
   );
 }

@@ -4,12 +4,16 @@ import DayGrid from './DayGrid';
 import MonthBar from './MonthBar';
 
 type Props = {
-  onDateSelected?: (date: Date) => void;
+  onDateSelect?: (date: Date) => void;
   selectedDates?: Date | Date[];
   hideMonthNav?: boolean;
 };
 
-const CalendarPicker = ({ onDateSelected, selectedDates, hideMonthNav }: Props) => {
+const CalendarPicker = ({
+  onDateSelect,
+  selectedDates,
+  hideMonthNav,
+}: Props) => {
   const [currentMonth, setCurrentMonth] = useState<number>(
     new Date().getMonth(),
   );
@@ -42,7 +46,7 @@ const CalendarPicker = ({ onDateSelected, selectedDates, hideMonthNav }: Props) 
       <DayGrid
         currentMonth={currentMonth}
         currentYear={currentYear}
-        onDateSelected={onDateSelected}
+        onDateSelect={onDateSelect}
         selectedDates={selectedDates}
       />
     </>

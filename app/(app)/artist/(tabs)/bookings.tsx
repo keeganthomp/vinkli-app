@@ -11,12 +11,37 @@ import { useQuery } from '@apollo/client';
 import { ArtistBookingsQuery, Booking } from '@graphql/types';
 import { GET_ARTIST_BOOKINGS } from '@graphql/queries/booking';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import theme from '@theme';
-
+import { BookingStatus } from '@graphql/types';
 import BookingCard from '@components/bookings/BookingCard';
+import { bookingStatusMap } from '@const/maps';
+import Modal from '@components/modals/Modal';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+
+const validFilterStatuses = [
+  BookingStatus.Completed,
+  BookingStatus.Confirmed,
+  BookingStatus.Cancelled,
+];
+
+const bookingStatusArr = Object.values(BookingStatus);
+const validBookingStatuses = bookingStatusArr.filter((status) =>
+  validFilterStatuses.includes(status),
+);
+
+type StatusFilterProps = {
+  status: BookingStatus;
+  onPress: (status: BookingStatus) => void;
+  isActive?: boolean;
+};
+
+type FiltersProps = {
+  activeFilter?: BookingStatus;
+  onSelect: (status: BookingStatus) => void;
+};
 
 const NoBookings = () => (
   <View
@@ -34,9 +59,59 @@ const NoBookings = () => (
   </View>
 );
 
+const StatusFilter = ({ status, onPress, isActive }: StatusFilterProps) => {
+  const handlePress = () => {
+    onPress(status);
+  };
+  return (
+    <Pressable
+      onPress={handlePress}
+      style={{
+        width: '100%',
+        borderRadius: 4,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 12,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 12,
+          textTransform: 'uppercase',
+          color: isActive ? '#fff' : '#000',
+        }}
+      >
+        {bookingStatusMap[status]}
+      </Text>
+    </Pressable>
+  );
+};
+
+const Filters = ({ activeFilter, onSelect }: FiltersProps) => (
+  <View
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      paddingBottom: 14,
+    }}
+  >
+    {validBookingStatuses.map((status) => (
+      <StatusFilter
+        key={status}
+        status={status}
+        onPress={onSelect}
+        isActive={activeFilter === status}
+      />
+    ))}
+  </View>
+);
+
 export default function ArtistBookings() {
   const insets = useSafeAreaInsets();
+  const filterModalRef = useRef<BottomSheetModal>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<BookingStatus>();
   const {
     data: bookingData,
     loading: loadingBookings,
@@ -45,6 +120,18 @@ export default function ArtistBookings() {
   } = useQuery<ArtistBookingsQuery>(GET_ARTIST_BOOKINGS);
 
   const bookings = bookingData?.artistBookings || [];
+
+  const openFilterModal = () => {
+    filterModalRef.current?.present();
+  };
+
+  const handleStatusFilterSelect = (status: BookingStatus) => {
+    if (activeFilter === status) {
+      setActiveFilter(undefined);
+    } else {
+      setActiveFilter(status);
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -101,6 +188,12 @@ export default function ArtistBookings() {
       ) : (
         <FlatList
           ListEmptyComponent={NoBookings}
+          // stickyHeaderIndices={[0]}
+          // ListHeaderComponent={() => (
+          //   <Pressable onPress={openFilterModal}>
+          //     <Text>Select Filters</Text>
+          //   </Pressable>
+          // )}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -115,11 +208,15 @@ export default function ArtistBookings() {
           keyExtractor={(item: Booking) => item.id}
           ItemSeparatorComponent={() => <View style={{ height: 28 }} />}
           contentContainerStyle={{
-            paddingTop: 14,
+            paddingTop: 10,
             paddingBottom: 44,
           }}
         />
       )}
+      {/* Filters Modal */}
+      <Modal ref={filterModalRef}>
+        <Filters onSelect={handleStatusFilterSelect} />
+      </Modal>
     </View>
   );
 }

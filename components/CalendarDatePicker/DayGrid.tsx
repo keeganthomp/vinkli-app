@@ -9,7 +9,7 @@ type DayProps = {
 type DayGridProps = {
   currentMonth: number;
   currentYear: number;
-  onDateSelected?: (date: Date) => void;
+  onDateSelect?: (date: Date) => void;
   selectedDates?: Date | Date[];
 };
 
@@ -66,15 +66,15 @@ const CalendarDay = ({ date, onPress, isSelected }: DayProps) => {
 const DayGrid = ({
   currentMonth,
   currentYear,
-  onDateSelected,
+  onDateSelect,
   selectedDates,
 }: DayGridProps) => {
   const totalDays: number = getDaysInMonth(currentMonth, currentYear);
   const firstDay: number = getFirstDayOfMonth(currentMonth, currentYear);
 
   const handleDateSelected = (date: number): void => {
-    if (!onDateSelected) return;
-    onDateSelected(new Date(currentYear, currentMonth, date));
+    if (!onDateSelect) return;
+    onDateSelect(new Date(currentYear, currentMonth, date));
   };
 
   const checkIfDateIsSelected = (date: number): boolean => {

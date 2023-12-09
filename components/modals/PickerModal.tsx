@@ -42,10 +42,11 @@ type PickerModalProps<TFieldValues extends FieldValues, TValue> = Omit<ModalProp
   options: PickerOption<TValue>[];
   name: Path<TFieldValues>;
   control: Control<TFieldValues>;
+  onValueChange?: (value: TValue) => void;
 };
 
 const PickerModal = forwardRef<BottomSheetModal, PickerModalProps<FieldValues, any>>(
-  ({ options, name, control, ...modalProps }, ref) => {
+  ({ options, name, control, onValueChange, ...modalProps }, ref) => {
     const { field: { onChange } } = useController({
       name,
       control,
@@ -60,6 +61,7 @@ const PickerModal = forwardRef<BottomSheetModal, PickerModalProps<FieldValues, a
   const handleSelect = useCallback(
     (value: any) => {
       onChange(value);
+      if (onValueChange) onValueChange(value);
       closeModal();
     },
     [onChange, closeModal],

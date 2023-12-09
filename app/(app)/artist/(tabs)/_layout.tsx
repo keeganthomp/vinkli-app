@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import theme from '@theme';
 import { useStripeTerminal } from '@stripe/stripe-terminal-react-native';
 import { useEffect } from 'react';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 type Route = {
   name: string;
@@ -23,6 +24,7 @@ export default function TabLayout() {
   }, []);
 
   return (
+    <BottomSheetModalProvider>
     <Tabs
       sceneContainerStyle={{
         backgroundColor: theme.appBackground,
@@ -50,7 +52,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="payment"
+        name="payments"
         options={{
           tabBarLabel: 'Payments',
         }}
@@ -63,5 +65,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </BottomSheetModalProvider>
   );
 }

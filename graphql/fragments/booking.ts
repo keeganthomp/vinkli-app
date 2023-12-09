@@ -1,4 +1,3 @@
-
 import { gql } from '@apollo/client';
 
 export const BOOKING_FRAGMENT = gql`
@@ -15,6 +14,7 @@ export const BOOKING_FRAGMENT = gql`
     type
     completedAt
     duration
-    cost
+    totalDue
+    paymentReceived
   }
 `;

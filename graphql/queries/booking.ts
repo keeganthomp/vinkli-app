@@ -70,6 +70,11 @@ export const GET_ARTIST_BOOKING = gql`
   query artistBooking($id: ID!) {
     artistBooking(id: $id) {
       ...BookingFragment
+      payment {
+        paymentIntentId
+        chargeId
+        status
+      }
       customer {
         ...UserFragment
       }

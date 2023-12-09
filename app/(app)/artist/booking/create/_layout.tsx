@@ -6,30 +6,27 @@ import { View } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '@utils/toast';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TimeOption } from '@utils/time';
 
 export const unstable_settings = {
   initialRouteName: 'customerInfo',
 };
 
 export type ArtistBookingFromValues = ArtistCreateBookingInput & {
-  startTime: {
-    hours: number;
-    minutes: number;
-  };
   duration: number; // in hours
+  startTime: TimeOption;
 };
 
 export default function ArtistBookingCreateLayout() {
+  const insets = useSafeAreaInsets();
   const formMethods = useForm<ArtistBookingFromValues>({
     defaultValues: {
       customerEmail: '',
       title: '',
       startDate: undefined,
       endDate: undefined,
-      startTime: {
-        hours: undefined,
-        minutes: undefined,
-      },
+      startTime: undefined,
     },
   });
 
@@ -37,7 +34,7 @@ export default function ArtistBookingCreateLayout() {
     <>
       <View
         style={{
-          paddingTop: 12,
+          paddingTop: insets.top,
         }}
       >
         <AritstHeader title="Create Booking" canGoBack onBackPress={router.back} />
@@ -59,7 +56,7 @@ export default function ArtistBookingCreateLayout() {
           </Stack>
         </FormProvider>
       </BottomSheetModalProvider>
-      <Toast config={toastConfig} topOffset={25} />
+      <Toast config={toastConfig} topOffset={55} />
     </>
   );
 }
