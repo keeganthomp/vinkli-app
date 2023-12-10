@@ -16,7 +16,6 @@ type Props = {
 
 export default function BookingCard({ booking, href }: Props) {
   const customer = booking.customer;
-  const status = booking.paymentReceived ? 'Paid' : booking.status;
   return (
     <Link
       asChild
@@ -57,7 +56,7 @@ export default function BookingCard({ booking, href }: Props) {
           >
             {bookingTypeMap[booking.type]}
           </Text>
-          <Tag text={status} />
+          <Tag text={booking.status} />
         </View>
         <View
           style={{

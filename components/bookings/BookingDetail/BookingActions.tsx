@@ -154,15 +154,14 @@ const BookingActions = ({ booking, onBookingComplete }: Props) => {
             borderRadius: 6,
             width: '100%',
             justifyContent: 'center',
-            backgroundColor: '#333',
             height: 40
           }}
         >
           <Text
             style={{
               fontSize: 14,
-              color: '#fff',
-              fontWeight: '500',
+              color: '#333',
+              fontWeight: 'bold',
             }}
           >
             Payment Received
@@ -173,7 +172,7 @@ const BookingActions = ({ booking, onBookingComplete }: Props) => {
             }}
             name="checkmark-circle-sharp"
             size={20}
-            color="#fff"
+            color="#333"
           />
         </View>
       ) : (

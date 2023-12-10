@@ -47,8 +47,8 @@ export const GET_ARTIST_BOOKINGS = gql`
   ${USER_FRAGMENT}
   ${BOOKING_FRAGMENT}
   ${TATTOO_FRAGMENT}
-  query artistBookings($status: BookingStatus) {
-    artistBookings(status: $status) {
+  query artistBookings($statuses: [BookingStatus]) {
+    artistBookings(statuses: $statuses) {
       ...BookingFragment
       customer {
         ...UserFragment

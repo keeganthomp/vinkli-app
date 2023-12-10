@@ -14,6 +14,7 @@ import { useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import Button from '@components/Button';
 import { tattooColorOptions, tattooStyleOptions } from '@const/input';
+import theme from '@theme';
 
 export default function CustomerBookingCreate() {
   const [error, setError] = useState<string | null>(null);
@@ -98,7 +99,7 @@ export default function CustomerBookingCreate() {
         <Text
           style={{
             textAlign: 'center',
-            color: 'red',
+            color: theme.error,
             paddingVertical: 5,
           }}
         >

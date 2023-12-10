@@ -65,36 +65,33 @@ const PaymentReceived = ({ booking }: Props) => {
           style={{
             fontSize: 34,
             fontWeight: 'bold',
-            paddingBottom: 3,
             textAlign: 'center',
           }}
         >
           {formatCentsToDollars(booking.totalDue)}
         </Text>
-        <Text
-          style={{
-            textAlign: 'center',
-            fontSize: 14,
-            fontWeight: '300',
-          }}
-        >
-          Payment received
-        </Text>
         <Ionicons
           style={{
-            marginVertical: 20,
+            marginTop: 6,
           }}
           name="checkmark-circle-sharp"
           size={100}
           color="#333"
         />
-      </View>
-        <Button
-          label="Back to bookings"
-          onPress={() => {
-            router.push('/artist/bookings');
+        <Text
+          style={{
+            fontWeight: '300',
           }}
-        />
+        >
+          Payment received
+        </Text>
+      </View>
+      <Button
+        label="Back to bookings"
+        onPress={() => {
+          router.push('/artist/bookings');
+        }}
+      />
     </View>
   );
 };

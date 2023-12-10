@@ -28,7 +28,7 @@ export default function TabLayout() {
     <Tabs
       sceneContainerStyle={{
         backgroundColor: theme.appBackground,
-        paddingHorizontal: 12,
+        paddingHorizontal: 14,
       }}
       screenOptions={({ route }: { route: Route }) => {
         const shouldHideTabBar = route.name.startsWith('booking/');

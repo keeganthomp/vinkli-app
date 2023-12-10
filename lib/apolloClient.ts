@@ -55,6 +55,11 @@ const apolloClient = new ApolloClient({
               return incoming || existing;
             },
           },
+          paymentReceived: {
+            merge(existing, incoming) {
+              return incoming || existing;
+            },
+          },
         },
       },
       Query: {
@@ -65,6 +70,11 @@ const apolloClient = new ApolloClient({
             },
           },
           artist: {
+            merge(existing, incoming) {
+              return { ...existing, ...incoming };
+            },
+          },
+          bookings: {
             merge(existing, incoming) {
               return { ...existing, ...incoming };
             },

@@ -3,6 +3,7 @@ import { generateTimeOptions, TimeOption } from '@utils/time';
 import { useCallback } from 'react';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 const timeOptions = generateTimeOptions({
   minHour: 9,
@@ -27,7 +28,11 @@ type ConfirmButtonProps = {
   text?: string;
 };
 
-const ConfrimTimeButton = ({ onPress, disabled, text = 'Confirm' }: ConfirmButtonProps) => {
+const ConfrimTimeButton = ({
+  onPress,
+  disabled,
+  text = 'Confirm',
+}: ConfirmButtonProps) => {
   return (
     <Pressable
       disabled={disabled}
@@ -60,25 +65,39 @@ const TimeButton = ({ time, onPress, selected }: TimeOptionProps) => {
     <Pressable
       onPress={onPress}
       style={{
-        height: 46,
+        height: 42,
         borderRadius: 6,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        flexDirection: 'row',
         width: '100%',
         borderWidth: selected ? 0 : 1,
-        backgroundColor: selected ? '#33333390' : 'transparent',
         borderColor: '#33333390',
       }}
     >
-      <Text
-        style={{
-          color: selected ? '#fff' : '#000',
-          fontWeight: '500',
-        }}
-      >
-        {time.displayTime}
-      </Text>
+      <View>
+        <Text
+          style={{
+            color: '#333',
+            fontWeight: selected ? '700' : '500',
+          }}
+        >
+          {time.displayTime}
+        </Text>
+        {selected && (
+          <Ionicons
+            style={{
+              position: 'absolute',
+              right: -22,
+              bottom: 1
+            }}
+            name="checkmark"
+            size={17}
+            color="black"
+          />
+        )}
+      </View>
     </Pressable>
   );
 };
@@ -134,7 +153,11 @@ const TimePicker = ({ closeModal, selectedTime, onTimeSelect }: Props) => {
           paddingTop: 12,
         }}
       >
-        <ConfrimTimeButton text='Confirm Time' disabled={!selectedTime} onPress={closeModal} />
+        <ConfrimTimeButton
+          text="Confirm Time"
+          disabled={!selectedTime}
+          onPress={closeModal}
+        />
       </View>
     </>
   );

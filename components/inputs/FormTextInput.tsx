@@ -20,6 +20,7 @@ import {
   textInputPlaceholderTextColor,
 } from '@const/input';
 import InputAccessory from './InputAccessory';
+import theme from '@theme';
 
 const genRandomId = () => Math.random().toString(36).substring(7);
 
@@ -79,7 +80,7 @@ function FormTextInput<TFieldValues extends FieldValues>({
         placeholderTextColor={textInputPlaceholderTextColor}
         returnKeyType={textInputProps.multiline ? 'default' : 'done'}
       />
-      {error && <Text style={{ color: 'red' }}>{error.message}</Text>}
+      {error && <Text style={{ color: theme.error }}>{error.message}</Text>}
       {/* Bar above keyboard */}
       <InputAccessory id={inputAccessoryViewID} />
     </View>

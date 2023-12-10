@@ -5,7 +5,7 @@ import {
   Text,
   ActivityIndicator,
 } from 'react-native';
-import Header from '@components/artist/ArtistHeader';
+import Header from '@components/artist/ArtistScreenHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@apollo/client';
 import { GET_PAYMENTS } from '@graphql/queries/payments';
@@ -13,6 +13,7 @@ import { GetPaymentsQuery, Payment } from '@graphql/types';
 import { useCallback, useState } from 'react';
 import theme from '@theme';
 import PaymentCard from '@components/payments/PaymentCard';
+import { useFocusEffect } from 'expo-router';
 
 export default function ArtistPayments() {
   const insets = useSafeAreaInsets();
@@ -23,6 +24,13 @@ export default function ArtistPayments() {
     error: errorFetchingPayments,
     refetch,
   } = useQuery<GetPaymentsQuery>(GET_PAYMENTS);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log('yeee');
+      refetch();
+    }, []),
+  );
 
   const renderPaymentCard = useCallback(
     ({ item: payment }: { item: Payment }) => {
@@ -68,8 +76,8 @@ export default function ArtistPayments() {
       <Header title="Payments" />
       <FlatList
         data={payments}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingHorizontal: 12,
           paddingTop: 12,
           paddingBottom: 44,
         }}
@@ -79,7 +87,7 @@ export default function ArtistPayments() {
         ItemSeparatorComponent={() => (
           <View
             style={{
-              height: 12,
+              height: 20,
             }}
           />
         )}

@@ -10,7 +10,7 @@ import { GET_ARTIST_BOOKING } from '@graphql/queries/booking';
 import { useQuery } from '@apollo/client';
 import { useState, useRef } from 'react';
 import { Booking, ArtistBookingQuery } from '@graphql/types';
-import ArtistHeader from '@components/artist/ArtistHeader';
+import ArtistHeader from '@components/artist/ArtistScreenHeader';
 import TattooInfo from '@components/bookings/BookingDetail/TattooInfo';
 import BookingActions from '@components/bookings/BookingDetail/BookingActions';
 import BookingHeader from '@components/bookings/BookingDetail/BookingHeader';
@@ -80,7 +80,7 @@ export default function ArtistBookingDetail() {
           paddingTop: insets.top,
         }}
       >
-        <ArtistHeader title='Booking Detail' onBackPress={goBack} canGoBack />
+        <ArtistHeader title="Booking Detail" onBackPress={goBack} canGoBack />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />

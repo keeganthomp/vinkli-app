@@ -116,7 +116,6 @@ export default function ArtistBookingTattooInfo() {
   if (isSubmitting) {
     <View
       style={{
-        flex: 1,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

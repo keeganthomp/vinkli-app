@@ -5,7 +5,7 @@ import {
   Pressable,
   RefreshControl,
 } from 'react-native';
-import ArtistHeader from '@components/artist/ArtistHeader';
+import ArtistHeader from '@components/artist/ArtistScreenHeader';
 import { useSession } from '@context/auth';
 import { router } from 'expo-router';
 import { supabase } from '@lib/supabase';

@@ -9,6 +9,7 @@ const NAV_BUTTON_ICON_COLOR = 'black';
 type Props = {
   title?: string;
   rightComponent?: React.ReactNode;
+  leftComponent?: React.ReactNode;
   canGoBack?: boolean;
   onBackPress?: () => void;
   onClosePress?: () => void;
@@ -45,12 +46,15 @@ const HeaderNavButton = ({
 
 // Left side of header
 const LeftComponent = ({
+  component,
   canGoBack,
   onBackPress,
 }: {
+  component: Props['leftComponent'];
   canGoBack: Props['canGoBack'];
   onBackPress?: Props['onBackPress'];
 }) => {
+  if (component) return component;
   if (canGoBack) {
     const handlePress = () => {
       if (onBackPress) onBackPress();
@@ -98,6 +102,7 @@ const ArtistHeader = ({
   onBackPress = () => {},
   onClosePress = () => {},
   rightComponent,
+  leftComponent,
   modalHeader = false,
 }: Props) => {
   return (
@@ -107,11 +112,15 @@ const ArtistHeader = ({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        height: 45,
+        height: 30,
         paddingHorizontal: 12,
       }}
     >
-      <LeftComponent canGoBack={canGoBack} onBackPress={onBackPress} />
+      <LeftComponent
+        component={leftComponent}
+        canGoBack={canGoBack}
+        onBackPress={onBackPress}
+      />
       {title && (
         <Text
           numberOfLines={1}
@@ -119,7 +128,7 @@ const ArtistHeader = ({
           style={{
             flex: 1,
             fontSize: 14,
-            fontWeight: modalHeader ? '600' : 'bold',
+            fontWeight: '500',
             paddingHorizontal: 8,
             textAlign: 'center',
           }}

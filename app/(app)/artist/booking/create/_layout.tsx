@@ -1,5 +1,5 @@
 import { Stack, router } from 'expo-router';
-import AritstHeader from '@components/artist/ArtistHeader';
+import AritstHeader from '@components/artist/ArtistScreenHeader';
 import { useForm, FormProvider } from 'react-hook-form';
 import { ArtistCreateBookingInput } from '@graphql/types';
 import { View } from 'react-native';
@@ -37,7 +37,11 @@ export default function ArtistBookingCreateLayout() {
           paddingTop: insets.top,
         }}
       >
-        <AritstHeader title="Create Booking" canGoBack onBackPress={router.back} />
+        <AritstHeader
+          title="Create Booking"
+          canGoBack
+          onBackPress={router.back}
+        />
       </View>
       <BottomSheetModalProvider>
         <FormProvider {...formMethods}>

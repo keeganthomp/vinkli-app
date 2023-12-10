@@ -16,6 +16,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import BookingCard from '@components/bookings/BookingCard';
 import Button from '@components/Button';
+import theme from '@theme';
 
 const NoBookings = () => (
   <View>
@@ -88,7 +89,7 @@ export default function CustomerBookings() {
         <CustomerHeader title="Bookings" />
         <Text
           style={{
-            color: 'red',
+            color: theme.error,
           }}
         >
           Error fetching bookings

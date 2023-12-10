@@ -34,6 +34,9 @@ const ArtistBookingCustomerInfo = () => {
         rules={{
           required: 'Customer Email is required',
         }}
+        containerStyle={{
+          paddingBottom: 20,
+        }}
       />
       <NextButton
         label="Appointment Info"

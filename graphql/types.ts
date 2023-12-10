@@ -294,7 +294,7 @@ export type QueryArtistBookingArgs = {
 
 
 export type QueryArtistBookingsArgs = {
-  status?: InputMaybe<BookingStatus>;
+  statuses?: InputMaybe<Array<InputMaybe<BookingStatus>>>;
 };
 
 
@@ -474,7 +474,7 @@ export type CustomerBookingQueryVariables = Exact<{
 export type CustomerBookingQuery = { __typename?: 'Query', customerBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null } | null } };
 
 export type ArtistBookingsQueryVariables = Exact<{
-  status?: InputMaybe<BookingStatus>;
+  statuses?: InputMaybe<Array<InputMaybe<BookingStatus>> | InputMaybe<BookingStatus>>;
 }>;
 
 
@@ -982,8 +982,8 @@ export type CustomerBookingLazyQueryHookResult = ReturnType<typeof useCustomerBo
 export type CustomerBookingSuspenseQueryHookResult = ReturnType<typeof useCustomerBookingSuspenseQuery>;
 export type CustomerBookingQueryResult = Apollo.QueryResult<CustomerBookingQuery, CustomerBookingQueryVariables>;
 export const ArtistBookingsDocument = gql`
-    query artistBookings($status: BookingStatus) {
-  artistBookings(status: $status) {
+    query artistBookings($statuses: [BookingStatus]) {
+  artistBookings(statuses: $statuses) {
     ...BookingFragment
     customer {
       ...UserFragment
@@ -1012,7 +1012,7 @@ ${TattooFragmentFragmentDoc}`;
  * @example
  * const { data, loading, error } = useArtistBookingsQuery({
  *   variables: {
- *      status: // value for 'status'
+ *      statuses: // value for 'statuses'
  *   },
  * });
  */
