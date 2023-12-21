@@ -4,17 +4,12 @@ import { BookingStatus } from '@graphql/types';
 import { bookingStatusMap } from '@const/maps';
 import { Ionicons } from '@expo/vector-icons';
 
-const validFilterStatuses = [
-  BookingStatus.Completed,
-  BookingStatus.Confirmed,
-  BookingStatus.Cancelled,
+const bookingStatusFilters: BookingStatus[] = [
   BookingStatus.Pending,
+  BookingStatus.Confirmed,
+  BookingStatus.Completed,
+  BookingStatus.Cancelled,
 ];
-
-const bookingStatusArr = Object.values(BookingStatus);
-const validBookingStatuses = bookingStatusArr.filter((status) =>
-  validFilterStatuses.includes(status),
-);
 
 type StatusFilterProps = {
   status: BookingStatus;
@@ -56,6 +51,7 @@ const FilterOption = ({
         style={{
           fontSize: 15,
           fontWeight: isActive ? '500' : '300',
+          color: '#333',
         }}
       >
         {bookingStatusMap[status]}
@@ -74,7 +70,11 @@ const FilterOption = ({
   );
 };
 
-const BookingFilters = ({ activeFilter, onSelect, clearFilter }: FiltersProps) => (
+const BookingFilters = ({
+  activeFilter,
+  onSelect,
+  clearFilter,
+}: FiltersProps) => (
   <View
     style={{
       display: 'flex',
@@ -86,11 +86,12 @@ const BookingFilters = ({ activeFilter, onSelect, clearFilter }: FiltersProps) =
       style={{
         fontWeight: '300',
         fontSize: 12,
+        color: '#333',
       }}
     >
-      Select status to filter
+      Select status
     </Text>
-    {validBookingStatuses.map((status) => (
+    {bookingStatusFilters.map((status) => (
       <FilterOption
         key={status}
         status={status}
@@ -98,23 +99,26 @@ const BookingFilters = ({ activeFilter, onSelect, clearFilter }: FiltersProps) =
         isActive={activeFilter === status}
       />
     ))}
-    {activeFilter && (
-      <Pressable
-        onPress={clearFilter}
+    <Pressable
+      disabled={!activeFilter}
+      onPress={clearFilter}
+      style={{
+        marginTop: 4,
+        paddingVertical: 14,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Text
         style={{
-          paddingVertical: 14,
+          color: !activeFilter ? '#d3d3d3' : theme.red,
         }}
       >
-        <Text
-          style={{
-            color: theme.alert,
-          }}
-        >
-          Clear
-        </Text>
-      </Pressable>
-    )}
+        Cancel
+      </Text>
+    </Pressable>
   </View>
 );
 
-export default BookingFilters
+export default BookingFilters;

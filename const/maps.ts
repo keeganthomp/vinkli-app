@@ -29,9 +29,9 @@ export const bookingTypeMap: Record<BookingType, string> = {
 
 export const bookingStatusMap: Record<BookingStatus, string> = {
   [BookingStatus.Pending]: 'Pending',
+  [BookingStatus.Confirmed]: 'Confirmed',
   [BookingStatus.Completed]: 'Completed',
   [BookingStatus.Cancelled]: 'Cancelled',
-  [BookingStatus.Confirmed]: 'Confirmed',
   [BookingStatus.Rejected]: 'Rejected',
 };
 

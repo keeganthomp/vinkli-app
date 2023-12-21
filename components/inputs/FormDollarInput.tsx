@@ -84,11 +84,11 @@ function FormDollarInputProps<TFieldValues extends FieldValues>({
         inputAccessoryViewID={inputAccessoryViewID}
         value={formatCurrency(value)}
         onChangeText={handleChange}
-        keyboardType="numeric"
+        inputMode="numeric"
         placeholder="$0"
         style={defaultTextInputStyle}
         placeholderTextColor={textInputPlaceholderTextColor}
-        returnKeyType="done"
+        enterKeyHint="done"
         {...textInputProps}
       />
       <InputAccessory id={inputAccessoryViewID} />

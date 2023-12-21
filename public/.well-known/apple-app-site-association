@@ -1,0 +1,27 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "KYJH22GCJ8.com.vinkli.app"
+        ],
+        "components": [
+          {
+            "/": "*",
+            "comment": "Matches all routes"
+          }
+        ]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": [
+      "KYJH22GCJ8.com.vinkli.app"
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "KYJH22GCJ8.com.vinkli.app"
+    ]
+  }
+}

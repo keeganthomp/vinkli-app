@@ -101,7 +101,7 @@ const ArtistRatesForm = ({ artist }: Props) => {
             label="Consultation Fee"
             name="consultationFee"
             placeholder="Enter your consultation fee"
-            keyboardType="numeric"
+            inputMode="numeric"
             containerStyle={{
               paddingBottom: 24,
             }}
@@ -111,7 +111,7 @@ const ArtistRatesForm = ({ artist }: Props) => {
             label="Hourly Rate"
             name="hourlyRate"
             placeholder="Enter your hourly rate"
-            keyboardType="numeric"
+            inputMode="numeric"
             containerStyle={{
               paddingBottom: 24,
             }}

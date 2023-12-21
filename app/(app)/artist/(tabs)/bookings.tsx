@@ -9,43 +9,18 @@ import { useQuery } from '@apollo/client';
 import { ArtistBookingsQuery, Booking } from '@graphql/types';
 import { GET_ARTIST_BOOKINGS } from '@graphql/queries/booking';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { BookingStatus } from '@graphql/types';
 import BookingCard from '@components/bookings/BookingCard';
-import Modal from '@components/modals/Modal';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import ArtistScreenHeader from '@components/artist/ArtistScreenHeader';
 import BookingListHeader from '@components/bookings/BookingsListHeader';
-import BookingFilters from '@components/bookings/BookingFilters';
+import EmptyList from '@components/EmptyList';
+import { SheetManager } from 'react-native-actions-sheet';
+import sheetIds from '@const/sheets';
 
 const defaultFilters = [BookingStatus.Confirmed];
 
-const NoBookings = ({
-  filtersApplied = false,
-}: {
-  filtersApplied?: boolean;
-}) => (
-  <View
-    style={{
-      paddingTop: 24,
-    }}
-  >
-    <Text
-      style={{
-        textAlign: 'center',
-        fontWeight: '300',
-      }}
-    >
-      {filtersApplied
-        ? 'No bookings match this criteria'
-        : 'No bookings to show'}
-    </Text>
-  </View>
-);
-
 export default function ArtistBookings() {
   const insets = useSafeAreaInsets();
-  const filterModalRef = useRef<BottomSheetModal>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [activeFilter, setActiveFilter] = useState<BookingStatus>();
@@ -61,15 +36,6 @@ export default function ArtistBookings() {
   });
 
   const bookings = bookingData?.artistBookings || [];
-
-  const openFilterModal = () => {
-    if (isRefetching || refreshing || loadingBookings) return;
-    filterModalRef.current?.present();
-  };
-
-  const closeFilterModal = () => {
-    filterModalRef.current?.close();
-  };
 
   const handleClearFilter = async () => {
     closeFilterModal();
@@ -103,6 +69,21 @@ export default function ArtistBookings() {
     setRefreshing(false);
   };
 
+  const openFilterModal = () => {
+    if (isRefetching || refreshing || loadingBookings) return;
+    SheetManager.show(sheetIds.bookingFilters, {
+      payload: {
+        activeFilter,
+        clearFilter: handleClearFilter,
+        selectFilter: handleStatusFilterSelect,
+      },
+    });
+  };
+
+  const closeFilterModal = () => {
+    // filterModalRef.current?.close();
+  };
+
   return (
     <View
       style={{
@@ -111,7 +92,6 @@ export default function ArtistBookings() {
       }}
     >
       <>
-        <ArtistScreenHeader title="Bookings" />
         <BookingListHeader
           activeFilter={activeFilter}
           openFilterModal={openFilterModal}
@@ -119,23 +99,24 @@ export default function ArtistBookings() {
         {loadingBookings || isRefetching ? (
           <View
             style={{
-              width: '100%',
+              flex: 1,
               display: 'flex',
-              alignItems: 'center',
               justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            <ActivityIndicator
-              style={{
-                marginTop: 20,
-              }}
-              color="black"
-            />
+            <ActivityIndicator />
           </View>
         ) : (
           <FlatList
             ListEmptyComponent={() => (
-              <NoBookings filtersApplied={!!activeFilter} />
+              <EmptyList
+                message={
+                  activeFilter
+                    ? 'No bookings match this criteria'
+                    : 'No bookings to show'
+                }
+              />
             )}
             showsVerticalScrollIndicator={false}
             refreshControl={
@@ -157,14 +138,6 @@ export default function ArtistBookings() {
           />
         )}
       </>
-      {/* Filters Modal */}
-      <Modal ref={filterModalRef}>
-        <BookingFilters
-          activeFilter={activeFilter}
-          onSelect={handleStatusFilterSelect}
-          clearFilter={handleClearFilter}
-        />
-      </Modal>
     </View>
   );
 }

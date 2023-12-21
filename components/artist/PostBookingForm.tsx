@@ -79,7 +79,7 @@ const PostBookingForm = ({ bookingId, closeModal }: Props) => {
         label="How many hours was the session?"
         name="duration"
         placeholder="3 hours"
-        keyboardType="numeric"
+        inputMode="numeric"
         labelStyle={{
           fontSize: 18,
           textAlign: 'center',

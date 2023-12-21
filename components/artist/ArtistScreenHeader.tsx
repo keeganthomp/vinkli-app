@@ -1,6 +1,8 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import theme from '@theme';
+
+const isWeb = Platform.OS === 'web';
 
 const NAV_BUTTON_SIZE = 32;
 const BUTTON_ICON_SIZE = 17;
@@ -105,6 +107,7 @@ const ArtistHeader = ({
   leftComponent,
   modalHeader = false,
 }: Props) => {
+  if (isWeb) return null;
   return (
     <View
       style={{
@@ -114,6 +117,7 @@ const ArtistHeader = ({
         justifyContent: 'space-between',
         height: 30,
         paddingHorizontal: 12,
+        backgroundColor: theme.appBackground,
       }}
     >
       <LeftComponent
@@ -131,6 +135,7 @@ const ArtistHeader = ({
             fontWeight: '500',
             paddingHorizontal: 8,
             textAlign: 'center',
+            color: '#333'
           }}
         >
           {title}

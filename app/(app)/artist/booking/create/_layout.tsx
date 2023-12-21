@@ -2,12 +2,15 @@ import { Stack, router } from 'expo-router';
 import AritstHeader from '@components/artist/ArtistScreenHeader';
 import { useForm, FormProvider } from 'react-hook-form';
 import { ArtistCreateBookingInput } from '@graphql/types';
-import { View } from 'react-native';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { View, Platform } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '@utils/toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TimeOption } from '@utils/time';
+import theme from '@theme';
+import { SheetProvider } from 'react-native-actions-sheet';
+
+const isWeb = Platform.OS === 'web';
 
 export const unstable_settings = {
   initialRouteName: 'customerInfo',
@@ -43,7 +46,7 @@ export default function ArtistBookingCreateLayout() {
           onBackPress={router.back}
         />
       </View>
-      <BottomSheetModalProvider>
+      <SheetProvider>
         <FormProvider {...formMethods}>
           <Stack
             screenOptions={{
@@ -51,16 +54,17 @@ export default function ArtistBookingCreateLayout() {
               contentStyle: {
                 paddingTop: 14,
                 paddingHorizontal: 12,
+                backgroundColor: theme.appBackground,
               },
             }}
           >
-            <Stack.Screen name="customerInfo" />
-            <Stack.Screen name="appointmentInfo" />
+            <Stack.Screen name="generalInfo" />
             <Stack.Screen name="tattooInfo" />
+            <Stack.Screen name="dateAndTime" />
           </Stack>
         </FormProvider>
-      </BottomSheetModalProvider>
-      <Toast config={toastConfig} topOffset={55} />
+      </SheetProvider>
+      <Toast config={toastConfig} topOffset={isWeb ? 16 : 55} />
     </>
   );
 }

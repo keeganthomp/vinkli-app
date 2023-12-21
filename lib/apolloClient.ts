@@ -1,7 +1,7 @@
 import {
   ApolloClient,
-  createHttpLink,
   InMemoryCache,
+  createHttpLink,
   from,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
@@ -9,10 +9,10 @@ import { supabase } from '@lib/supabase';
 import { onError } from '@apollo/client/link/error';
 
 const graphqlEndpoint = process.env.EXPO_PUBLIC_GRAPHQL_ENDPOINT;
-console.log('graphqlEndpoint', graphqlEndpoint);
 
 const httpLink = createHttpLink({
   uri: graphqlEndpoint,
+  fetch,
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -77,6 +77,22 @@ const apolloClient = new ApolloClient({
           bookings: {
             merge(existing, incoming) {
               return { ...existing, ...incoming };
+            },
+          },
+          artistBookings: {
+            merge(existing = [], incoming: any[]) {
+              // Use a Set to ensure unique IDs
+              const bookings = new Set(
+                existing.map((booking: any) => booking.__ref),
+              );
+
+              // Add incoming bookings if they are not already in the cache
+              incoming.forEach((booking: any) => {
+                bookings.add(booking.__ref);
+              });
+
+              // Convert Set back to an array
+              return Array.from(bookings).map((ref) => ({ __ref: ref }));
             },
           },
         },

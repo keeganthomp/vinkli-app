@@ -1,129 +1,74 @@
-import { View, Keyboard, ActivityIndicator, Text } from 'react-native';
+import { View, Keyboard, Text, Platform } from 'react-native';
 import FormTextInput from '@components/inputs/FormTextInput';
 import FormImageInput from '@components/inputs/FormImageInput';
 import { tattooColorMap, tattooStyleMap } from '@const/maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useCallback, useRef } from 'react';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useCallback } from 'react';
 import FormModalInput from '@components/inputs/FormModalInput';
-import PickerModal from '@components/modals/PickerModal';
 import { useFormContext } from 'react-hook-form';
-import Button from '@components/Button';
-import { ArtistCreateBookingMutation } from '@graphql/types';
-import { CREATE_ARTIST_BOOKING } from '@graphql/mutations/booking';
-import { useMutation } from '@apollo/client';
-import Toast from 'react-native-toast-message';
-import { router } from 'expo-router';
-import { BOOKING_FRAGMENT } from '@graphql/fragments/booking';
+import NextButton from '@components/NextButton';
 import { ArtistBookingFromValues } from './_layout';
+import { router } from 'expo-router';
+import { SheetManager } from 'react-native-actions-sheet';
+import sheetIds from '@const/sheets';
+import { TattooColor, TattooStyle } from '@graphql/types';
+import WebDropdown from '@components/inputs/WebDropdown';
 
-const tattooStyleOptions = Object.entries(tattooStyleMap).map(
-  ([key, value]) => ({ label: value, value: key }),
-);
+const isWeb = Platform.OS === 'web';
+
 const tattooColorOptions = Object.entries(tattooColorMap).map(
   ([key, value]) => ({ label: value, value: key }),
 );
-export default function ArtistBookingTattooInfo() {
-  const {
-    control,
-    watch,
-    handleSubmit,
-    formState: { isValid, isSubmitting },
-  } = useFormContext<ArtistBookingFromValues>();
-  const tattooColorModalRef = useRef<BottomSheetModal>(null);
-  const tattooStyleModalRef = useRef<BottomSheetModal>(null);
+const tattooStyleOptions = Object.entries(tattooStyleMap).map(
+  ([key, value]) => ({ label: value, value: key }),
+);
 
-  const [tattooColor, tattooStyle] = watch(['tattoo.color', 'tattoo.style']);
+export default function ArtistBookingTattooInfo() {
+  const { control, watch, setValue } =
+    useFormContext<ArtistBookingFromValues>();
+
+  const [tattooDescription, tattooPlacement, tattooColor, tattooStyle] = watch([
+    'tattoo.description',
+    'tattoo.placement',
+    'tattoo.color',
+    'tattoo.style',
+  ]);
+
+  const setTattooColor = (selectedColor: TattooColor) => {
+    setValue('tattoo.color', selectedColor);
+  };
+  const setTattooStyle = (selectedStyle: TattooStyle) => {
+    setValue('tattoo.style', selectedStyle);
+  };
+
+  const canGoNext = tattooDescription && tattooPlacement;
 
   const openTattooColorPicker = useCallback(() => {
-    tattooColorModalRef.current?.present();
     Keyboard.dismiss();
+    SheetManager.show(sheetIds.tattooColorSelect, {
+      payload: {
+        setTattooColor,
+        value: tattooColor,
+      },
+    });
   }, []);
 
   const openTattooStylePicker = useCallback(() => {
-    tattooStyleModalRef.current?.present();
     Keyboard.dismiss();
+    SheetManager.show(sheetIds.tattooStyleSelect, {
+      payload: {
+        setTattooStyle,
+        value: tattooStyle,
+      },
+    });
   }, []);
 
-  const [createBooking] = useMutation<ArtistCreateBookingMutation>(
-    CREATE_ARTIST_BOOKING,
-    {
-      update(cache, { data }) {
-        const newBooking = data?.artistCreateBooking;
-        cache.modify({
-          fields: {
-            artistBookings(existingBookings = []) {
-              const newBookingRef = cache.writeFragment({
-                data: newBooking,
-                fragment: BOOKING_FRAGMENT,
-              });
-              return [newBookingRef, ...existingBookings];
-            },
-          },
-        });
-      },
-    },
-  );
-
-  const handleCreateBooking = async (data: ArtistBookingFromValues) => {
-    const {
-      startDate: selectedStartDate,
-      startTime,
-      duration,
-      ...bookingFormValues
-    } = data;
-    try {
-      Keyboard.dismiss();
-      const startDateObj = new Date(selectedStartDate);
-      // get start date in iso string
-      const startDateIsoString = startDateObj.toISOString();
-      // trim off the time from the date iso string
-      const startDateString = startDateIsoString.split('T')[0];
-      // concat the start date string with the start time string
-      const finalizedStartDate = `${startDateString}T${startTime.value}`;
-      // convert finalized start date to milliseconds
-      const startDateToSubmit = new Date(finalizedStartDate).getTime();
-      // get end date by adding duration to start date
-      // convert duration from hours to milliseconds
-      const durationInMilliseconds = (duration || 0) * 60 * 60 * 1000;
-      // add duration to start date
-      const endDateToSubmit = new Date(
-        startDateObj.getTime() + durationInMilliseconds,
-      );
-      const createFormInput = {
-        ...bookingFormValues,
-        startDate: selectedStartDate ? startDateToSubmit : undefined,
-        endDate: duration ? endDateToSubmit : undefined,
-      };
-      const { data: newBookingData } = await createBooking({
-        variables: {
-          input: createFormInput,
-        },
-      });
-      const newBooking = newBookingData?.artistCreateBooking;
-      router.replace(`/artist/booking/${newBooking?.id}`);
-    } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error creating booking',
-        text2: error.message,
-      });
-    }
+  const goToAppointmentDate = () => {
+    Keyboard.dismiss();
+    router.push('/artist/booking/create/dateAndTime');
   };
 
   const SPACING = 22;
-
-  if (isSubmitting) {
-    <View
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <ActivityIndicator />
-    </View>;
-  }
 
   return (
     <>
@@ -147,7 +92,7 @@ export default function ArtistBookingTattooInfo() {
               paddingBottom: 18,
             }}
           >
-            Tattoo Info
+            Tattoo
           </Text>
           <FormTextInput
             control={control}
@@ -156,7 +101,7 @@ export default function ArtistBookingTattooInfo() {
             placeholder="owl, snake and dagger, clock, etc."
             multiline
             containerStyle={{
-              paddingBottom: SPACING,
+              paddingBottom: SPACING - (isWeb ? 10 : 0),
             }}
           />
           <FormTextInput
@@ -166,27 +111,47 @@ export default function ArtistBookingTattooInfo() {
             placeholder="upper right arm, left calf, etc."
             multiline
             containerStyle={{
-              paddingBottom: SPACING,
+              paddingBottom: SPACING - (isWeb ? 10 : 0),
             }}
           />
-          <FormModalInput
-            openPicker={openTattooColorPicker}
-            label="Color"
-            placeholder="color/black/grey"
-            value={tattooColorMap[tattooColor as keyof typeof tattooColorMap]}
-            containerStyle={{
-              paddingBottom: SPACING,
-            }}
-          />
-          <FormModalInput
-            openPicker={openTattooStylePicker}
-            label="Style"
-            placeholder="select style"
-            value={tattooStyleMap[tattooStyle as keyof typeof tattooStyleMap]}
-            containerStyle={{
-              paddingBottom: SPACING,
-            }}
-          />
+          {isWeb ? (
+            <WebDropdown
+              buttonLabel="color or black/grey"
+              label="Color/Black/Grey"
+              options={tattooColorOptions}
+              value={tattooColor}
+              onSelect={(val) => setValue('tattoo.color', val as TattooColor)}
+            />
+          ) : (
+            <FormModalInput
+              openPicker={openTattooColorPicker}
+              label="Color"
+              placeholder="color/black/grey"
+              value={tattooColorMap[tattooColor as keyof typeof tattooColorMap]}
+              containerStyle={{
+                paddingBottom: SPACING,
+              }}
+            />
+          )}
+          {isWeb ? (
+            <WebDropdown
+              buttonLabel="tattoo style"
+              label="Tattoo Style"
+              options={tattooStyleOptions}
+              value={tattooStyle}
+              onSelect={(val) => setValue('tattoo.style', val as TattooStyle)}
+            />
+          ) : (
+            <FormModalInput
+              openPicker={openTattooStylePicker}
+              label="Style"
+              placeholder="select style"
+              value={tattooStyleMap[tattooStyle as keyof typeof tattooStyleMap]}
+              containerStyle={{
+                paddingBottom: SPACING,
+              }}
+            />
+          )}
           <View
             style={{
               paddingBottom: SPACING,
@@ -198,10 +163,10 @@ export default function ArtistBookingTattooInfo() {
               name="tattoo.imagePaths"
             />
           </View>
-          <Button
-            label="Create Booking"
-            disabled={!isValid || isSubmitting}
-            onPress={handleSubmit(handleCreateBooking)}
+          <NextButton
+            label="Date & Time"
+            disabled={!canGoNext}
+            onPress={goToAppointmentDate}
             style={{
               marginTop: 5,
               borderRadius: 4,
@@ -210,19 +175,6 @@ export default function ArtistBookingTattooInfo() {
           />
         </KeyboardAwareScrollView>
       </View>
-      {/* Modals */}
-      <PickerModal
-        ref={tattooColorModalRef}
-        control={control as any}
-        name="tattoo.color"
-        options={tattooColorOptions}
-      />
-      <PickerModal
-        ref={tattooStyleModalRef}
-        control={control as any}
-        name="tattoo.style"
-        options={tattooStyleOptions}
-      />
     </>
   );
 }

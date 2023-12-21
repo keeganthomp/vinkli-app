@@ -1,4 +1,4 @@
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Platform } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { GET_ARTIST_BOOKING } from '@graphql/queries/booking';
 import { useQuery } from '@apollo/client';
@@ -15,6 +15,8 @@ import CollectPaymentInfo from '@components/payments/CollectPaymentInfo';
 import PaymentReceived from '@components/payments/PaymentReceived';
 import Error from '@components/Error';
 import { useEffect } from 'react';
+
+const isWeb = Platform.OS === 'web';
 
 export default function ArtistBookingCollectPayment() {
   const { bookingId } = useLocalSearchParams();

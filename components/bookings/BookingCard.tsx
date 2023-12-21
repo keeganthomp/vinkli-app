@@ -1,21 +1,28 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Link } from 'expo-router';
-import { Booking } from '@graphql/types';
+import { Booking, BookingStatus } from '@graphql/types';
 import moment from 'moment';
 import theme from '@theme';
 import { Feather } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 import { bookingTypeMap } from '@const/maps';
 import Tag from '@components/Tag';
+import { bookingStatusColor } from '@const/colors';
+import { bookingStatusMap } from '@const/maps';
 
 type Props = {
   booking: Booking;
   href: string;
 };
 
+const statusTagsToShow = [BookingStatus.Completed, BookingStatus.Pending];
+
+const SPACING = 6;
+
 export default function BookingCard({ booking, href }: Props) {
   const customer = booking.customer;
+  const shouldShowStatusTag = statusTagsToShow.includes(booking.status);
   return (
     <Link
       asChild
@@ -25,7 +32,7 @@ export default function BookingCard({ booking, href }: Props) {
     >
       <Pressable
         style={{
-          height: 135,
+          height: 125,
           backgroundColor: theme.accentGray,
           borderRadius: 16,
           overflow: 'hidden',
@@ -37,68 +44,90 @@ export default function BookingCard({ booking, href }: Props) {
           flexGrow: 1,
         }}
       >
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={{
-              flex: 1,
-              fontWeight: 'bold',
-              fontSize: 18,
-            }}
-          >
-            {bookingTypeMap[booking.type]}
-          </Text>
-          <Tag text={booking.status} />
-        </View>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <Feather name="calendar" size={18} color="black" />
-          <Text
-            style={{
-              marginLeft: 4,
-            }}
-          >
-            {booking.startDate ? moment(booking.startDate).calendar() : 'No Date Set'}
-          </Text>
-        </View>
-        {customer && (
+        <View>
           <View
             style={{
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingBottom: SPACING + 1,
             }}
           >
-            <Octicons
-              style={{
-                paddingLeft: 1,
-              }}
-              name="person"
-              size={19}
-              color="black"
-            />
             <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
               style={{
-                marginLeft: 5,
+                flex: 1,
+                fontWeight: '500',
+                fontSize: 20,
+                color: '#333',
               }}
             >
-              {customer.name}
+              {bookingTypeMap[booking.type]}
+            </Text>
+            {shouldShowStatusTag && (
+              <Tag
+                style={{
+                  backgroundColor: bookingStatusColor[booking.status],
+                  borderWidth: 0,
+                }}
+                textStyle={{
+                  color: '#fff',
+                }}
+                text={bookingStatusMap[booking.status]}
+              />
+            )}
+          </View>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingBottom: SPACING,
+            }}
+          >
+            <Feather name="calendar" size={15} color="#333" />
+            <Text
+              style={{
+                marginLeft: 4,
+                color: '#333',
+                fontWeight: '300',
+              }}
+            >
+              {booking.startDate
+                ? moment(booking.startDate).calendar()
+                : 'No Date Set'}
             </Text>
           </View>
-        )}
+          {customer && (
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Octicons
+                style={{
+                  paddingLeft: 1,
+                }}
+                name="person"
+                size={16}
+                color="#333"
+              />
+              <Text
+                style={{
+                  marginLeft: 6,
+                  color: '#333',
+                  fontWeight: '300',
+                }}
+              >
+                {customer.name}
+              </Text>
+            </View>
+          )}
+        </View>
         <View>
           <Text
             style={{

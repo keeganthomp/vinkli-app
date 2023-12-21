@@ -1,7 +1,6 @@
-import { View, Pressable, Text } from 'react-native';
+import { View, Pressable, Text, FlatList } from 'react-native';
 import { generateTimeOptions, TimeOption } from '@utils/time';
 import { useCallback } from 'react';
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,7 +16,6 @@ export type TimeOptionProps = {
 };
 
 type Props = {
-  closeModal: () => void;
   onTimeSelect: (time: TimeOption) => void;
   selectedTime?: TimeOption | null;
 };
@@ -102,7 +100,7 @@ const TimeButton = ({ time, onPress, selected }: TimeOptionProps) => {
   );
 };
 
-const TimePicker = ({ closeModal, selectedTime, onTimeSelect }: Props) => {
+const TimePicker = ({ selectedTime, onTimeSelect }: Props) => {
   const insets = useSafeAreaInsets();
 
   const renderTimeOption = useCallback(
@@ -122,7 +120,7 @@ const TimePicker = ({ closeModal, selectedTime, onTimeSelect }: Props) => {
 
   return (
     <>
-      <BottomSheetFlatList
+      <FlatList
         showsVerticalScrollIndicator={false}
         data={timeOptions}
         renderItem={renderTimeOption}
@@ -130,8 +128,6 @@ const TimePicker = ({ closeModal, selectedTime, onTimeSelect }: Props) => {
         showsHorizontalScrollIndicator={false}
         style={{}}
         contentContainerStyle={{
-          paddingTop: 14,
-          paddingHorizontal: 14,
           paddingBottom: insets.bottom + 80,
         }}
         ItemSeparatorComponent={() => (
@@ -142,23 +138,6 @@ const TimePicker = ({ closeModal, selectedTime, onTimeSelect }: Props) => {
           />
         )}
       />
-      <View
-        style={{
-          position: 'absolute',
-          paddingBottom: insets.bottom,
-          bottom: 0,
-          width: '100%',
-          paddingHorizontal: 14,
-          backgroundColor: '#fff',
-          paddingTop: 12,
-        }}
-      >
-        <ConfrimTimeButton
-          text="Confirm Time"
-          disabled={!selectedTime}
-          onPress={closeModal}
-        />
-      </View>
     </>
   );
 };

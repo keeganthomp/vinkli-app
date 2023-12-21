@@ -127,7 +127,7 @@ export default function Signup() {
         control={control}
         autoCapitalize="none"
         textContentType="oneTimeCode"
-        keyboardType="email-address"
+        inputMode="email"
         placeholder="jane@email.com"
         name="email"
         label="Email"

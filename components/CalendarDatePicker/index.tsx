@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import DayGrid from './DayGrid';
 import MonthBar from './MonthBar';
+import Button from '@components/Button';
 
 type Props = {
   onDateSelect?: (date: Date) => void;
@@ -35,7 +36,7 @@ const CalendarPicker = ({
   };
 
   return (
-    <>
+    <View>
       <MonthBar
         hideMonthNav={hideMonthNav}
         currentMonth={currentMonth}
@@ -49,7 +50,7 @@ const CalendarPicker = ({
         onDateSelect={onDateSelect}
         selectedDates={selectedDates}
       />
-    </>
+    </View>
   );
 };
 

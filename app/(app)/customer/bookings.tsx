@@ -89,7 +89,7 @@ export default function CustomerBookings() {
         <CustomerHeader title="Bookings" />
         <Text
           style={{
-            color: theme.error,
+            color: theme.red,
           }}
         >
           Error fetching bookings

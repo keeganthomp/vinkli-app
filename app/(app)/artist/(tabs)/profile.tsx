@@ -153,6 +153,9 @@ export default function ArtistProfile() {
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: 12,
+        }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }

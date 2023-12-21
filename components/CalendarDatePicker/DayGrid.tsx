@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
+import { useMemo } from 'react';
 
 type DayProps = {
   date?: number;
@@ -12,6 +13,10 @@ type DayGridProps = {
   onDateSelect?: (date: Date) => void;
   selectedDates?: Date | Date[];
 };
+
+const DAYS_IN_WEEK = 7;
+const MAX_ROWS = 6;
+const MAX_DAYS_ARR = Array.from(Array(DAYS_IN_WEEK * MAX_ROWS).keys());
 
 // utils
 const getDaysInMonth = (month: number, year: number): number => {
@@ -95,30 +100,37 @@ const DayGrid = ({
     }
   };
 
-  let days: JSX.Element[] = [];
+  const days = useMemo(() => {
+    let tempDays: JSX.Element[] = [];
 
-  // Fill in the blanks for days before the first day of the month
-  for (let i = 0; i < firstDay; i++) {
-    days.push(<CalendarDay key={`empty-${i}`} />);
-  }
+    // Fill in the blanks for days before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+      tempDays.push(<CalendarDay key={`empty-${i}`} />);
+    }
 
-  // Fill in the actual days of the month
-  for (let date = 1; date <= totalDays; date++) {
-    days.push(
-      <CalendarDay
-        key={date}
-        date={date}
-        isSelected={checkIfDateIsSelected(date)}
-        onPress={handleDateSelected}
-      />,
-    );
-  }
+    // Fill in the actual days of the month
+    for (let date = 1; date <= totalDays; date++) {
+      tempDays.push(
+        <CalendarDay
+          key={date}
+          date={date}
+          isSelected={checkIfDateIsSelected(date)}
+          onPress={handleDateSelected}
+        />,
+      );
+    }
+
+    return tempDays;
+  }, [totalDays, firstDay, checkIfDateIsSelected, handleDateSelected]);
 
   return (
     <View
       style={{
+        // display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
+        flex: 1,
+        // height: 300,
       }}
     >
       {days}

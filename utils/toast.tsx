@@ -1,5 +1,6 @@
 // App.jsx
 import Toast, { SuccessToast, ErrorToast, ToastConfig } from 'react-native-toast-message';
+import theme from '@theme';
 
 /*
   1. Create the config
@@ -12,7 +13,8 @@ export const toastConfig: ToastConfig = {
   success: (props: any) => (
     <SuccessToast
       {...props}
-      contentContainerStyle={{ width: '100%', paddingHorizontal: 10 }}
+      style={{ borderLeftColor: theme.green }}
+      contentContainerStyle={{ width: '100%', paddingHorizontal: 10, borderColor: '#333' }}
       text1Style={{
         fontSize: 15,
         fontWeight: 'bold',
@@ -32,6 +34,7 @@ export const toastConfig: ToastConfig = {
   error: (props: any) => (
     <ErrorToast
       {...props}
+      style={{ borderLeftColor: theme.red }}
       contentContainerStyle={{ width: '100%', paddingHorizontal: 10 }}
       text1Style={{
         fontSize: 15,

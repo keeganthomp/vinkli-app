@@ -3,7 +3,6 @@
     "name": "vinkli",
     "slug": "vinkli",
     "version": "1.0.0",
-    "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -17,7 +16,8 @@
     ],
     "ios": {
       "bundleIdentifier": "com.vinkli.app",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "requireFullScreen": true
     },
     "android": {
       "adaptiveIcon": {
@@ -31,11 +31,19 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "asyncRoutes": {
+            "web": false,
+            "default": false
+          }
+        }
+      ],
       [
         "expo-image-picker",
         {
@@ -56,15 +64,13 @@
         {
           "merchantIdentifier": "merchant.com.vinkli.app"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "router": {
-        "origin": false
-      },
       "eas": {
         "projectId": "aeff1ee4-bc69-46fb-bce2-de2761ceec8e"
       }

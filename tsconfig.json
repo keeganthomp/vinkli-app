@@ -13,6 +13,7 @@
       "@utils/*": ["utils/*"],
       "@const/*": ["const/*"],
       "@hooks/*": ["hooks/*"],
+      "@web/*": ["@web/*"],
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],

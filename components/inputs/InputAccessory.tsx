@@ -5,14 +5,18 @@ import {
   InputAccessoryView,
   Pressable,
   Keyboard,
+  Platform,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
+
+const isWeb = Platform.OS === 'web';
 
 type Props = {
   id: string;
 };
 
 const InputAccessory = ({ id }: Props) => {
+  if (isWeb) return <></>;
   return (
     <InputAccessoryView nativeID={id}>
       <BlurView

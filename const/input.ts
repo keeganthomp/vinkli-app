@@ -1,5 +1,7 @@
-import { TextInputProps } from 'react-native';
+import { TextInputProps, Platform } from 'react-native';
 import { TattooColor, TattooStyle } from '@graphql/types';
+
+const isWeb = Platform.OS === 'web';
 
 export const defaultTextInputStyle: TextInputProps['style'] = {
   fontSize: 16,
@@ -7,6 +9,9 @@ export const defaultTextInputStyle: TextInputProps['style'] = {
   fontWeight: '300',
   color: '#333',
 };
+if (isWeb) {
+  // defaultTextInputStyle.outline = 'none';
+}
 
 export const textInputPlaceholderTextColor = '#999999';
 

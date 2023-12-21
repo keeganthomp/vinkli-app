@@ -1,6 +1,8 @@
 import { Link, Stack } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Platform } from 'react-native';
 import { useNavigation } from 'expo-router';
+
+const isWeb = Platform.OS === 'web';
 
 export default function NotFoundScreen() {
   const g = useNavigation();
@@ -9,7 +11,9 @@ export default function NotFoundScreen() {
     <>
       <Stack.Screen options={{ title: 'Oops!' }} />
       <View style={styles.container}>
-        <Text style={styles.title}>This screen doesn't exist.</Text>
+        <Text style={styles.title}>
+          This {isWeb ? 'page' : 'screen'} doesn't exist.
+        </Text>
 
         <Link href="/" style={styles.link}>
           <Text style={styles.linkText}>Go back</Text>

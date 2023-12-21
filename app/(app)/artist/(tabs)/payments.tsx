@@ -27,7 +27,6 @@ export default function ArtistPayments() {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('yeee');
       refetch();
     }, []),
   );
@@ -51,7 +50,7 @@ export default function ArtistPayments() {
 
   const payments = paymentsData?.getPayments || [];
 
-  if (loadingPayments) {
+  if (!paymentsData && loadingPayments) {
     return (
       <View
         style={{

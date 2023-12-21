@@ -1,4 +1,3 @@
-import 'react-native-url-polyfill/auto';
 import React, { useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@lib/supabase';
@@ -34,7 +33,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
         const existingSession = data?.session;
         if (existingSession) {
           setSession(existingSession);
-          router.replace('/');
         }
         setIsLoading(false);
       })

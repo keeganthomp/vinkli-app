@@ -2,9 +2,11 @@ import { useSession } from '@context/auth';
 import { GET_USER } from '@graphql/queries/user';
 import { useQuery } from '@apollo/client';
 import { GetUserQuery } from '@graphql/types';
-import { router } from 'expo-router';
+import { router, Slot, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import ErrorCard from '@components/Error';
+import { useRootNavigationState } from 'expo-router';
+import { Text } from 'react-native';
 
 /**
  * This entry point is used to initialize the app
@@ -14,6 +16,7 @@ import ErrorCard from '@components/Error';
  */
 
 export default function AppInit() {
+  const route = useRootNavigationState();
   const { session } = useSession();
   const { data: userData, error: errorFetchingUser } = useQuery<GetUserQuery>(
     GET_USER,
@@ -31,7 +34,7 @@ export default function AppInit() {
       if (!currentUser) return;
       switch (currentUser.userType) {
         case 'ARTIST':
-          router.replace('/artist/bookings');
+          router.push('/artist/bookings');
           break;
         case 'CUSTOMER':
           router.replace('/customer/bookings');
@@ -51,5 +54,5 @@ export default function AppInit() {
     return <ErrorCard message="Error fetching user" />;
   }
 
-  return null;
+  return null
 }

@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 import moment from 'moment';
 import { Entypo } from '@expo/vector-icons';
 import theme from '@theme';
@@ -20,7 +20,7 @@ const MonthNavIcon = ({
   onPress: () => void;
   children: React.ReactNode;
 }) => (
-  <TouchableOpacity
+  <Pressable
     style={{
       backgroundColor: theme.accentGray + '70',
       display: 'flex',
@@ -33,7 +33,7 @@ const MonthNavIcon = ({
     onPress={onPress}
   >
     {children}
-  </TouchableOpacity>
+  </Pressable>
 );
 
 // util to format month and year

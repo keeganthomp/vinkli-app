@@ -109,7 +109,7 @@ const ErrorCard = ({
           >
             <Text
               style={{
-                color: theme.error,
+                color: theme.red,
                 fontSize: 13,
               }}
             >

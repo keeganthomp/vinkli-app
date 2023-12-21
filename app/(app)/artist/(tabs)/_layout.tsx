@@ -1,16 +1,23 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import theme from '@theme';
 import { useStripeTerminal } from '@stripe/stripe-terminal-react-native';
 import { useEffect } from 'react';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { Platform } from 'react-native';
+import { SheetProvider } from 'react-native-actions-sheet';
+
+const isWeb = Platform.OS === 'web';
 
 type Route = {
   name: string;
 };
 
-export default function TabLayout() {
+const IosTabLayout = () => {
   const insets = useSafeAreaInsets();
+
+  if (isWeb) {
+    return null;
+  }
   const { initialize: initializeStripeTerm } = useStripeTerminal();
 
   useEffect(() => {
@@ -24,47 +31,67 @@ export default function TabLayout() {
   }, []);
 
   return (
-    <BottomSheetModalProvider>
-    <Tabs
-      sceneContainerStyle={{
-        backgroundColor: theme.appBackground,
-        paddingHorizontal: 14,
-      }}
-      screenOptions={({ route }: { route: Route }) => {
-        const shouldHideTabBar = route.name.startsWith('booking/');
-        return {
-          tabBarActiveTintColor: '#333',
-          tabBarInactiveTintColor: '#c6c6c6',
-          tabBarStyle: {
-            paddingTop: 4,
-            paddingBottom: insets.bottom,
-            transform: shouldHideTabBar ? [{ translateY: 100 }] : [],
-            borderTopWidth: 0,
-          },
-          header: () => null,
-        };
+    <SheetProvider>
+      <Tabs
+        sceneContainerStyle={{
+          backgroundColor: theme.appBackground,
+          paddingHorizontal: 14,
+        }}
+        screenOptions={({ route }: { route: Route }) => {
+          const shouldHideTabBar = route.name.startsWith('booking/');
+          return {
+            tabBarActiveTintColor: '#333',
+            tabBarInactiveTintColor: '#c6c6c6',
+            tabBarStyle: {
+              paddingTop: isWeb ? 20 : 4,
+              paddingBottom: isWeb ? insets.bottom + 30 : insets.bottom,
+              transform: shouldHideTabBar ? [{ translateY: 100 }] : [],
+              borderTopWidth: 0,
+            },
+            header: () => null,
+          };
+        }}
+      >
+        <Tabs.Screen
+          name="bookings"
+          options={{
+            tabBarLabel: 'Bookings',
+          }}
+        />
+        <Tabs.Screen
+          name="payments"
+          options={{
+            tabBarLabel: 'Payments',
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            tabBarLabel: 'Profile',
+            lazy: false,
+          }}
+        />
+      </Tabs>
+    </SheetProvider>
+  );
+};
+
+const WebNavLayout = () => {
+  return (
+    <Stack
+      screenOptions={{
+        header: () => null,
       }}
     >
-      <Tabs.Screen
-        name="bookings"
-        options={{
-          tabBarLabel: 'Bookings',
-        }}
-      />
-      <Tabs.Screen
-        name="payments"
-        options={{
-          tabBarLabel: 'Payments',
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          tabBarLabel: 'Profile',
-          lazy: false,
-        }}
-      />
-    </Tabs>
-    </BottomSheetModalProvider>
+      <Stack.Screen name="bookings" />
+      <Stack.Screen name="payments" />
+      <Stack.Screen name="profile" />
+    </Stack>
   );
-}
+};
+
+const NavLayout = () => {
+  return isWeb ? <WebNavLayout /> : <IosTabLayout />;
+};
+
+export default NavLayout;

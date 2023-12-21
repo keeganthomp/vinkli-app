@@ -95,7 +95,7 @@ export default function Login() {
         name="email"
         textContentType="oneTimeCode"
         autoCapitalize="none"
-        keyboardType="email-address"
+        inputMode="email"
         control={control}
         label="Email"
         placeholder="jane@email.com"

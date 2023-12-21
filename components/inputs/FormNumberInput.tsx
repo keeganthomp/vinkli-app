@@ -72,11 +72,11 @@ function FormNumberInput<TFieldValues extends FieldValues>({
         inputAccessoryViewID={inputAccessoryViewID}
         value={value}
         onChangeText={handleChange}
-        keyboardType="numeric"
+        inputMode="numeric"
         placeholder={placeholder || 'Enter number'}
         style={defaultTextInputStyle}
         placeholderTextColor={textInputPlaceholderTextColor}
-        returnKeyType="done"
+        enterKeyHint="done"
         {...textInputProps}
       />
       <InputAccessory id={inputAccessoryViewID} />

@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
 import { useStripeTerminal } from '@stripe/stripe-terminal-react-native';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
+
+const isIos = Platform.OS === 'ios';
 
 export default function CardReader() {
+  if (!isIos) return null;
   const {
     discoverReaders,
     discoveredReaders,
     loading: isFetchingReaders,
   } = useStripeTerminal({
     onUpdateDiscoveredReaders: (readers) => {
-      console.log('Discovered readers111', readers);
       // The `readers` variable will contain an array of all the discovered readers.
     },
   });

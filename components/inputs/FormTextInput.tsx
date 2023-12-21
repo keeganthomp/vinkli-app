@@ -6,6 +6,7 @@ import {
   Text,
   ViewStyle,
   TextStyle,
+  Platform
 } from 'react-native';
 import {
   Control,
@@ -78,9 +79,9 @@ function FormTextInput<TFieldValues extends FieldValues>({
         style={defaultTextInputStyle}
         {...textInputProps}
         placeholderTextColor={textInputPlaceholderTextColor}
-        returnKeyType={textInputProps.multiline ? 'default' : 'done'}
+        enterKeyHint={textInputProps.multiline ? 'enter' : 'done'}
       />
-      {error && <Text style={{ color: theme.error }}>{error.message}</Text>}
+      {error && <Text style={{ color: theme.red }}>{error.message}</Text>}
       {/* Bar above keyboard */}
       <InputAccessory id={inputAccessoryViewID} />
     </View>

@@ -1,7 +1,13 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, ViewStyle, TextStyle } from 'react-native';
 
-const Tag = ({ text }: { text: string }) => {
+type Props = {
+  text: string;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+};
+
+const Tag = ({ text, style = {}, textStyle = {} }: Props) => {
   return (
     <View
       style={{
@@ -10,15 +16,18 @@ const Tag = ({ text }: { text: string }) => {
         alignItems: 'center',
         borderRadius: 4,
         borderWidth: 1,
+        borderColor: '#333',
         paddingVertical: 2,
         paddingHorizontal: 8,
-        alignSelf: 'flex-start',
+        ...style,
       }}
     >
       <Text
         style={{
           textAlign: 'center',
           fontSize: 11,
+          color: '#333',
+          ...textStyle,
         }}
       >
         {text}

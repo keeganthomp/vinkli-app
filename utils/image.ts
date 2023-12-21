@@ -37,7 +37,6 @@ export const uploadImages = async <
     image: ImagePickerAsset,
   ): Promise<string> => {
     const { path, extension: imageExtension } = generatePathName(image);
-    console.log('path', path)
     const { data, error } = await supabase.storage
       .from(storageBucket)
       .upload(path, decode(image.base64 as string), {
