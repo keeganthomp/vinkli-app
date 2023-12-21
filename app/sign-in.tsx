@@ -7,6 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Toast from 'react-native-toast-message';
 import FormTextInput from '@components/inputs/FormTextInput';
 import { useForm } from 'react-hook-form';
+import { EMAIL_REGEX } from '@utils/regex';
 
 type LoginForm = {
   email: string;
@@ -102,7 +103,7 @@ export default function Login() {
         rules={{
           required: 'Email is required',
           pattern: {
-            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            value: EMAIL_REGEX,
             message: 'Please enter valid email',
           },
         }}

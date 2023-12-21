@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import FormTextInput from '@components/inputs/FormTextInput';
 import Toast from 'react-native-toast-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { EMAIL_REGEX, FULL_NAME_REGEX } from '@utils/regex';
 
 type SignUpForm = {
   email: string;
@@ -115,7 +116,7 @@ export default function Signup() {
         rules={{
           required: 'Name is required',
           pattern: {
-            value: /^[A-Za-z]+(-[A-Za-z]+)? [A-Za-z]+(-[A-Za-z]+)?$/,
+            value: FULL_NAME_REGEX,
             message: 'Please enter your first and last name',
           },
         }}
@@ -134,7 +135,7 @@ export default function Signup() {
         rules={{
           required: 'Email is required',
           pattern: {
-            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            value: EMAIL_REGEX,
             message: 'Please enter valid email',
           },
         }}

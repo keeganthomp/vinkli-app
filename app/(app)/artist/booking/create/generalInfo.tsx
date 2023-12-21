@@ -10,7 +10,7 @@ import { bookingTypeMap } from '@const/maps';
 import { SheetManager } from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
 import { BookingType } from '@graphql/types';
-import WebDropdown from '@components/inputs/WebDropdown';
+import WebSelect from '@components/inputs/WebSelect';
 import { PickerOption } from '@components/sheets/PickerSheet';
 
 const bookingTypeOptions: PickerOption<string>[] = Object.entries(
@@ -74,12 +74,12 @@ const ArtistBookingGeneral = () => {
           }}
         />
         {isWeb ? (
-          <WebDropdown
+          <WebSelect
             buttonLabel="select type"
             label="Appointment Type"
             options={bookingTypeOptions}
-            value={bookingType}
-            onSelect={val => setValue('type', val as BookingType)}
+            control={control}
+            onSelect={(val) => setValue('type', val as BookingType)}
           />
         ) : (
           <FormModalInput

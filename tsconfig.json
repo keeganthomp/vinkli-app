@@ -4,6 +4,7 @@
     "strict": true,
     "baseUrl": "./",
     "paths": {
+      "@web/*": ["@web/*"],
       "@components/*": ["components/*"],
       "@lib/*": ["lib/*"],
       "@assets/*": ["assets/*"],
@@ -13,7 +14,7 @@
       "@utils/*": ["utils/*"],
       "@const/*": ["const/*"],
       "@hooks/*": ["hooks/*"],
-      "@web/*": ["@web/*"],
+      "@types/*": ["types/*"],
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],

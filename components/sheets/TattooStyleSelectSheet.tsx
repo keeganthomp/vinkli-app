@@ -1,10 +1,6 @@
-import PickerSheet, { PickerSheetProps, PickerOption } from './PickerSheet';
+import PickerSheet, { PickerSheetProps } from './PickerSheet';
 import sheetIds from '@const/sheets';
-import { tattooStyleMap } from '@const/maps';
-
-const tattooStyleOptions: PickerOption<string>[] = Object.entries(
-  tattooStyleMap,
-).map(([key, value]) => ({ label: value, value: key }));
+import { tattooStyleOptions } from '@const/input';
 
 const TattooStyleSelectSheet = (
   props: Omit<PickerSheetProps<string>, 'options' | 'sheetId'>,

@@ -76,7 +76,7 @@ export default function RootLayout() {
                 backgroundColor: '#fff',
                 width: getWidth(),
                 alignSelf: 'center',
-                paddingTop: isWeb ? 25 : 0,
+                paddingTop: isWeb ? 16 : 0,
                 paddingHorizontal: isWeb ? 0 : 12,
               }}
             >

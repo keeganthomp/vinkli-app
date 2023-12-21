@@ -12,16 +12,10 @@ import { router } from 'expo-router';
 import { SheetManager } from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
 import { TattooColor, TattooStyle } from '@graphql/types';
-import WebDropdown from '@components/inputs/WebDropdown';
+import WebSelect from '@components/inputs/WebSelect';
+import { tattooColorOptions, tattooStyleOptions } from '@const/input';
 
 const isWeb = Platform.OS === 'web';
-
-const tattooColorOptions = Object.entries(tattooColorMap).map(
-  ([key, value]) => ({ label: value, value: key }),
-);
-const tattooStyleOptions = Object.entries(tattooStyleMap).map(
-  ([key, value]) => ({ label: value, value: key }),
-);
 
 export default function ArtistBookingTattooInfo() {
   const { control, watch, setValue } =
@@ -115,7 +109,7 @@ export default function ArtistBookingTattooInfo() {
             }}
           />
           {isWeb ? (
-            <WebDropdown
+            <WebSelect
               buttonLabel="color or black/grey"
               label="Color/Black/Grey"
               options={tattooColorOptions}
@@ -134,7 +128,7 @@ export default function ArtistBookingTattooInfo() {
             />
           )}
           {isWeb ? (
-            <WebDropdown
+            <WebSelect
               buttonLabel="tattoo style"
               label="Tattoo Style"
               options={tattooStyleOptions}

@@ -1,62 +1,31 @@
-import { TextInputProps, Platform } from 'react-native';
-import { TattooColor, TattooStyle } from '@graphql/types';
+import { TextInputProps } from 'react-native';
+import { tattooColorMap, tattooStyleMap } from './maps';
+import theme from '@theme';
 
-const isWeb = Platform.OS === 'web';
+export const DEFAULT_INPUT_LINE_HEIGHT = 20;
 
-export const defaultTextInputStyle: TextInputProps['style'] = {
+export const DEFAULT_INPUT_HEIGHT = 30;
+
+export const textInputPlaceholderTextColor = '#999999';
+
+export const defaultTextInputStyle: TextInputProps['style'] & {
+  outline: string;
+} = {
   fontSize: 16,
   paddingTop: 0,
   fontWeight: '300',
   color: '#333',
+  outline: 'none',
+  borderColor: theme.accentGray,
+  lineHeight: DEFAULT_INPUT_LINE_HEIGHT,
 };
-if (isWeb) {
-  // defaultTextInputStyle.outline = 'none';
-}
 
-export const textInputPlaceholderTextColor = '#999999';
-
-export const tattooColorOptions: any[] = [
-  {
-    label: 'Black & Grey',
-    value: TattooColor.BlackAndGrey,
-  },
-  {
-    label: 'Color',
-    value: TattooColor.Color,
-  },
-];
-
-export const tattooStyleOptions: any[] = [
-  {
-    label: 'Blackwork',
-    value: TattooStyle.Blackwork,
-  },
-  {
-    label: 'Traditional American',
-    value: TattooStyle.TraditionalAmerican,
-  },
-  {
-    label: 'Japanese Irezumi',
-    value: TattooStyle.JapaneseIrezumi,
-  },
-  {
-    label: 'Realism',
-    value: TattooStyle.Realism,
-  },
-  {
-    label: 'Watercolor',
-    value: TattooStyle.Watercolor,
-  },
-  {
-    label: 'Tribal',
-    value: TattooStyle.Tribal,
-  },
-  {
-    label: 'New School',
-    value: TattooStyle.NewSchool,
-  },
-  {
-    label: 'Dotwork',
-    value: TattooStyle.Dotwork,
-  },
-];
+/**
+ * input options for dropdowns/selects/etc.
+ */
+export const tattooColorOptions = Object.entries(tattooColorMap).map(
+  ([key, value]) => ({ label: value, value: key }),
+);
+export const tattooStyleOptions = Object.entries(tattooStyleMap).map(
+  ([key, value]) => ({ label: value, value: key }),
+);
