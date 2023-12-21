@@ -75,11 +75,11 @@ const ArtistBookingGeneral = () => {
         />
         {isWeb ? (
           <WebSelect
-            buttonLabel="select type"
             label="Appointment Type"
+            buttonLabel="select type"
             options={bookingTypeOptions}
+            name="type"
             control={control}
-            onSelect={(val) => setValue('type', val as BookingType)}
           />
         ) : (
           <FormModalInput

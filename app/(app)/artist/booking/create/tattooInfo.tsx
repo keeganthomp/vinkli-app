@@ -110,11 +110,11 @@ export default function ArtistBookingTattooInfo() {
           />
           {isWeb ? (
             <WebSelect
-              buttonLabel="color or black/grey"
-              label="Color/Black/Grey"
+              label="Color or Black & Gray"
+              buttonLabel="select color"
               options={tattooColorOptions}
-              value={tattooColor}
-              onSelect={(val) => setValue('tattoo.color', val as TattooColor)}
+              control={control}
+              name="tattoo.color"
             />
           ) : (
             <FormModalInput
@@ -129,11 +129,11 @@ export default function ArtistBookingTattooInfo() {
           )}
           {isWeb ? (
             <WebSelect
-              buttonLabel="tattoo style"
               label="Tattoo Style"
+              buttonLabel="select style"
               options={tattooStyleOptions}
-              value={tattooStyle}
-              onSelect={(val) => setValue('tattoo.style', val as TattooStyle)}
+              control={control}
+              name="tattoo.style"
             />
           ) : (
             <FormModalInput
