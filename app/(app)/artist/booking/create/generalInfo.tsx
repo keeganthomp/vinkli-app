@@ -10,7 +10,7 @@ import { bookingTypeMap } from '@const/maps';
 import { SheetManager } from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
 import { BookingType } from '@graphql/types';
-import WebSelect from '@components/inputs/WebSelect';
+import WebSelect from '@web/components/WebSelect';
 import { PickerOption } from '@components/sheets/PickerSheet';
 
 const bookingTypeOptions: PickerOption<string>[] = Object.entries(

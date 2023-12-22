@@ -13,8 +13,11 @@ import {
   RegisterOptions,
 } from 'react-hook-form';
 import { View, ViewStyle, TextStyle } from 'react-native';
-import Label from './InputLabel';
-import { DEFAULT_INPUT_HEIGHT, textInputPlaceholderTextColor } from '@const/input';
+import Label from '../../components/inputs/InputLabel';
+import {
+  DEFAULT_INPUT_HEIGHT,
+  textInputPlaceholderTextColor,
+} from '@const/input';
 
 type SelectOption = {
   label: string;

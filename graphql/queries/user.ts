@@ -18,3 +18,12 @@ export const GET_ARTIST = gql`
     }
   }
 `;
+
+export const GET_PUBLIC_ARTIST_PROFILE = gql`
+  ${ARTIST_FRAGMENT}
+  query publicArtistProfile($artistId: ID!) {
+    publicArtistProfile(artistId: $artistId) {
+      ...ArtistFragment
+    }
+  }
+`;

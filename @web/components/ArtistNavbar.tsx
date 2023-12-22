@@ -1,7 +1,61 @@
 import { Link, Navigator } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
+import { Button } from './ui/button';
 
 import { cn } from '../utils';
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@web/components/ui/dialog';
+import { Text, View } from 'react-native';
+import { supabase } from '@lib/supabase';
+import { useSession } from '@context/auth';
+import apolloClient from '@lib/apolloClient';
+import { router } from 'expo-router';
+import { useRef } from 'react';
+
+export function LogoutButton() {
+  const { setSession } = useSession();
+
+  const logout = () => {
+    supabase.auth.signOut();
+    setSession(null);
+    apolloClient.clearStore();
+    router.replace('/sign-in');
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <AntDesign name="logout" size={18} color="#68748B" />
+      </DialogTrigger>
+      {/* Logout modal */}
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Log out</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to log out?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogClose asChild>
+          <Button onClick={logout} variant="destructive">
+            Log out
+          </Button>
+        </DialogClose>
+        <DialogClose asChild>
+          <Button variant="secondary">Cancel</Button>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function Navbar({
   className,
@@ -17,7 +71,7 @@ export function Navbar({
       )}
       {...props}
     >
-      <div className='flex items-center space-x-4 lg:space-x-6'>
+      <div className="flex items-center space-x-4 lg:space-x-6">
         <Link
           href="/artist/bookings"
           className={cn(
@@ -47,7 +101,7 @@ export function Navbar({
         </Link>
       </div>
       <div className="justify-self-end cursor-pointer">
-        <AntDesign name="logout" size={18} color="#68748B" />
+        <LogoutButton />
       </div>
     </nav>
   );

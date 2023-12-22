@@ -9,9 +9,11 @@ import { EvilIcons } from '@expo/vector-icons';
 type Props = {
   message?: string;
   onRefresh?: () => void;
+  hasLogout?: boolean;
 };
 
 const ErrorCard = ({
+  hasLogout = true,
   message = 'Please try again later',
   onRefresh,
 }: Props) => {
@@ -57,19 +59,11 @@ const ErrorCard = ({
         <Text
           style={{
             paddingTop: 5,
-            fontSize: 15
+            fontSize: 15,
           }}
         >
           {message}
         </Text>
-        <View
-          style={{
-            height: 1,
-            backgroundColor: theme.lightGray,
-            width: 50,
-            marginVertical: 14,
-          }}
-        />
         <View
           style={{
             display: 'flex',
@@ -77,7 +71,7 @@ const ErrorCard = ({
             alignItems: 'center',
           }}
         >
-          {onRefresh && (
+          {!!onRefresh && (
             <Pressable
               style={{
                 display: 'flex',
@@ -85,37 +79,39 @@ const ErrorCard = ({
                 justifyContent: 'center',
                 alignItems: 'center',
                 paddingHorizontal: 10,
-                paddingVertical: 5,
+                paddingTop: 10,
                 marginBottom: 4,
+              }}
+              onPress={() => onRefresh()}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: '300',
+                }}
+              >
+                Try again
+              </Text>
+              <EvilIcons name="refresh" size={20} />
+            </Pressable>
+          )}
+          {hasLogout && (
+            <Pressable
+              style={{
+                padding: 5,
               }}
               onPress={logout}
             >
               <Text
                 style={{
-                  fontSize: 16,
-                  fontWeight: '500',
+                  color: theme.red,
+                  fontSize: 13,
                 }}
               >
-                Refresh
+                Logout
               </Text>
-              <EvilIcons name="refresh" size={22} />
             </Pressable>
           )}
-          <Pressable
-            style={{
-              padding: 5,
-            }}
-            onPress={logout}
-          >
-            <Text
-              style={{
-                color: theme.red,
-                fontSize: 13,
-              }}
-            >
-              Logout
-            </Text>
-          </Pressable>
         </View>
       </View>
     </View>

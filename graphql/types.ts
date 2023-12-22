@@ -153,9 +153,16 @@ export type Charge = {
   paymentType?: Maybe<PaymentType>;
 };
 
+export type CustomerBookingResponse = {
+  __typename?: 'CustomerBookingResponse';
+  booking: Booking;
+  customerInfo: CustomerInfo;
+};
+
 export type CustomerCreateBookingInput = {
   artistId: Scalars['ID']['input'];
   customerEmail: Scalars['String']['input'];
+  name: Scalars['String']['input'];
   tattoo: TattooForBookingInput;
   title?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<BookingType>;
@@ -171,11 +178,18 @@ export type CustomerCreateTattooInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CustomerInfo = {
+  __typename?: 'CustomerInfo';
+  alreadyInvited: Scalars['Boolean']['output'];
+  isInvited: Scalars['Boolean']['output'];
+  verified: Scalars['Boolean']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   artistCreateBooking: Booking;
   artistUpdateBookingStatus: Booking;
-  customerCreateBooking: Booking;
+  customerCreateBooking: CustomerBookingResponse;
   customerCreateTattoo: Tattoo;
   deleteBooking?: Maybe<Booking>;
   generateStripeConnectOnboardingLink: Scalars['String']['output'];
@@ -283,6 +297,7 @@ export type Query = {
   customerTattoos: Array<Tattoo>;
   getPaymentLink: Scalars['String']['output'];
   getPayments: Array<Payment>;
+  publicArtistProfile: Artist;
   stripeTerminalConnectionToken: Scalars['String']['output'];
   user: User;
   users: Array<Maybe<User>>;
@@ -311,6 +326,11 @@ export type QueryCustomerBookingsArgs = {
 
 export type QueryGetPaymentLinkArgs = {
   bookingId: Scalars['ID']['input'];
+};
+
+
+export type QueryPublicArtistProfileArgs = {
+  artistId: Scalars['ID']['input'];
 };
 
 export type Refund = {
@@ -424,7 +444,7 @@ export type CustomerCreateBookingMutationVariables = Exact<{
 }>;
 
 
-export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean } };
+export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'CustomerBookingResponse', booking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }, customerInfo: { __typename?: 'CustomerInfo', verified: boolean, alreadyInvited: boolean, isInvited: boolean } } };
 
 export type ArtistCreateBookingMutationVariables = Exact<{
   input: ArtistCreateBookingInput;
@@ -519,6 +539,13 @@ export type ArtistQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ArtistQuery = { __typename?: 'Query', artist: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
+
+export type PublicArtistProfileQueryVariables = Exact<{
+  artistId: Scalars['ID']['input'];
+}>;
+
+
+export type PublicArtistProfileQuery = { __typename?: 'Query', publicArtistProfile: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
 
 export const BookingFragmentFragmentDoc = gql`
     fragment BookingFragment on Booking {
@@ -660,12 +687,26 @@ export const ArtistFragmentFragmentDoc = gql`
 }
     `;
 export const CustomerCreateBookingDocument = gql`
-    mutation CustomerCreateBooking($input: CustomerCreateBookingInput!) {
+    mutation customerCreateBooking($input: CustomerCreateBookingInput!) {
   customerCreateBooking(input: $input) {
-    ...BookingFragment
+    booking {
+      ...BookingFragment
+      customer {
+        ...UserFragment
+      }
+      artist {
+        ...UserFragment
+      }
+    }
+    customerInfo {
+      verified
+      alreadyInvited
+      isInvited
+    }
   }
 }
-    ${BookingFragmentFragmentDoc}`;
+    ${BookingFragmentFragmentDoc}
+${UserFragmentFragmentDoc}`;
 export type CustomerCreateBookingMutationFn = Apollo.MutationFunction<CustomerCreateBookingMutation, CustomerCreateBookingMutationVariables>;
 
 /**
@@ -693,7 +734,7 @@ export type CustomerCreateBookingMutationHookResult = ReturnType<typeof useCusto
 export type CustomerCreateBookingMutationResult = Apollo.MutationResult<CustomerCreateBookingMutation>;
 export type CustomerCreateBookingMutationOptions = Apollo.BaseMutationOptions<CustomerCreateBookingMutation, CustomerCreateBookingMutationVariables>;
 export const ArtistCreateBookingDocument = gql`
-    mutation ArtistCreateBooking($input: ArtistCreateBookingInput!) {
+    mutation artistCreateBooking($input: ArtistCreateBookingInput!) {
   artistCreateBooking(input: $input) {
     ...BookingFragment
   }
@@ -726,7 +767,7 @@ export type ArtistCreateBookingMutationHookResult = ReturnType<typeof useArtistC
 export type ArtistCreateBookingMutationResult = Apollo.MutationResult<ArtistCreateBookingMutation>;
 export type ArtistCreateBookingMutationOptions = Apollo.BaseMutationOptions<ArtistCreateBookingMutation, ArtistCreateBookingMutationVariables>;
 export const ArtistUpdateBookingStatusDocument = gql`
-    mutation ArtistUpdateBookingStatus($id: ID!, $status: BookingStatus!, $duration: Int) {
+    mutation artistUpdateBookingStatus($id: ID!, $status: BookingStatus!, $duration: Int) {
   artistUpdateBookingStatus(id: $id, status: $status, duration: $duration) {
     ...BookingFragment
   }
@@ -1338,3 +1379,43 @@ export type ArtistQueryHookResult = ReturnType<typeof useArtistQuery>;
 export type ArtistLazyQueryHookResult = ReturnType<typeof useArtistLazyQuery>;
 export type ArtistSuspenseQueryHookResult = ReturnType<typeof useArtistSuspenseQuery>;
 export type ArtistQueryResult = Apollo.QueryResult<ArtistQuery, ArtistQueryVariables>;
+export const PublicArtistProfileDocument = gql`
+    query publicArtistProfile($artistId: ID!) {
+  publicArtistProfile(artistId: $artistId) {
+    ...ArtistFragment
+  }
+}
+    ${ArtistFragmentFragmentDoc}`;
+
+/**
+ * __usePublicArtistProfileQuery__
+ *
+ * To run a query within a React component, call `usePublicArtistProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePublicArtistProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePublicArtistProfileQuery({
+ *   variables: {
+ *      artistId: // value for 'artistId'
+ *   },
+ * });
+ */
+export function usePublicArtistProfileQuery(baseOptions: Apollo.QueryHookOptions<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>(PublicArtistProfileDocument, options);
+      }
+export function usePublicArtistProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>(PublicArtistProfileDocument, options);
+        }
+export function usePublicArtistProfileSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>(PublicArtistProfileDocument, options);
+        }
+export type PublicArtistProfileQueryHookResult = ReturnType<typeof usePublicArtistProfileQuery>;
+export type PublicArtistProfileLazyQueryHookResult = ReturnType<typeof usePublicArtistProfileLazyQuery>;
+export type PublicArtistProfileSuspenseQueryHookResult = ReturnType<typeof usePublicArtistProfileSuspenseQuery>;
+export type PublicArtistProfileQueryResult = Apollo.QueryResult<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>;

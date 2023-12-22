@@ -12,7 +12,7 @@ import { router } from 'expo-router';
 import { SheetManager } from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
 import { TattooColor, TattooStyle } from '@graphql/types';
-import WebSelect from '@components/inputs/WebSelect';
+import WebSelect from '@web/components/WebSelect';
 import { tattooColorOptions, tattooStyleOptions } from '@const/input';
 
 const isWeb = Platform.OS === 'web';
