@@ -17,9 +17,9 @@ export const CREATE_CUSTOMER_BOOKING = gql`
         }
       }
       customerInfo {
-        verified
-        alreadyInvited
-        isInvited
+        isNewCustomer
+        isConfirmed
+        inviteSent
       }
     }
   }

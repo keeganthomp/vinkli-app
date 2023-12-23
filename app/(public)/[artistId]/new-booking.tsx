@@ -33,6 +33,7 @@ import { tattooColorOptions, tattooStyleOptions } from '@const/input';
 import { EvilIcons } from '@expo/vector-icons';
 import { EMAIL_REGEX, FULL_NAME_REGEX } from '@utils/regex';
 import { AntDesign } from '@expo/vector-icons';
+import useSyncFormWithStorage from '@hooks/useSyncFormWithStorage';
 
 export type PublicBookingFormValues = CustomerCreateBookingInput & {
   duration: number; // in hours
@@ -324,6 +325,8 @@ const TattooInfo = ({ onSubmit }: FormSection) => {
   );
 };
 
+const FORM_CACHE_KEY = 'public-booking-form';
+
 export default function PublicArtistBookingForm() {
   const { artistId } = useLocalSearchParams();
   const [successfullBooking, setSuccessfullBooking] = useState<Booking>();
@@ -335,30 +338,43 @@ export default function PublicArtistBookingForm() {
   );
   const form = useForm<PublicBookingFormValues>({
     defaultValues: {
-      artistId: artistId as string,
       customerEmail: '',
       name: '',
-      tattoo: {},
+      tattoo: {
+        description: '',
+        placement: '',
+        imagePaths: [],
+      },
     },
   });
-
   const {
     handleSubmit,
     reset,
     formState: { isSubmitting },
+    watch,
   } = form;
+  // sync form with storage - cache the form values
+  const { clearStorage, isInitialized } = useSyncFormWithStorage(
+    FORM_CACHE_KEY,
+    watch,
+    reset,
+  );
 
   const submitTattooForm = async (data: PublicBookingFormValues) => {
     try {
       const booking = await createBooking({
         variables: {
-          input: data,
+          input: {
+            ...data,
+            artistId,
+          },
         },
       });
       setSuccessfullBooking(booking.data?.customerCreateBooking?.booking);
       setCurrentFormStep(BookingFormStep.Success);
       // reset form values
       reset();
+      clearStorage();
     } catch (err: any) {
       Toast.show({
         type: 'error',
@@ -384,6 +400,8 @@ export default function PublicArtistBookingForm() {
         return null;
     }
   }, [currentFormStep]);
+
+  if (!isInitialized) return null;
 
   return (
     <FormProvider {...form}>

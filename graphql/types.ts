@@ -180,9 +180,9 @@ export type CustomerCreateTattooInput = {
 
 export type CustomerInfo = {
   __typename?: 'CustomerInfo';
-  alreadyInvited: Scalars['Boolean']['output'];
-  isInvited: Scalars['Boolean']['output'];
-  verified: Scalars['Boolean']['output'];
+  inviteSent: Scalars['Boolean']['output'];
+  isConfirmed: Scalars['Boolean']['output'];
+  isNewCustomer: Scalars['Boolean']['output'];
 };
 
 export type Mutation = {
@@ -444,7 +444,7 @@ export type CustomerCreateBookingMutationVariables = Exact<{
 }>;
 
 
-export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'CustomerBookingResponse', booking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }, customerInfo: { __typename?: 'CustomerInfo', verified: boolean, alreadyInvited: boolean, isInvited: boolean } } };
+export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'CustomerBookingResponse', booking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }, customerInfo: { __typename?: 'CustomerInfo', isNewCustomer: boolean, isConfirmed: boolean, inviteSent: boolean } } };
 
 export type ArtistCreateBookingMutationVariables = Exact<{
   input: ArtistCreateBookingInput;
@@ -699,9 +699,9 @@ export const CustomerCreateBookingDocument = gql`
       }
     }
     customerInfo {
-      verified
-      alreadyInvited
-      isInvited
+      isNewCustomer
+      isConfirmed
+      inviteSent
     }
   }
 }
