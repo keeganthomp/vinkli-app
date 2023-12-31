@@ -7,7 +7,6 @@ import ErrorCard from '@components/Error';
 import theme from '@theme';
 import { Ionicons } from '@expo/vector-icons';
 
-
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -66,6 +65,7 @@ const PublicLayout = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          backgroundColor: theme.appBackground,
         }}
       >
         <ActivityIndicator />
@@ -84,12 +84,16 @@ const PublicLayout = () => {
   }
 
   return (
-    <View>
+    <View
+      style={{
+        backgroundColor: theme.appBackground,
+        flex: 1,
+      }}
+    >
       <ArtistInfo artist={data?.publicArtistProfile as Artist} />
       <View
         style={{
           height: 1,
-          backgroundColor: theme.lightGray,
           width: '100%',
           marginVertical: 16,
         }}

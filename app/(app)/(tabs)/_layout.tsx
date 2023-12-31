@@ -20,11 +20,6 @@ type Route = {
   name: string;
 };
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: 'bookings',
-};
-
 const IosTabLayout = () => {
   const insets = useSafeAreaInsets();
 

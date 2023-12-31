@@ -37,7 +37,7 @@ export default function ArtistBookingAppointmentInfo() {
         const newBooking = data?.artistCreateBooking;
         cache.modify({
           fields: {
-            artistBookings(existingBookings = []) {
+            userBookings(existingBookings = []) {
               const newBookingRef = cache.writeFragment({
                 data: newBooking,
                 fragment: BOOKING_FRAGMENT,

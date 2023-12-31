@@ -6,12 +6,17 @@ import { useMemo } from 'react';
 import { Octicons } from '@expo/vector-icons';
 import { bookingTypeMap } from '@const/maps';
 import { AntDesign } from '@expo/vector-icons';
+import { useQuery } from '@apollo/client';
+import { FETCH_CURRENT_USER } from '@graphql/queries/user';
+import { GetUserQuery } from '@graphql/types';
 
 type Props = {
   booking: Booking;
 };
 
 export default function BookingHeader({ booking }: Props) {
+  // fetching this here to cache it as early as possible
+  const { data: userData } = useQuery<GetUserQuery>(FETCH_CURRENT_USER);
   const customer = booking.customer;
 
   const appointmentDate = useMemo(() => {
@@ -26,8 +31,12 @@ export default function BookingHeader({ booking }: Props) {
     return moment(bookingDateObj).format('LT');
   }, [booking?.startDate]);
 
+  if (!customer || !userData) return null;
 
-  if (!customer) return null;
+  const isArtist = userData.user?.userType === 'ARTIST';
+
+  const nameToShow = isArtist ? customer.name : booking?.artist?.name;
+
   return (
     <View
       style={{
@@ -105,7 +114,7 @@ export default function BookingHeader({ booking }: Props) {
             marginLeft: 7,
           }}
         >
-          {customer.name}
+          {nameToShow}
         </Text>
       </View>
     </View>

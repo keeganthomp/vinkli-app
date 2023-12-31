@@ -23,6 +23,7 @@ import {
 import WebSelect from '@web/components/WebSelect';
 import { TimeOption } from '@utils/time';
 import { CREATE_CUSTOMER_BOOKING } from '@graphql/mutations/booking';
+import { GET_USER_BOOKINGS } from '@graphql/queries/booking';
 import { useMutation } from '@apollo/client';
 import Button from '@components/Button';
 import NextButton from '@components/NextButton';
@@ -117,7 +118,8 @@ const PersonalInfo = ({ onSubmit }: FormSection) => {
   const [phone, name] = watch(['phone', 'name']);
 
   const isValidPhone = useMemo(() => {
-    const isPhoneValid = PHONE_REGEX.test(phone);
+    const fmtPhone = phone.replace(/\D/g, '');
+    const isPhoneValid = PHONE_REGEX.test(fmtPhone);
     return isPhoneValid;
   }, [phone]);
 
@@ -155,7 +157,17 @@ const PersonalInfo = ({ onSubmit }: FormSection) => {
           },
         }}
       />
-      <PhoneInput value={phone} onChange={(val) => setValue('phone', val)} />
+      <View
+        style={{
+          paddingBottom: INPUT_SPACING - (isWeb ? 10 : 0),
+        }}
+      >
+        <PhoneInput
+          label="Your Phone"
+          value={phone}
+          onChange={(val) => setValue('phone', val)}
+        />
+      </View>
       <View
         style={{
           paddingTop: 5,
@@ -281,6 +293,9 @@ export default function PublicArtistBookingForm() {
   );
   const [createBooking] = useMutation<CustomerCreateBookingMutation>(
     CREATE_CUSTOMER_BOOKING,
+    {
+      refetchQueries: [GET_USER_BOOKINGS],
+    },
   );
   const form = useForm<PublicBookingFormValues>({
     defaultValues: {
@@ -357,11 +372,7 @@ export default function PublicArtistBookingForm() {
 
   return (
     <FormProvider {...form}>
-      <View
-        style={{
-          flex: 1,
-        }}
-      >
+      <View>
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"

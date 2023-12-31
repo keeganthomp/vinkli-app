@@ -56,6 +56,7 @@ const IosLayout = () => {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="artist/[artistId]" />
         <Stack.Screen name="booking/create" />
         <Stack.Screen name="booking/[bookingId]/index" />
         <Stack.Screen
@@ -79,6 +80,7 @@ const WebLayout = () => {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="artist/[artistId]" />
         <Stack.Screen name="booking/create" />
         <Stack.Screen name="booking/[bookingId]/index" />
         <Stack.Screen name="booking/[bookingId]/collect-payment" />
@@ -130,8 +132,6 @@ const AppLayout = () => {
   const isOnboarded = userOnboardedData?.checkIfUserOnboarded;
 
   if (!isOnboarded) return <Redirect href="/register" />;
-
-  console.log('isWeb', isWeb)
 
   return isWeb ? <WebLayout /> : <IosLayout />;
 };

@@ -84,6 +84,9 @@ const ArtistBookingGeneral = () => {
             options={bookingTypeOptions}
             name="type"
             control={control}
+            containerStyle={{
+              paddingBottom: 20,
+            }}
           />
         ) : (
           <FormModalInput
