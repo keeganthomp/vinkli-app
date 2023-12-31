@@ -9,6 +9,7 @@ import { supabase } from '@lib/supabase';
 import { onError } from '@apollo/client/link/error';
 
 const graphqlEndpoint = process.env.EXPO_PUBLIC_GRAPHQL_ENDPOINT;
+console.log('endpoint', graphqlEndpoint)
 
 const httpLink = createHttpLink({
   uri: graphqlEndpoint,

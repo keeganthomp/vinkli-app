@@ -1,4 +1,10 @@
-import { View, Keyboard, Text, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Keyboard,
+  Text,
+  ActivityIndicator,
+  Platform,
+} from 'react-native';
 import { useFormContext } from 'react-hook-form';
 import { useCallback, useMemo, useState } from 'react';
 import moment from 'moment';
@@ -14,6 +20,9 @@ import Toast from 'react-native-toast-message';
 import { BOOKING_FRAGMENT } from '@graphql/fragments/booking';
 import { SheetManager } from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
+import { DatePicker as WebDatePicker } from '@web/components/DatePicker';
+
+const isWeb = Platform.OS === 'web';
 
 export default function ArtistBookingAppointmentInfo() {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -105,6 +114,7 @@ export default function ArtistBookingAppointmentInfo() {
       );
       const createFormInput = {
         ...bookingFormValues,
+        phone: bookingFormValues.phone.replace(/\D/g, ''),
         startDate: selectedStartDate ? startDateToSubmit : undefined,
         endDate: duration ? endDateToSubmit : undefined,
       };
@@ -114,7 +124,7 @@ export default function ArtistBookingAppointmentInfo() {
         },
       });
       const newBooking = newBookingData?.artistCreateBooking;
-      router.replace(`/artist/booking/${newBooking?.id}`);
+      router.replace(`/(app)/booking/${newBooking?.id}`);
       Toast.show({
         type: 'success',
         text1: 'Booking created',
@@ -164,15 +174,28 @@ export default function ArtistBookingAppointmentInfo() {
       >
         Date & Time
       </Text>
-      <FormModalInput
-        openPicker={() => openDatePicker()}
-        label="Date"
-        placeholder="Select date"
-        value={displayStartDate}
-        containerStyle={{
-          paddingBottom: SPACING,
-        }}
-      />
+      {isWeb ? (
+        <View
+          style={{
+            paddingBottom: SPACING,
+          }}
+        >
+          <WebDatePicker
+            date={selectedStartDate}
+            onDateSelect={(date) => setValue('startDate', date)}
+          />
+        </View>
+      ) : (
+        <FormModalInput
+          openPicker={() => openDatePicker()}
+          label="Date"
+          placeholder="Select date"
+          value={displayStartDate}
+          containerStyle={{
+            paddingBottom: SPACING,
+          }}
+        />
+      )}
       {selectedStartDate && (
         <FormModalInput
           openPicker={openTimePicker}

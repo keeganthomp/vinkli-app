@@ -1,159 +1,173 @@
-import React from 'react';
-import { Pressable, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import {
+  Pressable,
+  Text,
+  ActivityIndicator,
+  View,
+  Platform,
+} from 'react-native';
 import { supabase } from '@lib/supabase';
-import { useSession } from '@context/auth';
-import { router } from 'expo-router';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-toast-message';
-import FormTextInput from '@components/inputs/FormTextInput';
-import { useForm } from 'react-hook-form';
-import { EMAIL_REGEX } from '@utils/regex';
+import VerifyOTPModal from '@web/components/VerifyOTPModal';
+import { PHONE_REGEX } from '@utils/regex';
+import { useLazyQuery } from '@apollo/client';
+import { CHECK_IF_USER_ONBOARDED } from '@graphql/queries/user';
+import { CheckIfUserOnboardedQuery } from '@graphql/types';
+import { router } from 'expo-router';
+import PhoneInput from '@components/inputs/PhoneInput';
+import { SheetManager } from 'react-native-actions-sheet';
+import sheetIds from '@const/sheets';
 
-type LoginForm = {
-  email: string;
-  password: string;
+const isWeb = Platform.OS === 'web';
+
+const isValidPhone = (phone: string) => {
+  return PHONE_REGEX.test(phone);
 };
 
-const RegisterLink = () => {
-  return (
-    <Pressable
-      onPress={() => router.replace('/register')}
-      style={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 18,
-      }}
-    >
-      <Text>Don't have an account? Register</Text>
-    </Pressable>
+export default function SignIn() {
+  const [isAuthenticating, setIsAuthenticating] = React.useState(false);
+  const [isVerifyingOTP, setIsVerifyingOTP] = React.useState(false);
+  const [checkIfUserRegistered] = useLazyQuery<CheckIfUserOnboardedQuery>(
+    CHECK_IF_USER_ONBOARDED,
   );
-};
+  const [phoneNum, setPhoneNum] = React.useState('');
 
-export default function Login() {
-  const { setSession } = useSession();
+  const formattedPhoneNum = useMemo(() => {
+    const phone = phoneNum.replace(/\D/g, '');
+    return phone;
+  }, [phoneNum]);
 
-  const {
-    handleSubmit,
-    control,
-    formState: { isValid, isSubmitting },
-  } = useForm<LoginForm>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
+  const openVerifyOTPModal = () => {
+    if (isWeb) {
+      setIsVerifyingOTP(true);
+    } else {
+      console.log('wooo')
+      SheetManager.show(sheetIds.verifyOTP, {
+        payload: {
+          phoneNumber: formattedPhoneNum,
+        },
+      });
+    }
+  };
+  const closeModal = () => {
+    setIsVerifyingOTP(false);
+  };
 
-  async function signInWithEmail(data: LoginForm) {
+  async function checkIfUserNeedsRegistration() {
     try {
-      const authResponse = await supabase.auth.signInWithPassword(data);
-      if (authResponse?.error) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error signing in',
-          text2: authResponse.error.message,
-        });
+      // see if user needs onboarding
+      const validUserResp = await checkIfUserRegistered({
+        variables: {
+          phone: formattedPhoneNum,
+        },
+      });
+      const hasOnboarded = validUserResp?.data?.checkIfUserOnboarded;
+      // if they are onboarded, redirect to app
+      if (hasOnboarded) {
+        router.replace('/(app)');
         return;
       }
-      const session = authResponse?.data?.session;
-      if (session) {
-        setSession(session);
-        router.replace('/');
-      }
-    } catch (error: any) {
+      // if they need onboarding, take them to register
+      router.replace('/register');
+    } catch (err: any) {
       Toast.show({
         type: 'error',
-        text1: 'Error signing in',
-        text2: error?.message || 'Something went wrong',
+        text1: 'Error checking user status',
+        text2: err?.message || 'Something went wrong',
       });
     }
   }
 
-  const SPACING = 18;
+  async function signInWithOTP() {
+    setIsAuthenticating(true);
+    const { data, error } = await supabase.auth.signInWithOtp({
+      phone: formattedPhoneNum,
+    });
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error signing in',
+        text2: error.message,
+      });
+      setIsAuthenticating(false);
+      return;
+    }
+    if (data) {
+      openVerifyOTPModal();
+    }
+  }
 
   return (
-    <KeyboardAwareScrollView
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        display: 'flex',
-        flex: 1,
-        justifyContent: 'center',
-        paddingHorizontal: 12,
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 32,
-          fontWeight: 'bold',
-          paddingBottom: 24,
-        }}
-      >
-        Sign In
-      </Text>
-      <FormTextInput
-        name="email"
-        textContentType="oneTimeCode"
-        autoCapitalize="none"
-        inputMode="email"
-        control={control}
-        label="Email"
-        placeholder="jane@email.com"
-        rules={{
-          required: 'Email is required',
-          pattern: {
-            value: EMAIL_REGEX,
-            message: 'Please enter valid email',
-          },
-        }}
-        containerStyle={{
-          paddingBottom: SPACING,
-        }}
-      />
-      <FormTextInput
-        name="password"
-        secureTextEntry={true}
-        autoCapitalize="none"
-        control={control}
-        label="Password"
-        placeholder="password123!"
-        rules={{
-          required: 'Password is required',
-          minLength: {
-            value: 6,
-            message: 'Password must be at least 6 characters',
-          },
-        }}
-        containerStyle={{
-          paddingBottom: SPACING,
-        }}
-      />
-      <Pressable
-        style={{
-          marginTop: 20,
-          backgroundColor: isSubmitting || !isValid ? 'lightgray' : '#000',
-          height: 44,
-          borderRadius: 4,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        disabled={isSubmitting || !isValid}
-        onPress={handleSubmit(signInWithEmail)}
-      >
-        <Text
+    <>
+      {isAuthenticating ? (
+        <View
           style={{
-            color: '#fff',
-            textAlign: 'center',
-            fontWeight: '500',
-            fontSize: 18,
+            display: 'flex',
+            flex: 1,
+            justifyContent: 'center',
           }}
         >
-          Sign in
-        </Text>
-      </Pressable>
-      <RegisterLink />
-    </KeyboardAwareScrollView>
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <KeyboardAwareScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            display: 'flex',
+            flex: 1,
+            justifyContent: 'center',
+            paddingHorizontal: 12,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 32,
+              fontWeight: 'bold',
+              paddingBottom: 24,
+            }}
+          >
+            Sign In
+          </Text>
+          <PhoneInput value={phoneNum} onChange={setPhoneNum} />
+          <Pressable
+            style={{
+              marginTop: 20,
+              backgroundColor: !isValidPhone(formattedPhoneNum)
+                ? 'lightgray'
+                : '#000',
+              height: 44,
+              borderRadius: 4,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            disabled={!isValidPhone(formattedPhoneNum)}
+            onPress={signInWithOTP}
+          >
+            <Text
+              style={{
+                color: '#fff',
+                textAlign: 'center',
+                fontWeight: '500',
+                fontSize: 18,
+              }}
+            >
+              Sign in
+            </Text>
+          </Pressable>
+        </KeyboardAwareScrollView>
+      )}
+      {/* OTP pin input */}
+      {isWeb && (
+        <VerifyOTPModal
+          isOpen={isVerifyingOTP}
+          onClose={closeModal}
+          phoneNumber={isValidPhone(formattedPhoneNum) ? formattedPhoneNum : ''}
+          onSubmit={checkIfUserNeedsRegistration}
+        />
+      )}
+    </>
   );
 }

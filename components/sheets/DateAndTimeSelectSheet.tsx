@@ -109,7 +109,7 @@ const TimePickerSheet = ({ router, payload }: RouteScreenProps) => {
       <TimePicker selectedTime={selectedTime} onTimeSelect={handleTimeSelect} />
       <View
         style={{
-          backgroundColor: 'white',
+          backgroundColor: '#fff',
           paddingTop: 20,
           position: 'absolute',
           bottom: 0,

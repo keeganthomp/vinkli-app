@@ -89,7 +89,7 @@ const PaymentReceived = ({ booking }: Props) => {
       <Button
         label="Back to bookings"
         onPress={() => {
-          router.push('/artist/bookings');
+          router.push('/(app)/(tabs)/bookings');
         }}
       />
     </View>

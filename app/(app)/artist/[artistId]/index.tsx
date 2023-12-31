@@ -7,9 +7,9 @@ const ArtistPublicProfile = () => {
   // redirect to booking for now
   // TODO: build out public artist profile
   useEffect(() => {
-    router.replace(`/${artistId}/new-booking`);
+    router.replace(`/artist/${artistId}/new-booking`);
   }, []);
-  
+
   return null;
 };
 

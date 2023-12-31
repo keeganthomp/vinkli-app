@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@lib/supabase';
-import { router } from 'expo-router';
+import { useGlobalSearchParams } from 'expo-router';
 
 type AuthContextT = {
   session?: Session | null;
@@ -23,6 +23,7 @@ export function useSession() {
 }
 
 export function SessionProvider(props: React.PropsWithChildren) {
+  const params = useGlobalSearchParams()
   const [session, setSession] = React.useState<Session | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 

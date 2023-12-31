@@ -6,8 +6,9 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useQuery } from '@apollo/client';
-import { ArtistBookingsQuery, Booking } from '@graphql/types';
-import { GET_ARTIST_BOOKINGS } from '@graphql/queries/booking';
+import { UserBookingsQuery, Booking } from '@graphql/types';
+import { GET_USER_BOOKINGS } from '@graphql/queries/booking';
+import { FETCH_CURRENT_USER } from '@graphql/queries/user';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { BookingStatus } from '@graphql/types';
@@ -16,6 +17,7 @@ import BookingListHeader from '@components/bookings/BookingsListHeader';
 import EmptyList from '@components/EmptyList';
 import { SheetManager } from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
+import { GetUserQuery } from '@graphql/types';
 
 const defaultFilters = [BookingStatus.Confirmed];
 
@@ -24,32 +26,36 @@ export default function ArtistBookings() {
   const [refreshing, setRefreshing] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [activeFilter, setActiveFilter] = useState<BookingStatus>();
+  const { data: userData, loading: isFetchingUser } =
+    useQuery<GetUserQuery>(FETCH_CURRENT_USER);
   const {
     data: bookingData,
     loading: loadingBookings,
     error: bookingError,
     refetch,
-  } = useQuery<ArtistBookingsQuery>(GET_ARTIST_BOOKINGS, {
+  } = useQuery<UserBookingsQuery>(GET_USER_BOOKINGS, {
     variables: {
       statuses: defaultFilters,
     },
   });
 
-  const bookings = bookingData?.artistBookings || [];
+  const user = userData?.user;
+  const isArtist = user?.userType === 'ARTIST';
+
+  const bookings = bookingData?.userBookings || [];
 
   const handleClearFilter = async () => {
-    closeFilterModal();
     setActiveFilter(undefined);
     setIsRefetching(true);
     // handle refetch based on filter
     await refetch({
-      statuses: defaultFilters,
+      status: undefined,
     });
     setIsRefetching(false);
   };
 
   const handleStatusFilterSelect = async (status: BookingStatus) => {
-    closeFilterModal();
+    console.log('status', status)
     if (activeFilter === status) {
       setActiveFilter(undefined);
     } else {
@@ -58,7 +64,7 @@ export default function ArtistBookings() {
     // handle refetch based on filter
     setIsRefetching(true);
     await refetch({
-      statuses: status ? [status] : defaultFilters,
+      status: status,
     });
     setIsRefetching(false);
   };
@@ -80,10 +86,6 @@ export default function ArtistBookings() {
     });
   };
 
-  const closeFilterModal = () => {
-    // filterModalRef.current?.close();
-  };
-
   return (
     <View
       style={{
@@ -92,11 +94,13 @@ export default function ArtistBookings() {
       }}
     >
       <>
-        <BookingListHeader
-          activeFilter={activeFilter}
-          openFilterModal={openFilterModal}
-        />
-        {loadingBookings || isRefetching ? (
+        {isArtist && (
+          <BookingListHeader
+            activeFilter={activeFilter}
+            openFilterModal={openFilterModal}
+          />
+        )}
+        {loadingBookings || isFetchingUser || isRefetching ? (
           <View
             style={{
               flex: 1,
@@ -126,7 +130,7 @@ export default function ArtistBookings() {
             renderItem={({ item: booking }) => (
               <BookingCard
                 booking={booking}
-                href={`/artist/booking/${booking.id}`}
+                href={`/(app)/booking/${booking.id}`}
               />
             )}
             keyExtractor={(item: Booking) => item.id}

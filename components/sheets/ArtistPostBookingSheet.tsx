@@ -1,16 +1,24 @@
-import PostBookingForm from "@components/artist/PostBookingForm";
+import PostBookingForm from '@components/artist/PostBookingForm';
 import React, { useRef } from 'react';
-import ActionSheet, { ActionSheetRef } from 'react-native-actions-sheet';
+import ActionSheet, {
+  ActionSheetRef,
+  SheetProps,
+} from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
 
-const ArtistPostBookingSheet = () => {
+const ArtistPostBookingSheet = ({ payload }: SheetProps) => {
   const actionSheetRef = useRef<ActionSheetRef>(null);
+  const booking = payload?.booking;
+
+  const closeModal = () => {
+    actionSheetRef.current?.hide();
+  };
+
   return (
     <ActionSheet
       id={sheetIds.artistPostBookingSheet}
       ref={actionSheetRef}
-      isModal={false}
-      snapPoints={[200]}
+      // snapPoints={[200]}
       initialSnapIndex={0}
       statusBarTranslucent
       drawUnderStatusBar={true}
@@ -18,7 +26,7 @@ const ArtistPostBookingSheet = () => {
       useBottomSafeAreaPadding
       defaultOverlayOpacity={0.3}
     >
-      <PostBookingForm />
+      <PostBookingForm bookingId={booking?.id} closeModal={closeModal} />
     </ActionSheet>
   );
 };

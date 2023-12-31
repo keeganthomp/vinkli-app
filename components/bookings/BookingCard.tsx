@@ -10,6 +10,9 @@ import { bookingTypeMap } from '@const/maps';
 import Tag from '@components/Tag';
 import { bookingStatusColor } from '@const/colors';
 import { bookingStatusMap } from '@const/maps';
+import { useQuery } from '@apollo/client';
+import { FETCH_CURRENT_USER } from '@graphql/queries/user';
+import { GetUserQuery } from '@graphql/types';
 
 type Props = {
   booking: Booking;
@@ -23,6 +26,12 @@ const SPACING = 6;
 export default function BookingCard({ booking, href }: Props) {
   const customer = booking.customer;
   const shouldShowStatusTag = statusTagsToShow.includes(booking.status);
+  const { data: userData, loading, error } = useQuery<GetUserQuery>(FETCH_CURRENT_USER);
+
+  const isArtist = userData?.user?.userType === 'ARTIST';
+
+  const name = isArtist ? customer?.name : booking.artist?.name;
+
   return (
     <Link
       asChild
@@ -123,7 +132,7 @@ export default function BookingCard({ booking, href }: Props) {
                   fontWeight: '300',
                 }}
               >
-                {customer.name}
+                {name}
               </Text>
             </View>
           )}

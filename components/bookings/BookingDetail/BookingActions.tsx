@@ -95,7 +95,7 @@ const BookingActions = ({ booking, onBookingComplete }: Props) => {
 
     // if currently complete go to collect payment
     if (currentStatus === BookingStatus.Completed) {
-      router.push(`/artist/booking/${booking.id}/collect-payment`);
+      router.push(`/(app)/booking/${booking.id}/collect-payment`);
       return;
     }
 
@@ -154,7 +154,7 @@ const BookingActions = ({ booking, onBookingComplete }: Props) => {
             borderRadius: 6,
             width: '100%',
             justifyContent: 'center',
-            height: 40
+            height: 40,
           }}
         >
           <Text

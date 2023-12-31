@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { USER_FRAGMENT, ARTIST_FRAGMENT } from '../fragments/user';
 
-export const GET_USER = gql`
+export const FETCH_CURRENT_USER = gql`
   ${USER_FRAGMENT}
   query GetUser {
     user {
@@ -25,5 +25,11 @@ export const GET_PUBLIC_ARTIST_PROFILE = gql`
     publicArtistProfile(artistId: $artistId) {
       ...ArtistFragment
     }
+  }
+`;
+
+export const CHECK_IF_USER_ONBOARDED = gql`
+  query checkIfUserOnboarded($phone: String!) {
+    checkIfUserOnboarded(phone: $phone)
   }
 `;

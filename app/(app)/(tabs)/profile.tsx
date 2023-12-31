@@ -1,6 +1,5 @@
 import {
   View,
-  Button,
   ActivityIndicator,
   Pressable,
   RefreshControl,
@@ -17,6 +16,7 @@ import {
   GenerateStripeConnectOnboardingLinkMutation,
   ArtistQuery,
 } from '@graphql/types';
+import Button from '@components/Button';
 import { useEffect, useState } from 'react';
 import * as Linking from 'expo-linking';
 import { GET_ARTIST } from '@graphql/queries/user';
@@ -161,7 +161,7 @@ export default function ArtistProfile() {
         }
       >
         {!hasOnboarded && (
-          <Button title="Setup Payments" onPress={goStripeConnect} />
+          <Button label="Setup Payments" onPress={goStripeConnect} />
         )}
         {hasOnboarded && <ArtistRatesForm artist={user} />}
       </KeyboardAwareScrollView>

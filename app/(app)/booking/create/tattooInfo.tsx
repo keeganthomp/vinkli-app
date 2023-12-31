@@ -59,7 +59,7 @@ export default function ArtistBookingTattooInfo() {
 
   const goToAppointmentDate = () => {
     Keyboard.dismiss();
-    router.push('/artist/booking/create/dateAndTime');
+    router.push('/(app)/booking/create/dateAndTime');
   };
 
   const SPACING = 22;

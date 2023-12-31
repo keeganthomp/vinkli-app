@@ -1,27 +1,30 @@
 import { GET_PUBLIC_ARTIST_PROFILE } from '@graphql/queries/user';
 import { useQuery } from '@apollo/client';
 import { useLocalSearchParams, Slot } from 'expo-router';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator, Text, Platform } from 'react-native';
 import { PublicArtistProfileQuery, Artist } from '@graphql/types';
 import ErrorCard from '@components/Error';
 import theme from '@theme';
 import { Ionicons } from '@expo/vector-icons';
 
+
 export {
-    // Catch any errors thrown by the Layout component.
-    ErrorBoundary,
-  } from 'expo-router';
-  
-  export const unstable_settings = {
-    // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: 'new-booking',
-  };
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
+
+export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
+  initialRouteName: 'new-booking',
+};
 
 const ArtistInfo = ({ artist }: { artist: Artist }) => {
   return (
-    <View style={{
+    <View
+      style={{
         paddingVertical: 6,
-    }}>
+      }}
+    >
       <View
         style={{
           display: 'flex',
@@ -44,7 +47,7 @@ const ArtistInfo = ({ artist }: { artist: Artist }) => {
   );
 };
 
-const PublicArtistLayout = () => {
+const PublicLayout = () => {
   const { artistId } = useLocalSearchParams();
   const { data, loading, error, refetch } = useQuery<PublicArtistProfileQuery>(
     GET_PUBLIC_ARTIST_PROFILE,
@@ -96,4 +99,4 @@ const PublicArtistLayout = () => {
   );
 };
 
-export default PublicArtistLayout;
+export default PublicLayout;

@@ -1,50 +1,43 @@
-import { Alert, View, Pressable, Text } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 import Checkbox from 'expo-checkbox';
-import { supabase } from '@lib/supabase';
-import { UserType } from '@graphql/types';
+import { UserType, OnboardUserMutation } from '@graphql/types';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import FormTextInput from '@components/inputs/FormTextInput';
 import Toast from 'react-native-toast-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { EMAIL_REGEX, FULL_NAME_REGEX } from '@utils/regex';
+import { FULL_NAME_REGEX } from '@utils/regex';
+import { useMutation } from '@apollo/client';
+import { ONBOARD_USER } from '@graphql/mutations/user';
+import { CHECK_IF_USER_ONBOARDED } from '@graphql/queries/user';
+import { useSession } from '@context/auth';
 
-type SignUpForm = {
-  email: string;
-  password: string;
-  userType: UserType;
+type OnboardingForm = {
   name: string;
+  userType: UserType;
 };
 
-const SigninLink = () => {
-  return (
-    <Pressable
-      onPress={() => router.replace('/sign-in')}
-      style={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 16,
-      }}
-    >
-      <Text>Already have an account? Sign in</Text>
-    </Pressable>
-  );
-};
-
-export default function Signup() {
+export default function OnboardingForm() {
+  const { session } = useSession();
+  const [onboardUser] = useMutation<OnboardUserMutation>(ONBOARD_USER, {
+    refetchQueries: [
+      {
+        query: CHECK_IF_USER_ONBOARDED,
+        variables: {
+          phone: session?.user?.phone,
+        },
+      },
+    ],
+  });
   const {
     handleSubmit,
     setValue,
     control,
     watch,
     formState: { isValid, isSubmitting },
-  } = useForm<SignUpForm>({
+  } = useForm<OnboardingForm>({
     defaultValues: {
       name: '',
-      email: '',
-      password: '',
       userType: UserType.Customer,
     },
   });
@@ -58,35 +51,34 @@ export default function Signup() {
     setValue('userType', newType);
   };
 
-  const handleSignup = async (data: SignUpForm) => {
-    const { name, ...signupFormValues } = data;
+  const handleOnboarding = async (data: OnboardingForm) => {
+    const { name, userType } = data;
     try {
-      const { data: user, error } = await supabase.auth.signUp({
-        ...signupFormValues,
-        options: {
-          data: {
-            user_type: selectedUserType,
-            name,
+      await onboardUser({
+        variables: {
+          input: {
+            name: name.trim(),
+            userType,
           },
         },
       });
-      if (error) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error signing up',
-          text2: error.message,
-        });
-        return;
-      }
-      Alert.alert('Check your email for the confirmation link & login!');
-      router.replace('/sign-in');
+      Toast.show({
+        type: 'success',
+        text1: 'Congrats! You are registered',
+        text2: 'You are good to go',
+      });
+      router.replace('/(app)');
     } catch (error) {
-      console.log('Error signing up:', error);
-      Alert.alert('Error signing up');
+      console.log('Error onboarding user:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error Onboarding user',
+        text2: 'Please try again',
+      });
     }
   };
 
-  const SPACING = 18;
+  const SPACING = 15;
 
   return (
     <KeyboardAwareScrollView
@@ -103,10 +95,20 @@ export default function Signup() {
         style={{
           fontSize: 32,
           fontWeight: 'bold',
-          paddingBottom: 24,
+          paddingBottom: 3,
         }}
       >
-        Register
+        Welcome to Vinkli
+      </Text>
+      <Text
+        style={{
+          fontSize: 12,
+          fontWeight: '300',
+          paddingBottom: 18,
+          color: '#666',
+        }}
+      >
+        We need a few details before you get started
       </Text>
       <FormTextInput
         control={control}
@@ -122,43 +124,6 @@ export default function Signup() {
         }}
         containerStyle={{
           paddingBottom: SPACING,
-        }}
-      />
-      <FormTextInput
-        control={control}
-        autoCapitalize="none"
-        textContentType="oneTimeCode"
-        inputMode="email"
-        placeholder="jane@email.com"
-        name="email"
-        label="Email"
-        rules={{
-          required: 'Email is required',
-          pattern: {
-            value: EMAIL_REGEX,
-            message: 'Please enter valid email',
-          },
-        }}
-        containerStyle={{
-          paddingBottom: SPACING,
-        }}
-      />
-      <FormTextInput
-        control={control}
-        secureTextEntry={true}
-        autoCapitalize="none"
-        name="password"
-        label="Password"
-        placeholder="password123!"
-        rules={{
-          required: 'Password is required',
-          minLength: {
-            value: 6,
-            message: 'Password must be at least 6 characters',
-          },
-        }}
-        containerStyle={{
-          paddingBottom: SPACING + 5,
         }}
       />
       <View
@@ -207,7 +172,7 @@ export default function Signup() {
           alignItems: 'center',
         }}
         disabled={isSubmitting || !isValid}
-        onPress={handleSubmit(handleSignup)}
+        onPress={handleSubmit(handleOnboarding)}
       >
         <Text
           style={{
@@ -217,10 +182,9 @@ export default function Signup() {
             fontSize: 18,
           }}
         >
-          Sign up
+          Register
         </Text>
       </Pressable>
-      <SigninLink />
     </KeyboardAwareScrollView>
   );
 }

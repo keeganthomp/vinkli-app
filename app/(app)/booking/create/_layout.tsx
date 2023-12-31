@@ -25,7 +25,7 @@ export default function ArtistBookingCreateLayout() {
   const insets = useSafeAreaInsets();
   const formMethods = useForm<ArtistBookingFromValues>({
     defaultValues: {
-      customerEmail: '',
+      phone: '',
       title: '',
       startDate: undefined,
       endDate: undefined,
@@ -46,24 +46,22 @@ export default function ArtistBookingCreateLayout() {
           onBackPress={router.back}
         />
       </View>
-      <SheetProvider>
-        <FormProvider {...formMethods}>
-          <Stack
-            screenOptions={{
-              header: () => null,
-              contentStyle: {
-                paddingTop: 14,
-                paddingHorizontal: 12,
-                backgroundColor: theme.appBackground,
-              },
-            }}
-          >
-            <Stack.Screen name="generalInfo" />
-            <Stack.Screen name="tattooInfo" />
-            <Stack.Screen name="dateAndTime" />
-          </Stack>
-        </FormProvider>
-      </SheetProvider>
+      <FormProvider {...formMethods}>
+        <Stack
+          screenOptions={{
+            header: () => null,
+            contentStyle: {
+              paddingTop: 14,
+              paddingHorizontal: 12,
+              backgroundColor: theme.appBackground,
+            },
+          }}
+        >
+          <Stack.Screen name="generalInfo" />
+          <Stack.Screen name="tattooInfo" />
+          <Stack.Screen name="dateAndTime" />
+        </Stack>
+      </FormProvider>
       <Toast config={toastConfig} topOffset={isWeb ? 16 : 55} />
     </>
   );

@@ -1,4 +1,4 @@
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text, Dimensions, Platform } from 'react-native';
 import { Booking, BookingType } from '@graphql/types';
 import QRCode from 'react-native-qrcode-svg';
 import moment from 'moment';
@@ -6,6 +6,8 @@ import { formatCentsToDollars } from '@utils/money';
 import { useMemo } from 'react';
 import Button from '@components/Button';
 import Toast from 'react-native-toast-message';
+
+const isWeb = Platform.OS === 'web';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -15,7 +17,7 @@ type Props = {
 };
 
 export default function ArtistCollectPayment({ booking, paymentLink }: Props) {
-  const qrCodeWidth = screenWidth * 0.65;
+  const qrCodeWidth = isWeb ? 200 : screenWidth * 0.65;
 
   const sendPaymentToCustomer = async () => {
     Toast.show({

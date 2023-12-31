@@ -1,7 +1,6 @@
 import { View, Text, Keyboard } from 'react-native';
 import { router } from 'expo-router';
 import { useFormContext } from 'react-hook-form';
-import FormTextInput from '@components/inputs/FormTextInput';
 import NextButton from '@components/NextButton';
 import { ArtistBookingFromValues } from './_layout';
 import FormModalInput from '@components/inputs/FormModalInput';
@@ -12,6 +11,9 @@ import sheetIds from '@const/sheets';
 import { BookingType } from '@graphql/types';
 import WebSelect from '@web/components/WebSelect';
 import { PickerOption } from '@components/sheets/PickerSheet';
+import { PHONE_REGEX } from '@utils/regex';
+import { useMemo } from 'react';
+import PhoneInput from '@components/inputs/PhoneInput';
 
 const bookingTypeOptions: PickerOption<string>[] = Object.entries(
   bookingTypeMap,
@@ -23,9 +25,15 @@ const ArtistBookingGeneral = () => {
   const { control, watch, setValue } =
     useFormContext<ArtistBookingFromValues>();
 
-  const [email, bookingType] = watch(['customerEmail', 'type']);
+  const [phone, bookingType] = watch(['phone', 'type']);
 
-  const canGoNext = !!email && !!bookingType;
+  const isValidPhone = useMemo(() => {
+    const fmtPhone = phone.replace(/\D/g, '');
+    const isPhoneValid = PHONE_REGEX.test(fmtPhone);
+    return isPhoneValid;
+  }, [phone]);
+
+  const canGoNext = isValidPhone && !!bookingType;
 
   const setBookingType = (type: BookingType) => {
     setValue('type', type);
@@ -33,7 +41,7 @@ const ArtistBookingGeneral = () => {
 
   const goToTattooInfo = () => {
     Keyboard.dismiss();
-    router.push('/artist/booking/create/tattooInfo');
+    router.push('/(app)/booking/create/tattooInfo');
   };
 
   const openAppointmentTypePicker = () => {
@@ -58,21 +66,17 @@ const ArtistBookingGeneral = () => {
         >
           {`Customer &\nAppointment Type`}
         </Text>
-        <FormTextInput
-          control={control}
-          autoCapitalize="none"
-          name="customerEmail"
-          label="Customer Email"
-          placeholder="jane@email.com"
-          inputMode="email"
-          enterKeyHint="done"
-          rules={{
-            required: 'Customer Email is required',
+        <View
+          style={{
+            paddingBottom: 12,
           }}
-          containerStyle={{
-            paddingBottom: 20,
-          }}
-        />
+        >
+          <PhoneInput
+            label="Customer Phone"
+            value={phone}
+            onChange={(val) => setValue('phone', val)}
+          />
+        </View>
         {isWeb ? (
           <WebSelect
             label="Appointment Type"

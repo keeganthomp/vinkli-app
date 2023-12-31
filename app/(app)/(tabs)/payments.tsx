@@ -2,7 +2,6 @@ import {
   View,
   FlatList,
   RefreshControl,
-  Text,
   ActivityIndicator,
 } from 'react-native';
 import Header from '@components/artist/ArtistScreenHeader';
@@ -11,9 +10,9 @@ import { useQuery } from '@apollo/client';
 import { GET_PAYMENTS } from '@graphql/queries/payments';
 import { GetPaymentsQuery, Payment } from '@graphql/types';
 import { useCallback, useState } from 'react';
-import theme from '@theme';
 import PaymentCard from '@components/payments/PaymentCard';
 import { useFocusEffect } from 'expo-router';
+import EmptyList from '@components/EmptyList';
 
 export default function ArtistPayments() {
   const insets = useSafeAreaInsets();
@@ -83,6 +82,7 @@ export default function ArtistPayments() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
+        ListEmptyComponent={() => <EmptyList message="No payments to show" />}
         ItemSeparatorComponent={() => (
           <View
             style={{

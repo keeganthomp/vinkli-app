@@ -23,18 +23,19 @@ export type Artist = {
   __typename?: 'Artist';
   consultationFee?: Maybe<Scalars['Int']['output']>;
   createdAt: Scalars['Date']['output'];
-  email: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
   hasOnboardedToStripe?: Maybe<Scalars['Boolean']['output']>;
   hourlyRate?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  phone: Scalars['String']['output'];
   stripeAccountId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
 };
 
 export type ArtistCreateBookingInput = {
-  customerEmail: Scalars['String']['input'];
   endDate?: InputMaybe<Scalars['Date']['input']>;
+  phone: Scalars['String']['input'];
   startDate: Scalars['Date']['input'];
   tattoo?: InputMaybe<TattooForBookingInput>;
   tattooId?: InputMaybe<Scalars['ID']['input']>;
@@ -161,8 +162,8 @@ export type CustomerBookingResponse = {
 
 export type CustomerCreateBookingInput = {
   artistId: Scalars['ID']['input'];
-  customerEmail: Scalars['String']['input'];
   name: Scalars['String']['input'];
+  phone: Scalars['String']['input'];
   tattoo: TattooForBookingInput;
   title?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<BookingType>;
@@ -193,6 +194,7 @@ export type Mutation = {
   customerCreateTattoo: Tattoo;
   deleteBooking?: Maybe<Booking>;
   generateStripeConnectOnboardingLink: Scalars['String']['output'];
+  onboardUser: User;
   updateArtistRates: Artist;
 };
 
@@ -224,9 +226,19 @@ export type MutationDeleteBookingArgs = {
 };
 
 
+export type MutationOnboardUserArgs = {
+  input: OnboardUserInput;
+};
+
+
 export type MutationUpdateArtistRatesArgs = {
   consultationFee?: InputMaybe<Scalars['Int']['input']>;
   hourlyRate?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type OnboardUserInput = {
+  name: Scalars['String']['input'];
+  userType: UserType;
 };
 
 export type Payment = {
@@ -289,38 +301,22 @@ export enum PayoutStatus {
 export type Query = {
   __typename?: 'Query';
   artist: Artist;
-  artistBooking: Booking;
-  artistBookings: Array<Booking>;
   artistFinancials: ArtistFinancials;
-  customerBooking: Booking;
-  customerBookings: Array<Booking>;
+  checkIfUserOnboarded: Scalars['Boolean']['output'];
   customerTattoos: Array<Tattoo>;
   getPaymentLink: Scalars['String']['output'];
   getPayments: Array<Payment>;
   publicArtistProfile: Artist;
   stripeTerminalConnectionToken: Scalars['String']['output'];
   user: User;
+  userBooking: Booking;
+  userBookings: Array<Booking>;
   users: Array<Maybe<User>>;
 };
 
 
-export type QueryArtistBookingArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryArtistBookingsArgs = {
-  statuses?: InputMaybe<Array<InputMaybe<BookingStatus>>>;
-};
-
-
-export type QueryCustomerBookingArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryCustomerBookingsArgs = {
-  status?: InputMaybe<BookingStatus>;
+export type QueryCheckIfUserOnboardedArgs = {
+  phone: Scalars['String']['input'];
 };
 
 
@@ -331,6 +327,16 @@ export type QueryGetPaymentLinkArgs = {
 
 export type QueryPublicArtistProfileArgs = {
   artistId: Scalars['ID']['input'];
+};
+
+
+export type QueryUserBookingArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryUserBookingsArgs = {
+  status?: InputMaybe<BookingStatus>;
 };
 
 export type Refund = {
@@ -405,11 +411,12 @@ export type User = {
   __typename?: 'User';
   consultationFee?: Maybe<Scalars['Int']['output']>;
   createdAt: Scalars['Date']['output'];
-  email: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
   hasOnboardedToStripe?: Maybe<Scalars['Boolean']['output']>;
   hourlyRate?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  phone: Scalars['String']['output'];
   stripeAccountId?: Maybe<Scalars['String']['output']>;
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
@@ -435,16 +442,16 @@ export type PaymentFragmentFragment = { __typename?: 'Payment', chargeId: string
 
 export type TattooFragmentFragment = { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null };
 
-export type UserFragmentFragment = { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null };
+export type UserFragmentFragment = { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null };
 
-export type ArtistFragmentFragment = { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null };
+export type ArtistFragmentFragment = { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null };
 
 export type CustomerCreateBookingMutationVariables = Exact<{
   input: CustomerCreateBookingInput;
 }>;
 
 
-export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'CustomerBookingResponse', booking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }, customerInfo: { __typename?: 'CustomerInfo', isNewCustomer: boolean, isConfirmed: boolean, inviteSent: boolean } } };
+export type CustomerCreateBookingMutation = { __typename?: 'Mutation', customerCreateBooking: { __typename?: 'CustomerBookingResponse', booking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }, customerInfo: { __typename?: 'CustomerInfo', isNewCustomer: boolean, isConfirmed: boolean, inviteSent: boolean } } };
 
 export type ArtistCreateBookingMutationVariables = Exact<{
   input: ArtistCreateBookingInput;
@@ -465,7 +472,7 @@ export type ArtistUpdateBookingStatusMutation = { __typename?: 'Mutation', artis
 export type CustomerTattoosQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CustomerTattoosQuery = { __typename?: 'Query', customerTattoos: Array<{ __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, consultation?: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null } | null, sessions?: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }> | null }> };
+export type CustomerTattoosQuery = { __typename?: 'Query', customerTattoos: Array<{ __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, consultation?: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null } | null, sessions?: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null }> | null }> };
 
 export type GenerateStripeConnectOnboardingLinkMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -478,35 +485,28 @@ export type UpdateArtistRatesMutationVariables = Exact<{
 }>;
 
 
-export type UpdateArtistRatesMutation = { __typename?: 'Mutation', updateArtistRates: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
+export type UpdateArtistRatesMutation = { __typename?: 'Mutation', updateArtistRates: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
 
-export type CustomerBookingsQueryVariables = Exact<{
+export type OnboardUserMutationVariables = Exact<{
+  input: OnboardUserInput;
+}>;
+
+
+export type OnboardUserMutation = { __typename?: 'Mutation', onboardUser: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
+
+export type UserBookingsQueryVariables = Exact<{
   status?: InputMaybe<BookingStatus>;
 }>;
 
 
-export type CustomerBookingsQuery = { __typename?: 'Query', customerBookings: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null } | null }> };
+export type UserBookingsQuery = { __typename?: 'Query', userBookings: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null } | null }> };
 
-export type CustomerBookingQueryVariables = Exact<{
+export type UserBookingQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type CustomerBookingQuery = { __typename?: 'Query', customerBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null } | null } };
-
-export type ArtistBookingsQueryVariables = Exact<{
-  statuses?: InputMaybe<Array<InputMaybe<BookingStatus>> | InputMaybe<BookingStatus>>;
-}>;
-
-
-export type ArtistBookingsQuery = { __typename?: 'Query', artistBookings: Array<{ __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null } | null }> };
-
-export type ArtistBookingQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type ArtistBookingQuery = { __typename?: 'Query', artistBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, payment?: { __typename?: 'Payment', paymentIntentId?: string | null, chargeId: string, status: PaymentStatus } | null, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null } | null } };
+export type UserBookingQuery = { __typename?: 'Query', userBooking: { __typename?: 'Booking', id: string, createdAt?: any | null, updatedAt?: any | null, artistId?: string | null, userId: string, tattooId: string, status: BookingStatus, startDate?: any | null, endDate?: any | null, type: BookingType, completedAt?: any | null, duration?: number | null, totalDue?: number | null, paymentReceived: boolean, customer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, artist?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null, tattoo?: { __typename?: 'Tattoo', id: string, createdAt?: any | null, updatedAt?: any | null, customerId?: string | null, title?: string | null, description?: string | null, style?: TattooStyle | null, color?: TattooColor | null, imageUrls: Array<string>, placement?: string | null } | null } };
 
 export type ArtistFinancialsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -533,19 +533,26 @@ export type GetPaymentsQuery = { __typename?: 'Query', getPayments: Array<{ __ty
 export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, userType?: UserType | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
+export type GetUserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
 
 export type ArtistQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ArtistQuery = { __typename?: 'Query', artist: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
+export type ArtistQuery = { __typename?: 'Query', artist: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
 
 export type PublicArtistProfileQueryVariables = Exact<{
   artistId: Scalars['ID']['input'];
 }>;
 
 
-export type PublicArtistProfileQuery = { __typename?: 'Query', publicArtistProfile: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
+export type PublicArtistProfileQuery = { __typename?: 'Query', publicArtistProfile: { __typename?: 'Artist', id: string, createdAt: any, updatedAt: any, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } };
+
+export type CheckIfUserOnboardedQueryVariables = Exact<{
+  phone: Scalars['String']['input'];
+}>;
+
+
+export type CheckIfUserOnboardedQuery = { __typename?: 'Query', checkIfUserOnboarded: boolean };
 
 export const BookingFragmentFragmentDoc = gql`
     fragment BookingFragment on Booking {
@@ -665,9 +672,11 @@ export const UserFragmentFragmentDoc = gql`
   id
   createdAt
   updatedAt
-  email
-  name
   userType
+  email
+  phone
+  name
+  stripeAccountId
   hasOnboardedToStripe
   hourlyRate
   consultationFee
@@ -679,6 +688,7 @@ export const ArtistFragmentFragmentDoc = gql`
   createdAt
   updatedAt
   email
+  phone
   name
   stripeAccountId
   hasOnboardedToStripe
@@ -921,9 +931,42 @@ export function useUpdateArtistRatesMutation(baseOptions?: Apollo.MutationHookOp
 export type UpdateArtistRatesMutationHookResult = ReturnType<typeof useUpdateArtistRatesMutation>;
 export type UpdateArtistRatesMutationResult = Apollo.MutationResult<UpdateArtistRatesMutation>;
 export type UpdateArtistRatesMutationOptions = Apollo.BaseMutationOptions<UpdateArtistRatesMutation, UpdateArtistRatesMutationVariables>;
-export const CustomerBookingsDocument = gql`
-    query customerBookings($status: BookingStatus) {
-  customerBookings(status: $status) {
+export const OnboardUserDocument = gql`
+    mutation onboardUser($input: OnboardUserInput!) {
+  onboardUser(input: $input) {
+    ...UserFragment
+  }
+}
+    ${UserFragmentFragmentDoc}`;
+export type OnboardUserMutationFn = Apollo.MutationFunction<OnboardUserMutation, OnboardUserMutationVariables>;
+
+/**
+ * __useOnboardUserMutation__
+ *
+ * To run a mutation, you first call `useOnboardUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useOnboardUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [onboardUserMutation, { data, loading, error }] = useOnboardUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useOnboardUserMutation(baseOptions?: Apollo.MutationHookOptions<OnboardUserMutation, OnboardUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<OnboardUserMutation, OnboardUserMutationVariables>(OnboardUserDocument, options);
+      }
+export type OnboardUserMutationHookResult = ReturnType<typeof useOnboardUserMutation>;
+export type OnboardUserMutationResult = Apollo.MutationResult<OnboardUserMutation>;
+export type OnboardUserMutationOptions = Apollo.BaseMutationOptions<OnboardUserMutation, OnboardUserMutationVariables>;
+export const UserBookingsDocument = gql`
+    query userBookings($status: BookingStatus) {
+  userBookings(status: $status) {
     ...BookingFragment
     customer {
       ...UserFragment
@@ -941,40 +984,40 @@ ${UserFragmentFragmentDoc}
 ${TattooFragmentFragmentDoc}`;
 
 /**
- * __useCustomerBookingsQuery__
+ * __useUserBookingsQuery__
  *
- * To run a query within a React component, call `useCustomerBookingsQuery` and pass it any options that fit your needs.
- * When your component renders, `useCustomerBookingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useUserBookingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserBookingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCustomerBookingsQuery({
+ * const { data, loading, error } = useUserBookingsQuery({
  *   variables: {
  *      status: // value for 'status'
  *   },
  * });
  */
-export function useCustomerBookingsQuery(baseOptions?: Apollo.QueryHookOptions<CustomerBookingsQuery, CustomerBookingsQueryVariables>) {
+export function useUserBookingsQuery(baseOptions?: Apollo.QueryHookOptions<UserBookingsQuery, UserBookingsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CustomerBookingsQuery, CustomerBookingsQueryVariables>(CustomerBookingsDocument, options);
+        return Apollo.useQuery<UserBookingsQuery, UserBookingsQueryVariables>(UserBookingsDocument, options);
       }
-export function useCustomerBookingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CustomerBookingsQuery, CustomerBookingsQueryVariables>) {
+export function useUserBookingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserBookingsQuery, UserBookingsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CustomerBookingsQuery, CustomerBookingsQueryVariables>(CustomerBookingsDocument, options);
+          return Apollo.useLazyQuery<UserBookingsQuery, UserBookingsQueryVariables>(UserBookingsDocument, options);
         }
-export function useCustomerBookingsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CustomerBookingsQuery, CustomerBookingsQueryVariables>) {
+export function useUserBookingsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UserBookingsQuery, UserBookingsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<CustomerBookingsQuery, CustomerBookingsQueryVariables>(CustomerBookingsDocument, options);
+          return Apollo.useSuspenseQuery<UserBookingsQuery, UserBookingsQueryVariables>(UserBookingsDocument, options);
         }
-export type CustomerBookingsQueryHookResult = ReturnType<typeof useCustomerBookingsQuery>;
-export type CustomerBookingsLazyQueryHookResult = ReturnType<typeof useCustomerBookingsLazyQuery>;
-export type CustomerBookingsSuspenseQueryHookResult = ReturnType<typeof useCustomerBookingsSuspenseQuery>;
-export type CustomerBookingsQueryResult = Apollo.QueryResult<CustomerBookingsQuery, CustomerBookingsQueryVariables>;
-export const CustomerBookingDocument = gql`
-    query customerBooking($id: ID!) {
-  customerBooking(id: $id) {
+export type UserBookingsQueryHookResult = ReturnType<typeof useUserBookingsQuery>;
+export type UserBookingsLazyQueryHookResult = ReturnType<typeof useUserBookingsLazyQuery>;
+export type UserBookingsSuspenseQueryHookResult = ReturnType<typeof useUserBookingsSuspenseQuery>;
+export type UserBookingsQueryResult = Apollo.QueryResult<UserBookingsQuery, UserBookingsQueryVariables>;
+export const UserBookingDocument = gql`
+    query userBooking($id: ID!) {
+  userBooking(id: $id) {
     ...BookingFragment
     customer {
       ...UserFragment
@@ -992,144 +1035,37 @@ ${UserFragmentFragmentDoc}
 ${TattooFragmentFragmentDoc}`;
 
 /**
- * __useCustomerBookingQuery__
+ * __useUserBookingQuery__
  *
- * To run a query within a React component, call `useCustomerBookingQuery` and pass it any options that fit your needs.
- * When your component renders, `useCustomerBookingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useUserBookingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserBookingQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCustomerBookingQuery({
+ * const { data, loading, error } = useUserBookingQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useCustomerBookingQuery(baseOptions: Apollo.QueryHookOptions<CustomerBookingQuery, CustomerBookingQueryVariables>) {
+export function useUserBookingQuery(baseOptions: Apollo.QueryHookOptions<UserBookingQuery, UserBookingQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CustomerBookingQuery, CustomerBookingQueryVariables>(CustomerBookingDocument, options);
+        return Apollo.useQuery<UserBookingQuery, UserBookingQueryVariables>(UserBookingDocument, options);
       }
-export function useCustomerBookingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CustomerBookingQuery, CustomerBookingQueryVariables>) {
+export function useUserBookingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserBookingQuery, UserBookingQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CustomerBookingQuery, CustomerBookingQueryVariables>(CustomerBookingDocument, options);
+          return Apollo.useLazyQuery<UserBookingQuery, UserBookingQueryVariables>(UserBookingDocument, options);
         }
-export function useCustomerBookingSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CustomerBookingQuery, CustomerBookingQueryVariables>) {
+export function useUserBookingSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UserBookingQuery, UserBookingQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<CustomerBookingQuery, CustomerBookingQueryVariables>(CustomerBookingDocument, options);
+          return Apollo.useSuspenseQuery<UserBookingQuery, UserBookingQueryVariables>(UserBookingDocument, options);
         }
-export type CustomerBookingQueryHookResult = ReturnType<typeof useCustomerBookingQuery>;
-export type CustomerBookingLazyQueryHookResult = ReturnType<typeof useCustomerBookingLazyQuery>;
-export type CustomerBookingSuspenseQueryHookResult = ReturnType<typeof useCustomerBookingSuspenseQuery>;
-export type CustomerBookingQueryResult = Apollo.QueryResult<CustomerBookingQuery, CustomerBookingQueryVariables>;
-export const ArtistBookingsDocument = gql`
-    query artistBookings($statuses: [BookingStatus]) {
-  artistBookings(statuses: $statuses) {
-    ...BookingFragment
-    customer {
-      ...UserFragment
-    }
-    artist {
-      ...UserFragment
-    }
-    tattoo {
-      ...TattooFragment
-    }
-  }
-}
-    ${BookingFragmentFragmentDoc}
-${UserFragmentFragmentDoc}
-${TattooFragmentFragmentDoc}`;
-
-/**
- * __useArtistBookingsQuery__
- *
- * To run a query within a React component, call `useArtistBookingsQuery` and pass it any options that fit your needs.
- * When your component renders, `useArtistBookingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useArtistBookingsQuery({
- *   variables: {
- *      statuses: // value for 'statuses'
- *   },
- * });
- */
-export function useArtistBookingsQuery(baseOptions?: Apollo.QueryHookOptions<ArtistBookingsQuery, ArtistBookingsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ArtistBookingsQuery, ArtistBookingsQueryVariables>(ArtistBookingsDocument, options);
-      }
-export function useArtistBookingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ArtistBookingsQuery, ArtistBookingsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ArtistBookingsQuery, ArtistBookingsQueryVariables>(ArtistBookingsDocument, options);
-        }
-export function useArtistBookingsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ArtistBookingsQuery, ArtistBookingsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ArtistBookingsQuery, ArtistBookingsQueryVariables>(ArtistBookingsDocument, options);
-        }
-export type ArtistBookingsQueryHookResult = ReturnType<typeof useArtistBookingsQuery>;
-export type ArtistBookingsLazyQueryHookResult = ReturnType<typeof useArtistBookingsLazyQuery>;
-export type ArtistBookingsSuspenseQueryHookResult = ReturnType<typeof useArtistBookingsSuspenseQuery>;
-export type ArtistBookingsQueryResult = Apollo.QueryResult<ArtistBookingsQuery, ArtistBookingsQueryVariables>;
-export const ArtistBookingDocument = gql`
-    query artistBooking($id: ID!) {
-  artistBooking(id: $id) {
-    ...BookingFragment
-    payment {
-      paymentIntentId
-      chargeId
-      status
-    }
-    customer {
-      ...UserFragment
-    }
-    artist {
-      ...UserFragment
-    }
-    tattoo {
-      ...TattooFragment
-    }
-  }
-}
-    ${BookingFragmentFragmentDoc}
-${UserFragmentFragmentDoc}
-${TattooFragmentFragmentDoc}`;
-
-/**
- * __useArtistBookingQuery__
- *
- * To run a query within a React component, call `useArtistBookingQuery` and pass it any options that fit your needs.
- * When your component renders, `useArtistBookingQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useArtistBookingQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useArtistBookingQuery(baseOptions: Apollo.QueryHookOptions<ArtistBookingQuery, ArtistBookingQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ArtistBookingQuery, ArtistBookingQueryVariables>(ArtistBookingDocument, options);
-      }
-export function useArtistBookingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ArtistBookingQuery, ArtistBookingQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ArtistBookingQuery, ArtistBookingQueryVariables>(ArtistBookingDocument, options);
-        }
-export function useArtistBookingSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ArtistBookingQuery, ArtistBookingQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ArtistBookingQuery, ArtistBookingQueryVariables>(ArtistBookingDocument, options);
-        }
-export type ArtistBookingQueryHookResult = ReturnType<typeof useArtistBookingQuery>;
-export type ArtistBookingLazyQueryHookResult = ReturnType<typeof useArtistBookingLazyQuery>;
-export type ArtistBookingSuspenseQueryHookResult = ReturnType<typeof useArtistBookingSuspenseQuery>;
-export type ArtistBookingQueryResult = Apollo.QueryResult<ArtistBookingQuery, ArtistBookingQueryVariables>;
+export type UserBookingQueryHookResult = ReturnType<typeof useUserBookingQuery>;
+export type UserBookingLazyQueryHookResult = ReturnType<typeof useUserBookingLazyQuery>;
+export type UserBookingSuspenseQueryHookResult = ReturnType<typeof useUserBookingSuspenseQuery>;
+export type UserBookingQueryResult = Apollo.QueryResult<UserBookingQuery, UserBookingQueryVariables>;
 export const ArtistFinancialsDocument = gql`
     query artistFinancials {
   artistFinancials {
@@ -1419,3 +1355,41 @@ export type PublicArtistProfileQueryHookResult = ReturnType<typeof usePublicArti
 export type PublicArtistProfileLazyQueryHookResult = ReturnType<typeof usePublicArtistProfileLazyQuery>;
 export type PublicArtistProfileSuspenseQueryHookResult = ReturnType<typeof usePublicArtistProfileSuspenseQuery>;
 export type PublicArtistProfileQueryResult = Apollo.QueryResult<PublicArtistProfileQuery, PublicArtistProfileQueryVariables>;
+export const CheckIfUserOnboardedDocument = gql`
+    query checkIfUserOnboarded($phone: String!) {
+  checkIfUserOnboarded(phone: $phone)
+}
+    `;
+
+/**
+ * __useCheckIfUserOnboardedQuery__
+ *
+ * To run a query within a React component, call `useCheckIfUserOnboardedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckIfUserOnboardedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCheckIfUserOnboardedQuery({
+ *   variables: {
+ *      phone: // value for 'phone'
+ *   },
+ * });
+ */
+export function useCheckIfUserOnboardedQuery(baseOptions: Apollo.QueryHookOptions<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>(CheckIfUserOnboardedDocument, options);
+      }
+export function useCheckIfUserOnboardedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>(CheckIfUserOnboardedDocument, options);
+        }
+export function useCheckIfUserOnboardedSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>(CheckIfUserOnboardedDocument, options);
+        }
+export type CheckIfUserOnboardedQueryHookResult = ReturnType<typeof useCheckIfUserOnboardedQuery>;
+export type CheckIfUserOnboardedLazyQueryHookResult = ReturnType<typeof useCheckIfUserOnboardedLazyQuery>;
+export type CheckIfUserOnboardedSuspenseQueryHookResult = ReturnType<typeof useCheckIfUserOnboardedSuspenseQuery>;
+export type CheckIfUserOnboardedQueryResult = Apollo.QueryResult<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>;

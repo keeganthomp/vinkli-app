@@ -115,7 +115,7 @@ const BookingFilters = ({
           color: !activeFilter ? '#d3d3d3' : theme.red,
         }}
       >
-        Cancel
+        Clear
       </Text>
     </Pressable>
   </View>

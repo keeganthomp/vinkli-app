@@ -1,12 +1,8 @@
 import { View, ActivityIndicator, Platform } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { GET_ARTIST_BOOKING } from '@graphql/queries/booking';
+import { GET_USER_BOOKING } from '@graphql/queries/booking';
 import { useQuery } from '@apollo/client';
-import {
-  Booking,
-  ArtistBookingQuery,
-  GetPaymentLinkQuery,
-} from '@graphql/types';
+import { Booking, UserBookingQuery, GetPaymentLinkQuery } from '@graphql/types';
 import ArtistHeader from '@components/artist/ArtistScreenHeader';
 import { GET_PAYMENT_LINK } from '@graphql/queries/payments';
 import Toast from 'react-native-toast-message';
@@ -26,7 +22,7 @@ export default function ArtistBookingCollectPayment() {
     error: errorFetchingBooking,
     startPolling,
     stopPolling,
-  } = useQuery<ArtistBookingQuery>(GET_ARTIST_BOOKING, {
+  } = useQuery<UserBookingQuery>(GET_USER_BOOKING, {
     variables: {
       id: bookingId,
     },
@@ -42,13 +38,13 @@ export default function ArtistBookingCollectPayment() {
     },
   });
 
-  const booking = bookingData?.artistBooking as Booking;
+  const booking = bookingData?.userBooking as Booking;
   const paymentLink = paymentLinkData?.getPaymentLink;
 
   useEffect(() => {
     const pollInterval = 2500;
     // Check if the booking data has been loaded and if it's not paid
-    if (bookingData && !bookingData?.artistBooking?.paymentReceived) {
+    if (bookingData && !bookingData?.userBooking?.paymentReceived) {
       // Start polling if the booking is not paid
       startPolling(pollInterval);
     } else {

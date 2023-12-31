@@ -1,4 +1,4 @@
-import { View, Keyboard, ActivityIndicator } from 'react-native';
+import { View, Keyboard } from 'react-native';
 import Button from '@components/Button';
 import FormNumberInput from '@components/inputs/FormNumberInput';
 import { useForm } from 'react-hook-form';
@@ -67,10 +67,10 @@ const PostBookingForm = ({ bookingId, closeModal }: Props) => {
   return (
     <View
       style={{
-        flex: 1,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        paddingHorizontal: 12,
       }}
     >
       <FormNumberInput

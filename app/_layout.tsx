@@ -1,6 +1,7 @@
 import './global.css';
+import '@components/sheets';
 
-import { Slot, Navigator, Stack } from 'expo-router';
+import { Slot, Navigator } from 'expo-router';
 import { SessionProvider } from '@context/auth';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ApolloProvider } from '@apollo/client';
@@ -15,21 +16,14 @@ import { useWindowDimensions } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useApolloClientDevTools } from '@dev-plugins/apollo-client';
 import breakpoints from '@const/breakpoints';
-
 import { StripeProvider } from '@stripe/stripe-react-native';
+import theme from '@theme';
+import { SheetProvider } from 'react-native-actions-sheet';
 
 const { EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY, EXPO_PUBLIC_MERCHANT_ID } =
   process.env;
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-// export const unstable_settings = {
-//   // Ensure that reloading on `/modal` keeps a back button present.
-//   initialRouteName: '(app)',
-// };
+export { ErrorBoundary } from 'expo-router';
 
 // Keep the splash screen visible while we fetch resources
 // we will hide this manually in (app)/_layout.tsx which is rendered next in
@@ -50,16 +44,20 @@ const AppWrapper = ({ children }: { children: React.ReactNode }) => {
 export default function RootLayout() {
   useApolloClientDevTools(apolloClient);
   const { width } = useWindowDimensions();
+
   useEffect(() => {
     StatusBar.setBarStyle('dark-content');
   }, []);
+
+  const isSmallBrowser = isWeb && width < breakpoints.md;
+
   const getWidth = () => {
-    const isSmallBrowser = isWeb && width < breakpoints.md;
     if (!isWeb) return '100%';
     if (isSmallBrowser) return '100%';
     // larger web browsers
     return 750;
   };
+
   return (
     <AppWrapper>
       <ApolloProvider client={apolloClient}>
@@ -73,14 +71,16 @@ export default function RootLayout() {
             <SafeAreaProvider
               style={{
                 flex: 1,
-                backgroundColor: '#fff',
                 width: getWidth(),
                 alignSelf: 'center',
                 paddingTop: isWeb ? 16 : 0,
-                paddingHorizontal: isWeb ? 0 : 12,
+                paddingHorizontal: isWeb ? 12 : 0,
+                backgroundColor: theme.appBackground,
               }}
             >
-              <Slot />
+              <SheetProvider>
+                <Slot />
+              </SheetProvider>
             </SafeAreaProvider>
           </ActionSheetProvider>
           {/* </StripeProvider> */}

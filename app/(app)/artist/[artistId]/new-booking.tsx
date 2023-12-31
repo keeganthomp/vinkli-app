@@ -14,7 +14,7 @@ import FormTextInput from '@components/inputs/FormTextInput';
 import FormImageInput from '@components/inputs/FormImageInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useForm, useFormContext, FormProvider } from 'react-hook-form';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import {
   CustomerCreateBookingInput,
   CustomerCreateBookingMutation,
@@ -31,9 +31,10 @@ import { toastConfig } from '@utils/toast';
 import { useState, useMemo } from 'react';
 import { tattooColorOptions, tattooStyleOptions } from '@const/input';
 import { EvilIcons } from '@expo/vector-icons';
-import { EMAIL_REGEX, FULL_NAME_REGEX } from '@utils/regex';
-import { AntDesign } from '@expo/vector-icons';
+import { PHONE_REGEX, FULL_NAME_REGEX } from '@utils/regex';
 import useSyncFormWithStorage from '@hooks/useSyncFormWithStorage';
+import Success from '@components/Success';
+import PhoneInput from '@components/inputs/PhoneInput';
 
 export type PublicBookingFormValues = CustomerCreateBookingInput & {
   duration: number; // in hours
@@ -110,62 +111,22 @@ const Header = ({ currentStep, setCurrentStep }: HeaderProps) => {
   );
 };
 
-const Success = ({ booking }: { booking?: Booking }) => {
-  if (!booking?.customer || !booking?.artist) return null;
-  const { customer, artist } = booking;
-  return (
-    <View
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 25,
-          fontWeight: '400',
-        }}
-      >
-        Your submission to {artist.name} has been submitted successfully
-      </Text>
-      <Text
-        style={{
-          paddingTop: 5,
-          fontSize: 18,
-          fontWeight: '300',
-        }}
-      >
-        You will receive a confirmation email to {customer.email}
-      </Text>
-      <AntDesign
-        style={{
-          paddingTop: 10,
-        }}
-        name="checkcircle"
-        size={55}
-        color="black"
-      />
-    </View>
-  );
-};
-
 const PersonalInfo = ({ onSubmit }: FormSection) => {
-  const { control, watch } = useFormContext<PublicBookingFormValues>();
+  const { control, watch, setValue } =
+    useFormContext<PublicBookingFormValues>();
+  const [phone, name] = watch(['phone', 'name']);
 
-  const [email, name] = watch(['customerEmail', 'name']);
-
-  const isValidEmail = useMemo(() => {
-    const isEmailValid = EMAIL_REGEX.test(email);
-    return isEmailValid;
-  }, [email]);
+  const isValidPhone = useMemo(() => {
+    const isPhoneValid = PHONE_REGEX.test(phone);
+    return isPhoneValid;
+  }, [phone]);
 
   const isValidName = useMemo(() => {
     const isNameValid = FULL_NAME_REGEX.test(name);
     return isNameValid;
   }, [name]);
 
-  const canContinue = isValidEmail && isValidName;
+  const canContinue = isValidPhone && isValidName;
 
   return (
     <>
@@ -194,22 +155,7 @@ const PersonalInfo = ({ onSubmit }: FormSection) => {
           },
         }}
       />
-      <FormTextInput
-        control={control}
-        name="customerEmail"
-        label="Email"
-        placeholder="janedoe@gmail.com"
-        containerStyle={{
-          paddingBottom: INPUT_SPACING - (isWeb ? 10 : 0),
-        }}
-        rules={{
-          required: 'Email is required',
-          pattern: {
-            value: EMAIL_REGEX,
-            message: 'Please enter valid email',
-          },
-        }}
-      />
+      <PhoneInput value={phone} onChange={(val) => setValue('phone', val)} />
       <View
         style={{
           paddingTop: 5,
@@ -338,7 +284,7 @@ export default function PublicArtistBookingForm() {
   );
   const form = useForm<PublicBookingFormValues>({
     defaultValues: {
-      customerEmail: '',
+      phone: '',
       name: '',
       tattoo: {
         description: '',
@@ -366,6 +312,7 @@ export default function PublicArtistBookingForm() {
         variables: {
           input: {
             ...data,
+            phone: data.phone.replace(/\D/g, ''),
             artistId,
           },
         },
@@ -395,7 +342,12 @@ export default function PublicArtistBookingForm() {
       case BookingFormStep.TattooInfo:
         return <TattooInfo onSubmit={handleSubmit(submitTattooForm)} />;
       case BookingFormStep.Success:
-        return <Success booking={successfullBooking} />;
+        return successfullBooking ? (
+          <Success
+            title={`Your submission to ${successfullBooking?.artist?.name} has been submitted successfully`}
+            subTitle={` You will receive a confirmation text to ${successfullBooking?.customer?.phone}`}
+          />
+        ) : null;
       default:
         return null;
     }

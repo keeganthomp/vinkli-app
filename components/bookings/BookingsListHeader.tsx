@@ -80,7 +80,7 @@ export default function BookingListHeader({
   openFilterModal,
 }: Props) {
   const goCreateBooking = () => {
-    router.push('/artist/booking/create');
+    router.push('/(app)/booking/create');
   };
 
   return (

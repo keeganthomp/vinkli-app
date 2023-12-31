@@ -18,3 +18,12 @@ export const UPDATE_ARTIST_RATES = gql`
     }
   }
 `;
+
+export const ONBOARD_USER = gql`
+  ${USER_FRAGMENT}
+  mutation onboardUser($input: OnboardUserInput!) {
+    onboardUser(input: $input) {
+      ...UserFragment
+    }
+  }
+`;
