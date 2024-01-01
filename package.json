@@ -12,6 +12,10 @@
     "build:simi": "eas build --profile development-simulator --platform ios",
     "build:staging": "eas build --profile staging -p ios --non-interactive",
     "build:prod": "eas build --profile production -p ios --non-interactive",
+    "web:build": "npx expo export -p web",
+    "web:serve": "npx serve dist",
+    "web:deploy:preview": "netlify deploy --dir dist",
+    "web:deploy": "netlify deploy --prod --dir dist",
     "cache:clear": "bun pm cache rm",
     "test": "jest --watchAll",
     "generate": "graphql-codegen"
@@ -20,7 +24,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.7",
+    "@apollo/client": "^3.8.8",
     "@expo/react-native-action-sheet": "^4.0.1",
     "@expo/vector-icons": "^13.0.0",
     "@radix-ui/react-dialog": "^1.0.5",
