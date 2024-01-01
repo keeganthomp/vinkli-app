@@ -10,7 +10,6 @@
     "ios": "EXPO_USE_UNSTABLE_DEBUGGER=1 npx expo run ios",
     "ios:device": "npx expo run ios --device",
     "build:simi": "eas build --profile development-simulator --platform ios",
-    "build:dev": "eas build --profile development -p ios --non-interactive",
     "build:staging": "eas build --profile staging -p ios --non-interactive",
     "build:prod": "eas build --profile production -p ios --non-interactive",
     "cache:clear": "bun pm cache rm",

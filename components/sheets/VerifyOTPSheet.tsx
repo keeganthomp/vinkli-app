@@ -52,7 +52,7 @@ function VerifyOTPSheet({ payload }: SheetProps) {
     inputRefs[0].current?.focus();
   };
 
-  const handleClose = () => {
+  const closeModal = () => {
     actionSheetRef.current?.hide();
     resetBoxes();
     setIsVerifying(false);
@@ -92,6 +92,7 @@ function VerifyOTPSheet({ payload }: SheetProps) {
         .finally(() => {
           // clear input boxes
           setOtp(new Array(6).fill(''));
+          closeModal();
           setIsVerifying(false);
         });
     }
