@@ -165,7 +165,7 @@ export default function ArtistBookingCollectPayment() {
       ) : (
         <PaymentReceived booking={booking} />
       )}
-      <Toast topOffset={25} config={toastConfig} />
+      <Toast topOffset={50} config={toastConfig} />
     </View>
   );
 }

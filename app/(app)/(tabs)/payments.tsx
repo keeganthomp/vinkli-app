@@ -22,8 +22,11 @@ import { router } from 'expo-router';
 
 export default function ArtistPayments() {
   const insets = useSafeAreaInsets();
-  const { data: userData, loading: isFetchingUser } =
-    useQuery<GetUserQuery>(FETCH_CURRENT_USER);
+  const {
+    data: userData,
+    loading: isFetchingUser,
+    refetch: refetchUser,
+  } = useQuery<GetUserQuery>(FETCH_CURRENT_USER);
   const [refreshing, setRefreshing] = useState(false);
   const {
     data: paymentsData,
@@ -34,6 +37,7 @@ export default function ArtistPayments() {
 
   useFocusEffect(
     useCallback(() => {
+      refetchUser()
       refetch();
     }, []),
   );

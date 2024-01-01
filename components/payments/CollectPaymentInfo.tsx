@@ -6,6 +6,7 @@ import { formatCentsToDollars } from '@utils/money';
 import { useMemo } from 'react';
 import Button from '@components/Button';
 import Toast from 'react-native-toast-message';
+import * as SMS from 'expo-sms';
 
 const isWeb = Platform.OS === 'web';
 
@@ -19,14 +20,6 @@ type Props = {
 export default function ArtistCollectPayment({ booking, paymentLink }: Props) {
   const qrCodeWidth = isWeb ? 200 : screenWidth * 0.65;
 
-  const sendPaymentToCustomer = async () => {
-    Toast.show({
-      type: 'success',
-      text1: 'Payment info sent',
-      text2: 'Sent payment options to customer',
-    });
-  };
-
   const title = useMemo(() => {
     if (booking?.type === BookingType.Consultation) {
       return 'Consultation';
@@ -34,6 +27,43 @@ export default function ArtistCollectPayment({ booking, paymentLink }: Props) {
     // it is a tattoo session
     return booking.duration ? `${booking.duration} hour session` : 'Session';
   }, [booking?.type, booking?.duration]);
+
+  const sendTextToCustomer = async () => {
+    const customerPhone = booking.customer?.phone;
+    if (!customerPhone) {
+      Toast.show({
+        type: 'error',
+        text1: 'No phone number',
+        text2: 'Customer does not have a phone number',
+      });
+      return;
+    }
+    const isAvailable = await SMS.isAvailableAsync();
+    const customerFirstName = booking.customer?.name?.split(' ')[0];
+    if (isAvailable) {
+      const message = `Hi ${customerFirstName},\n\nbelow you will find a link where you can pay ${
+        booking?.artist?.name
+      } for your ${
+        booking.type === BookingType.Consultation
+          ? 'tattoo consultation'
+          : 'tattoo session'
+      }.\n\n${paymentLink}`;
+      const { result } = await SMS.sendSMSAsync([customerPhone], message, {});
+      if (result === 'sent') {
+        Toast.show({
+          type: 'success',
+          text1: 'Successfully sent text message',
+          text2: `Message sent to ${customerFirstName}`,
+        });
+      }
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'SMS not available',
+        text2: 'SMS is not available on this device',
+      });
+    }
+  };
 
   return (
     <View
@@ -133,7 +163,7 @@ export default function ArtistCollectPayment({ booking, paymentLink }: Props) {
               height: 36,
             }}
             label="Send to customer"
-            onPress={sendPaymentToCustomer}
+            onPress={sendTextToCustomer}
           />
         </View>
       </View>

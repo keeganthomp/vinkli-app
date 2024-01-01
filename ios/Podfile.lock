@@ -107,6 +107,8 @@ PODS:
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
+  - ExpoSMS (11.7.1):
+    - ExpoModulesCore
   - ExpoSystemUI (2.9.1):
     - ExpoModulesCore
   - ExpoWebBrowser (12.8.0):
@@ -1303,6 +1305,7 @@ DEPENDENCIES:
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
+  - ExpoSMS (from `../node_modules/expo-sms/ios`)
   - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
@@ -1436,6 +1439,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
+  ExpoSMS:
+    :path: "../node_modules/expo-sms/ios"
   ExpoSystemUI:
     :path: "../node_modules/expo-system-ui/ios"
   ExpoWebBrowser:
@@ -1582,6 +1587,7 @@ SPEC CHECKSUMS:
   ExpoImagePicker: 247fc7d2c13426a835525b67d5fb221864b79612
   ExpoKeepAwake: ed71bfe0e6ecd38e337586ba6e1ba27a56eb373b
   ExpoModulesCore: 94238d9653114ff9786634541688e1fdb7ed95e3
+  ExpoSMS: 50236489ead8beaef1eb7a1be262e7f51169e34b
   ExpoSystemUI: 921601d83ed776533f1d654f02c0fdece0a0632b
   ExpoWebBrowser: 2b660d423b818c4c45b6b3d22a3c0652153fb176
   EXSplashScreen: d6d7ea9582e4ed7655cf893b32dca13ef0712279
