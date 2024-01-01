@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "EXPO_USE_UNSTABLE_DEBUGGER=1 expo start",
+    "postinstall": "node ./scripts/fix-web-build.js",
     "android": "expo run:android",
     "web": "expo start --web",
     "prebuild": "expo prebuild",
