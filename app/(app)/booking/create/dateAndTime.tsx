@@ -124,7 +124,7 @@ export default function ArtistBookingAppointmentInfo() {
         },
       });
       const newBooking = newBookingData?.artistCreateBooking;
-      router.replace(`/(app)/booking/${newBooking?.id}`);
+      router.push(`/(app)/booking/${newBooking?.id}`);
       Toast.show({
         type: 'success',
         text1: 'Booking created',

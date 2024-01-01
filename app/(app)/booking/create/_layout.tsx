@@ -26,6 +26,7 @@ export default function ArtistBookingCreateLayout() {
   const formMethods = useForm<ArtistBookingFromValues>({
     defaultValues: {
       phone: '',
+      customerName: '',
       title: '',
       startDate: undefined,
       endDate: undefined,
@@ -38,6 +39,7 @@ export default function ArtistBookingCreateLayout() {
       <View
         style={{
           paddingTop: insets.top,
+          backgroundColor: theme.appBackground,
         }}
       >
         <AritstHeader

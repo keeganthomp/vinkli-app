@@ -59,12 +59,7 @@ const IosLayout = () => {
         <Stack.Screen name="artist/[artistId]" />
         <Stack.Screen name="booking/create" />
         <Stack.Screen name="booking/[bookingId]/index" />
-        <Stack.Screen
-          name="booking/[bookingId]/collect-payment"
-          options={{
-            presentation: 'modal',
-          }}
-        />
+        <Stack.Screen name="booking/[bookingId]/collect-payment" />
       </Stack>
     </StripeTerminalProvider>
   );

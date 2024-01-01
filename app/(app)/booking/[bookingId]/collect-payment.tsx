@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, Platform } from 'react-native';
+import { View, ActivityIndicator, Platform, Text } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { GET_USER_BOOKING } from '@graphql/queries/booking';
 import { useQuery } from '@apollo/client';
@@ -11,10 +11,22 @@ import CollectPaymentInfo from '@components/payments/CollectPaymentInfo';
 import PaymentReceived from '@components/payments/PaymentReceived';
 import Error from '@components/Error';
 import { useEffect } from 'react';
+import { GetUserQuery } from '@graphql/types';
+import { FETCH_CURRENT_USER } from '@graphql/queries/user';
+import NextButton from '@components/NextButton';
+import theme from '@theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const isWeb = Platform.OS === 'web';
 
 export default function ArtistBookingCollectPayment() {
+  const insets = useSafeAreaInsets();
+  const { data: userData, loading: isFetchingUser } = useQuery<GetUserQuery>(
+    FETCH_CURRENT_USER,
+    {
+      fetchPolicy: 'cache-and-network',
+    },
+  );
   const { bookingId } = useLocalSearchParams();
   const {
     data: bookingData,
@@ -38,6 +50,15 @@ export default function ArtistBookingCollectPayment() {
     },
   });
 
+  const goToProfile = () => {
+    router.push('/(app)/(tabs)/profile');
+  };
+
+  const hasOnboarded =
+    !!userData?.user?.stripeAccountId && userData?.user?.hasOnboardedToStripe;
+  const missingStripProduct =
+    errorGettingPaymentLink?.message?.includes('product not found');
+
   const booking = bookingData?.userBooking as Booking;
   const paymentLink = paymentLinkData?.getPaymentLink;
 
@@ -57,6 +78,52 @@ export default function ArtistBookingCollectPayment() {
     };
   }, [bookingData, startPolling, stopPolling]);
 
+  if (!hasOnboarded || missingStripProduct) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          paddingTop: insets.top,
+          backgroundColor: theme.appBackground,
+        }}
+      >
+        <ArtistHeader title="Collect Payment" onBackPress={router.back} canGoBack />
+        <View
+          style={{
+            paddingTop: 75,
+            paddingHorizontal: 20,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              textAlign: 'center',
+              paddingBottom: 5,
+            }}
+          >
+            Complete payment onboarding to accept payments.
+          </Text>
+          <Text
+            style={{
+              textAlign: 'center',
+              paddingBottom: 20,
+              fontWeight: '300',
+              fontSize: 13,
+            }}
+          >
+            Make sure to set prices for your services.
+          </Text>
+          <NextButton
+            onPress={goToProfile}
+            label="Complete payment onboarding"
+          />
+        </View>
+      </View>
+    );
+  }
+
   if (loading || paymentLinkLoading) {
     return (
       <View
@@ -65,6 +132,8 @@ export default function ArtistBookingCollectPayment() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          paddingTop: insets.top,
+          backgroundColor: theme.appBackground,
         }}
       >
         <ActivityIndicator />
@@ -86,13 +155,11 @@ export default function ArtistBookingCollectPayment() {
     <View
       style={{
         flex: 1,
+        paddingTop: insets.top,
+        backgroundColor: theme.appBackground,
       }}
     >
-      <ArtistHeader
-        title="Collect Payment"
-        onClosePress={router.back}
-        modalHeader
-      />
+      <ArtistHeader title="Collect Payment" onBackPress={router.back} canGoBack />
       {!booking.paymentReceived ? (
         <CollectPaymentInfo booking={booking} paymentLink={paymentLink || ''} />
       ) : (

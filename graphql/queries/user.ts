@@ -33,3 +33,12 @@ export const CHECK_IF_USER_ONBOARDED = gql`
     checkIfUserOnboarded(phone: $phone)
   }
 `;
+
+export const GET_EXISTING_CUSTOMER = gql`
+  ${USER_FRAGMENT}
+  query existingCustomer($phone: String!) {
+    existingCustomer(phone: $phone) {
+      ...UserFragment
+    }
+  }
+`;

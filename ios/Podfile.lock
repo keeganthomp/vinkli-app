@@ -84,6 +84,8 @@ PODS:
     - React-Core
   - ExpoBlur (12.9.0):
     - ExpoModulesCore
+  - ExpoClipboard (5.0.1):
+    - ExpoModulesCore
   - ExpoFileSystem (16.0.1):
     - ExpoModulesCore
   - ExpoHead (3.4.0):
@@ -1294,6 +1296,7 @@ DEPENDENCIES:
   - expo-dev-menu (from `../node_modules/expo-dev-menu`)
   - expo-dev-menu-interface (from `../node_modules/expo-dev-menu-interface/ios`)
   - ExpoBlur (from `../node_modules/expo-blur/ios`)
+  - ExpoClipboard (from `../node_modules/expo-clipboard/ios`)
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoHead (from `../node_modules/expo-router/ios`)
   - ExpoImage (from `../node_modules/expo-image/ios`)
@@ -1419,6 +1422,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-dev-menu-interface/ios"
   ExpoBlur:
     :path: "../node_modules/expo-blur/ios"
+  ExpoClipboard:
+    :path: "../node_modules/expo-clipboard/ios"
   ExpoFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   ExpoHead:
@@ -1570,6 +1575,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 0898881a6e3a546d1c933044c1d912920e3bf4e4
   expo-dev-menu-interface: 3c36b4d5032397e022958a2041afe91a130ea74c
   ExpoBlur: 6c4602d729a492663b0916e5862b334a23157f0a
+  ExpoClipboard: b597982124f067ff9f5b89093eb3d97898d5d877
   ExpoFileSystem: ebbbe77366bff2e66876e3b3bf09e61d3bb72c70
   ExpoHead: 573e78cb221b5461376d0cc88ee0611337c3c3cb
   ExpoImage: 5ba424cbd89ba94103f21817cc310c26a009d967

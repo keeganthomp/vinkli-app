@@ -15,9 +15,15 @@ import PaymentCard from '@components/payments/PaymentCard';
 import { useFocusEffect } from 'expo-router';
 import EmptyList from '@components/EmptyList';
 import ErrorCard from '@components/Error';
+import { FETCH_CURRENT_USER } from '@graphql/queries/user';
+import { GetUserQuery } from '@graphql/types';
+import NextButton from '@components/NextButton';
+import { router } from 'expo-router';
 
 export default function ArtistPayments() {
   const insets = useSafeAreaInsets();
+  const { data: userData, loading: isFetchingUser } =
+    useQuery<GetUserQuery>(FETCH_CURRENT_USER);
   const [refreshing, setRefreshing] = useState(false);
   const {
     data: paymentsData,
@@ -31,6 +37,10 @@ export default function ArtistPayments() {
       refetch();
     }, []),
   );
+
+  const goToProfile = () => {
+    router.push('/(app)/(tabs)/profile');
+  };
 
   const renderPaymentCard = useCallback(
     ({ item: payment }: { item: Payment }) => {
@@ -51,7 +61,7 @@ export default function ArtistPayments() {
 
   const payments = paymentsData?.getPayments || [];
 
-  if (!paymentsData && loadingPayments) {
+  if (isFetchingUser || (!paymentsData && loadingPayments)) {
     return (
       <View
         style={{
@@ -84,6 +94,11 @@ export default function ArtistPayments() {
     );
   }
 
+  const isArtist = userData?.user.userType === 'ARTIST';
+  const hasOnboardedToStripe = userData?.user.hasOnboardedToStripe;
+
+  const needsOnboarding = isArtist && !hasOnboardedToStripe;
+
   return (
     <View
       style={{
@@ -92,27 +107,38 @@ export default function ArtistPayments() {
       }}
     >
       <Header title="Payments" />
-      <FlatList
-        data={payments}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: 12,
-          paddingBottom: 44,
-        }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        ListEmptyComponent={() => <EmptyList message="No payments to show" />}
-        ItemSeparatorComponent={() => (
-          <View
-            style={{
-              height: 20,
-            }}
-          />
-        )}
-        renderItem={renderPaymentCard}
-        keyExtractor={keyExtractor}
-      />
+      {needsOnboarding ? (
+        <NextButton
+          variant="outlined"
+          label="Set up payments"
+          onPress={goToProfile}
+          style={{
+            marginTop: 25,
+          }}
+        />
+      ) : (
+        <FlatList
+          data={payments}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingTop: 12,
+            paddingBottom: 44,
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          ListEmptyComponent={() => <EmptyList message="No payments to show" />}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: 20,
+              }}
+            />
+          )}
+          renderItem={renderPaymentCard}
+          keyExtractor={keyExtractor}
+        />
+      )}
     </View>
   );
 }

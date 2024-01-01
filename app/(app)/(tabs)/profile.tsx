@@ -54,6 +54,7 @@ export default function ArtistProfile() {
 
   useEffect(() => {
     if (isAppInForeground && !isFetchingUser) {
+      setIsSettingUpPayments(false);
       refetch();
     }
   }, [isAppInForeground]);
@@ -100,7 +101,7 @@ export default function ArtistProfile() {
       const { data } = await genStripeConnectOnboardingLink();
       const url = data?.generateStripeConnectOnboardingLink;
       if (url) {
-        Linking.openURL(url);
+        await Linking.openURL(url);
       } else {
         console.log('no url returned!');
         Toast.show({
@@ -108,6 +109,7 @@ export default function ArtistProfile() {
           text1: 'Error setting up payments',
           text2: 'No url returned',
         });
+        setIsSettingUpPayments(false);
       }
     } catch (error: any) {
       Toast.show({
@@ -115,7 +117,6 @@ export default function ArtistProfile() {
         text1: 'Error setting up payments',
         text2: error?.message || 'Something went wrong',
       });
-    } finally {
       setIsSettingUpPayments(false);
     }
   };
@@ -179,6 +180,9 @@ export default function ArtistProfile() {
             loading={isSettingUpPayments}
             label="Setup Payments"
             onPress={goStripeConnect}
+            style={{
+              marginTop: 25,
+            }}
           />
         )}
         {hasOnboarded && <ArtistRatesForm artist={user} />}

@@ -13,6 +13,7 @@ import { Image } from 'expo-image';
 import Label from './InputLabel';
 import { uploadImages, StorageBucket } from '@utils/image';
 import theme from '@theme';
+import Toast from 'react-native-toast-message';
 
 const ImagePreview = ({
   imageUrl,
@@ -112,26 +113,35 @@ function FormImageInput<TFieldValues extends FieldValues>({
 
   const pickImage = async () => {
     if (isSelecting) return;
-    setIsSelecting(true);
-    // No permissions request is necessary for launching the image library
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      quality: 1,
-      base64: true,
-      allowsMultipleSelection: true,
-    });
+    try {
+      setIsSelecting(true);
+      // No permissions request is necessary for launching the image library
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        quality: 1,
+        base64: true,
+        allowsMultipleSelection: true,
+      });
 
-    if (!result.canceled && result.assets) {
-      const images = result.assets;
-      const newImageUris = images.map((image) => image.uri);
-      // append to local state to show
-      const imagePaths = await uploadImages(images, StorageBucket.TATTOOS);
-      // update parent form value
-      onChange(imagePaths);
-      setSelectedImages([...selectedImages, ...newImageUris]);
+      if (!result.canceled && result.assets) {
+        const images = result.assets;
+        const newImageUris = images.map((image) => image.uri);
+        // append to local state to show
+        const imagePaths = await uploadImages(images, StorageBucket.TATTOOS);
+        // update parent form value
+        onChange(imagePaths);
+        setSelectedImages([...selectedImages, ...newImageUris]);
+      }
+      setIsSelecting(false);
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error uploading images',
+        text2: error?.message || 'Something went wrong',
+      });
+      setIsSelecting(false);
     }
-    setIsSelecting(false);
   };
 
   const deselectImage = (imageUrl: string) => {

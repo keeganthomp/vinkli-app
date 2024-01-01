@@ -34,6 +34,7 @@ export type Artist = {
 };
 
 export type ArtistCreateBookingInput = {
+  customerName?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['Date']['input']>;
   phone: Scalars['String']['input'];
   startDate: Scalars['Date']['input'];
@@ -304,6 +305,7 @@ export type Query = {
   artistFinancials: ArtistFinancials;
   checkIfUserOnboarded: Scalars['Boolean']['output'];
   customerTattoos: Array<Tattoo>;
+  existingCustomer?: Maybe<User>;
   getPaymentLink: Scalars['String']['output'];
   getPayments: Array<Payment>;
   publicArtistProfile: Artist;
@@ -316,6 +318,11 @@ export type Query = {
 
 
 export type QueryCheckIfUserOnboardedArgs = {
+  phone: Scalars['String']['input'];
+};
+
+
+export type QueryExistingCustomerArgs = {
   phone: Scalars['String']['input'];
 };
 
@@ -553,6 +560,13 @@ export type CheckIfUserOnboardedQueryVariables = Exact<{
 
 
 export type CheckIfUserOnboardedQuery = { __typename?: 'Query', checkIfUserOnboarded: boolean };
+
+export type ExistingCustomerQueryVariables = Exact<{
+  phone: Scalars['String']['input'];
+}>;
+
+
+export type ExistingCustomerQuery = { __typename?: 'Query', existingCustomer?: { __typename?: 'User', id: string, createdAt: any, updatedAt: any, userType?: UserType | null, email?: string | null, phone: string, name?: string | null, stripeAccountId?: string | null, hasOnboardedToStripe?: boolean | null, hourlyRate?: number | null, consultationFee?: number | null } | null };
 
 export const BookingFragmentFragmentDoc = gql`
     fragment BookingFragment on Booking {
@@ -1393,3 +1407,43 @@ export type CheckIfUserOnboardedQueryHookResult = ReturnType<typeof useCheckIfUs
 export type CheckIfUserOnboardedLazyQueryHookResult = ReturnType<typeof useCheckIfUserOnboardedLazyQuery>;
 export type CheckIfUserOnboardedSuspenseQueryHookResult = ReturnType<typeof useCheckIfUserOnboardedSuspenseQuery>;
 export type CheckIfUserOnboardedQueryResult = Apollo.QueryResult<CheckIfUserOnboardedQuery, CheckIfUserOnboardedQueryVariables>;
+export const ExistingCustomerDocument = gql`
+    query existingCustomer($phone: String!) {
+  existingCustomer(phone: $phone) {
+    ...UserFragment
+  }
+}
+    ${UserFragmentFragmentDoc}`;
+
+/**
+ * __useExistingCustomerQuery__
+ *
+ * To run a query within a React component, call `useExistingCustomerQuery` and pass it any options that fit your needs.
+ * When your component renders, `useExistingCustomerQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useExistingCustomerQuery({
+ *   variables: {
+ *      phone: // value for 'phone'
+ *   },
+ * });
+ */
+export function useExistingCustomerQuery(baseOptions: Apollo.QueryHookOptions<ExistingCustomerQuery, ExistingCustomerQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ExistingCustomerQuery, ExistingCustomerQueryVariables>(ExistingCustomerDocument, options);
+      }
+export function useExistingCustomerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ExistingCustomerQuery, ExistingCustomerQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ExistingCustomerQuery, ExistingCustomerQueryVariables>(ExistingCustomerDocument, options);
+        }
+export function useExistingCustomerSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ExistingCustomerQuery, ExistingCustomerQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ExistingCustomerQuery, ExistingCustomerQueryVariables>(ExistingCustomerDocument, options);
+        }
+export type ExistingCustomerQueryHookResult = ReturnType<typeof useExistingCustomerQuery>;
+export type ExistingCustomerLazyQueryHookResult = ReturnType<typeof useExistingCustomerLazyQuery>;
+export type ExistingCustomerSuspenseQueryHookResult = ReturnType<typeof useExistingCustomerSuspenseQuery>;
+export type ExistingCustomerQueryResult = Apollo.QueryResult<ExistingCustomerQuery, ExistingCustomerQueryVariables>;

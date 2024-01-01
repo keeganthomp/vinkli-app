@@ -1,5 +1,4 @@
 import Modal from 'react-native-modal';
-
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -7,12 +6,13 @@ import {
   TextInput,
   ActivityIndicator,
   StyleSheet,
-  KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import { useSession } from '@context/auth';
 import { supabase } from '@lib/supabase';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
+import { OTP_REGEX } from '@utils/regex';
 
 type Props = {
   isOpen: boolean;
@@ -20,67 +20,50 @@ type Props = {
   phoneNumber: string;
 };
 
+const checkValidOTP = (otp: string) => {
+  return OTP_REGEX.test(otp);
+};
+
 function VerifyOTPModal({ isOpen, onClose, phoneNumber }: Props) {
-  const inputRefs = Array.from({ length: 6 }, () => useRef<TextInput>(null));
-  const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
+  const otpInputRef = useRef<TextInput | null>(null);
+  const [otp, setOtp] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const { setSession } = useSession();
 
-  const handleInputBoxChange = (value: string, index: number) => {
-    if (value === '' || /^[0-9]$/i.test(value)) {
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-
-      if (value && index !== otp.length - 1) {
-        inputRefs[index + 1].current?.focus();
-      }
-    }
-  };
-
-  const handleInputBoxBackSpace = (index: number) => {
-    const newOtp = [...otp];
-    newOtp[index] = '';
-    setOtp(newOtp);
-    if (index !== 0) {
-      inputRefs[index - 1].current?.focus();
-    }
-  };
-
-  const resetBoxes = () => {
-    setOtp(new Array(6).fill(''));
-    inputRefs[0].current?.focus();
+  const resetInput = () => {
+    setOtp('');
   };
 
   const closeModal = () => {
+    Keyboard.dismiss();
     onClose();
-    resetBoxes();
-    setIsVerifying(false);
   };
 
   useEffect(() => {
-    const isValidOTP = otp.every((digit) => !!digit);
+    const isValidOTP = checkValidOTP(otp);
     if (isValidOTP && phoneNumber) {
+      Keyboard.dismiss();
       setIsVerifying(true);
       supabase.auth
         .verifyOtp({
           phone: phoneNumber,
-          token: otp.join(''),
+          token: otp,
           type: 'sms',
         })
         .then((authResponse) => {
           const session = authResponse?.data?.session;
           if (session) {
+            closeModal();
             setSession(session);
             router.replace('/(app)');
-            return;
+          } else {
+            // something went wrong
+            Toast.show({
+              type: 'error',
+              text1: 'Error signing in',
+              text2: 'Something went wrong',
+            });
           }
-          // something went wrong
-          Toast.show({
-            type: 'error',
-            text1: 'Error signing in',
-            text2: 'Something went wrong',
-          });
         })
         .catch((err) => {
           Toast.show({
@@ -90,9 +73,7 @@ function VerifyOTPModal({ isOpen, onClose, phoneNumber }: Props) {
           });
         })
         .finally(() => {
-          // clear input boxes
-          setOtp(new Array(6).fill(''));
-          closeModal();
+          resetInput();
           setIsVerifying(false);
         });
     }
@@ -103,7 +84,7 @@ function VerifyOTPModal({ isOpen, onClose, phoneNumber }: Props) {
       onBackdropPress={onClose}
       isVisible={isOpen}
       onModalShow={() => {
-        inputRefs[0].current?.focus();
+        otpInputRef.current?.focus();
       }}
     >
       <View style={styles.container}>
@@ -115,23 +96,15 @@ function VerifyOTPModal({ isOpen, onClose, phoneNumber }: Props) {
           <ActivityIndicator />
         ) : (
           <View style={styles.inputContainer}>
-            {otp.map((digit, index) => (
-              <TextInput
-                key={index}
-                style={styles.inputBox}
-                inputMode="numeric"
-                maxLength={1}
-                value={digit}
-                onChangeText={(text) => {
-                  if (!text) {
-                    handleInputBoxBackSpace(index);
-                  } else {
-                    handleInputBoxChange(text, index);
-                  }
-                }}
-                ref={inputRefs[index]}
-              />
-            ))}
+            <TextInput
+              ref={otpInputRef}
+              style={styles.inputBox}
+              inputMode="numeric"
+              maxLength={6}
+              value={otp}
+              onChangeText={setOtp}
+              placeholder="123456"
+            />
           </View>
         )}
       </View>
@@ -158,18 +131,22 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     paddingTop: 14,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   inputBox: {
-    width: 40,
+    width: '70%',
     height: 40,
-    textAlign: 'center',
     fontSize: 18,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderColor: 'gray',
     borderRadius: 5,
-    marginHorizontal: 3,
+    letterSpacing: 24,
+    paddingHorizontal: 4,
+    display: 'flex',
+    textAlign: 'center',
   },
 });
 
