@@ -19,6 +19,7 @@ import { router } from 'expo-router';
 
 function VerifyOTPSheet({ payload }: SheetProps) {
   const phoneNumber = payload?.phoneNumber;
+  const onClose = payload?.onClose;
   const insets = useSafeAreaInsets();
   const actionSheetRef = useRef<ActionSheetRef>(null);
   const inputRefs = Array.from({ length: 6 }, () => useRef<TextInput>(null));
@@ -54,6 +55,7 @@ function VerifyOTPSheet({ payload }: SheetProps) {
 
   const closeModal = () => {
     actionSheetRef.current?.hide();
+    onClose?.();
     resetBoxes();
     setIsVerifying(false);
   };

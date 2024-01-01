@@ -42,10 +42,10 @@ export default function SignIn() {
     if (isWeb) {
       setIsVerifyingOTP(true);
     } else {
-      console.log('wooo')
       SheetManager.show(sheetIds.verifyOTP, {
         payload: {
           phoneNumber: formattedPhoneNum,
+          onClose: () => setIsVerifyingOTP(false),
         },
       });
     }
