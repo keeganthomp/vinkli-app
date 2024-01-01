@@ -1,8 +1,6 @@
 import { registerSheet } from 'react-native-actions-sheet';
 import sheetIds from '@const/sheets';
 
-import VerifyOTPSheet from './VerifyOTPSheet';
-
 import BookingFiltersSheet from './BookingFilterSheet';
 
 import ArtistPostBookingSheet from './ArtistPostBookingSheet';
@@ -19,6 +17,5 @@ registerSheet(sheetIds.bookingFilters, BookingFiltersSheet);
 registerSheet(sheetIds.tattooStyleSelect, TattooStyleSheet);
 registerSheet(sheetIds.tattooColorSelect, TattooColorSheet);
 registerSheet(sheetIds.artistPostBookingSheet, ArtistPostBookingSheet);
-registerSheet(sheetIds.verifyOTP, VerifyOTPSheet);
 
 export {};

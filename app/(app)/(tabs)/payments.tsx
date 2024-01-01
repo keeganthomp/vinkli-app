@@ -3,6 +3,7 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import Header from '@components/artist/ArtistScreenHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import { useCallback, useState } from 'react';
 import PaymentCard from '@components/payments/PaymentCard';
 import { useFocusEffect } from 'expo-router';
 import EmptyList from '@components/EmptyList';
+import ErrorCard from '@components/Error';
 
 export default function ArtistPayments() {
   const insets = useSafeAreaInsets();
@@ -61,6 +63,24 @@ export default function ArtistPayments() {
       >
         <ActivityIndicator />
       </View>
+    );
+  }
+
+  if (errorFetchingPayments) {
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+        contentContainerStyle={{
+          paddingTop: insets.top,
+          paddingHorizontal: 12,
+        }}
+      >
+        <ErrorCard
+          message={errorFetchingPayments.message || 'Error fetching payments'}
+        />
+      </ScrollView>
     );
   }
 

@@ -120,7 +120,6 @@ function FormTextInput<TFieldValues extends FieldValues>({
         onFocus={() => setIsFocused(true)}
         onContentSizeChange={(event) => {
           const incomingHeight = event.nativeEvent.contentSize.height;
-          console.log('incomingHeight', incomingHeight);
           const newHeight =
             incomingHeight > DEFAULT_INPUT_HEIGHT
               ? incomingHeight

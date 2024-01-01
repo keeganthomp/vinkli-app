@@ -28,12 +28,14 @@ import ArtistRatesForm from '@components/artist/ArtistRatesForm';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useFocusEffect } from '@react-navigation/native';
 import useAppInForeground from '@hooks/useAppInForeground';
+import Toast from 'react-native-toast-message';
 
 export default function ArtistProfile() {
   const insets = useSafeAreaInsets();
   const isAppInForeground = useAppInForeground();
   const { showActionSheetWithOptions } = useActionSheet();
   const [refreshing, setRefreshing] = useState(false);
+  const [isSettingUpPayments, setIsSettingUpPayments] = useState(false);
   const { setSession } = useSession();
   const [genStripeConnectOnboardingLink] =
     useMutation<GenerateStripeConnectOnboardingLinkMutation>(
@@ -94,15 +96,27 @@ export default function ArtistProfile() {
 
   const goStripeConnect = async () => {
     try {
+      setIsSettingUpPayments(true);
       const { data } = await genStripeConnectOnboardingLink();
       const url = data?.generateStripeConnectOnboardingLink;
       if (url) {
         Linking.openURL(url);
       } else {
         console.log('no url returned!');
+        Toast.show({
+          type: 'error',
+          text1: 'Error setting up payments',
+          text2: 'No url returned',
+        });
       }
     } catch (error: any) {
-      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error setting up payments',
+        text2: error?.message || 'Something went wrong',
+      });
+    } finally {
+      setIsSettingUpPayments(false);
     }
   };
 
@@ -161,7 +175,11 @@ export default function ArtistProfile() {
         }
       >
         {!hasOnboarded && (
-          <Button label="Setup Payments" onPress={goStripeConnect} />
+          <Button
+            loading={isSettingUpPayments}
+            label="Setup Payments"
+            onPress={goStripeConnect}
+          />
         )}
         {hasOnboarded && <ArtistRatesForm artist={user} />}
       </KeyboardAwareScrollView>

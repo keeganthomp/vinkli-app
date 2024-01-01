@@ -1,3 +1,5 @@
+import Modal from 'react-native-modal';
+
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -5,23 +7,20 @@ import {
   TextInput,
   ActivityIndicator,
   StyleSheet,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useSession } from '@context/auth';
 import { supabase } from '@lib/supabase';
-import ActionSheet, {
-  ActionSheetRef,
-  SheetProps,
-} from 'react-native-actions-sheet';
-import sheetIds from '@const/sheets';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
 
-function VerifyOTPSheet({ payload }: SheetProps) {
-  const phoneNumber = payload?.phoneNumber;
-  const onClose = payload?.onClose;
-  const insets = useSafeAreaInsets();
-  const actionSheetRef = useRef<ActionSheetRef>(null);
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  phoneNumber: string;
+};
+
+function VerifyOTPModal({ isOpen, onClose, phoneNumber }: Props) {
   const inputRefs = Array.from({ length: 6 }, () => useRef<TextInput>(null));
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
   const [isVerifying, setIsVerifying] = useState(false);
@@ -54,8 +53,7 @@ function VerifyOTPSheet({ payload }: SheetProps) {
   };
 
   const closeModal = () => {
-    actionSheetRef.current?.hide();
-    onClose?.();
+    onClose();
     resetBoxes();
     setIsVerifying(false);
   };
@@ -101,15 +99,11 @@ function VerifyOTPSheet({ payload }: SheetProps) {
   }, [otp, phoneNumber]);
 
   return (
-    <ActionSheet
-      id={sheetIds.verifyOTP}
-      ref={actionSheetRef}
-      isModal={true}
-      statusBarTranslucent
-      gestureEnabled={false}
-      defaultOverlayOpacity={0.3}
-      containerStyle={{
-        paddingBottom: insets.bottom,
+    <Modal
+      onBackdropPress={onClose}
+      isVisible={isOpen}
+      onModalShow={() => {
+        inputRefs[0].current?.focus();
       }}
     >
       <View style={styles.container}>
@@ -141,7 +135,7 @@ function VerifyOTPSheet({ payload }: SheetProps) {
           </View>
         )}
       </View>
-    </ActionSheet>
+    </Modal>
   );
 }
 
@@ -149,7 +143,9 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 25,
+    backgroundColor: '#fff',
+    borderRadius: 10,
   },
   title: {
     fontSize: 20,
@@ -177,4 +173,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VerifyOTPSheet;
+export default VerifyOTPModal;

@@ -1,4 +1,10 @@
-import { Pressable, Text, ViewStyle, View } from 'react-native';
+import {
+  Pressable,
+  Text,
+  ViewStyle,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 
 export type ButtonProps = {
   label: string;
@@ -7,6 +13,7 @@ export type ButtonProps = {
   disabled?: boolean;
   style?: ViewStyle;
   variant?: 'primary' | 'outlined';
+  loading?: boolean;
 };
 
 const disabledColor = '#999999';
@@ -31,7 +38,10 @@ export const getBackgroundColor = (
   }
 };
 
-export const getTextColor = (variant: ButtonProps['variant'], disabled?: boolean) => {
+export const getTextColor = (
+  variant: ButtonProps['variant'],
+  disabled?: boolean,
+) => {
   if (disabled) {
     switch (variant) {
       case 'primary':
@@ -64,7 +74,28 @@ const Button = ({
   style = {},
   icon,
   variant = 'primary',
+  loading = false,
 }: ButtonProps) => {
+  if (loading) {
+    return (
+      <View
+        style={{
+          width: '100%',
+          height: 40,
+          backgroundColor: 'transparent',
+          borderRadius: 6,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: variant === 'outlined' ? 1 : 0,
+          borderColor: getBorderColor(variant, disabled),
+          ...style,
+        }}
+      >
+        <ActivityIndicator />
+      </View>
+    );
+  }
   return (
     <Pressable
       onPress={onPress}

@@ -5,7 +5,6 @@ const sheets = {
   tattooStyleSelect: 'tattoo-style-select',
   tattooColorSelect: 'tattoo-color-select',
   artistPostBookingSheet: 'artist-post-booking-sheet',
-  verifyOTP: 'verify-otp',
 };
 
 export default sheets;

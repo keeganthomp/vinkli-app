@@ -5,19 +5,19 @@ import {
   ActivityIndicator,
   View,
   Platform,
+  Keyboard
 } from 'react-native';
 import { supabase } from '@lib/supabase';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-toast-message';
-import VerifyOTPModal from '@web/components/VerifyOTPModal';
+import VerifyOTPModalWeb from '@web/components/VerifyOTPModal';
 import { PHONE_REGEX } from '@utils/regex';
 import { useLazyQuery } from '@apollo/client';
 import { CHECK_IF_USER_ONBOARDED } from '@graphql/queries/user';
 import { CheckIfUserOnboardedQuery } from '@graphql/types';
 import { router } from 'expo-router';
 import PhoneInput from '@components/inputs/PhoneInput';
-import { SheetManager } from 'react-native-actions-sheet';
-import sheetIds from '@const/sheets';
+import VerifyOTPModal from '@components/modals/VerifyOTPModal';
 
 const isWeb = Platform.OS === 'web';
 
@@ -39,19 +39,12 @@ export default function SignIn() {
   }, [phoneNum]);
 
   const openVerifyOTPModal = () => {
-    if (isWeb) {
-      setIsVerifyingOTP(true);
-    } else {
-      SheetManager.show(sheetIds.verifyOTP, {
-        payload: {
-          phoneNumber: formattedPhoneNum,
-          onClose: () => setIsVerifyingOTP(false),
-        },
-      });
-    }
+    setIsVerifyingOTP(true);
   };
   const closeModal = () => {
+    Keyboard.dismiss();
     setIsVerifyingOTP(false);
+    setIsAuthenticating(false);
   };
 
   async function checkIfUserNeedsRegistration() {
@@ -160,12 +153,18 @@ export default function SignIn() {
         </KeyboardAwareScrollView>
       )}
       {/* OTP pin input */}
-      {isWeb && (
-        <VerifyOTPModal
+      {isWeb ? (
+        <VerifyOTPModalWeb
           isOpen={isVerifyingOTP}
           onClose={closeModal}
           phoneNumber={isValidPhone(formattedPhoneNum) ? formattedPhoneNum : ''}
           onSubmit={checkIfUserNeedsRegistration}
+        />
+      ) : (
+        <VerifyOTPModal
+          isOpen={isVerifyingOTP}
+          onClose={closeModal}
+          phoneNumber={isValidPhone(formattedPhoneNum) ? formattedPhoneNum : ''}
         />
       )}
     </>
