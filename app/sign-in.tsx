@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   View,
   Platform,
-  Keyboard
+  Keyboard,
 } from 'react-native';
 import { supabase } from '@lib/supabase';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -27,7 +27,7 @@ const isValidPhone = (phone: string) => {
 
 export default function SignIn() {
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
-  const [isVerifyingOTP, setIsVerifyingOTP] = React.useState(false);
+  const [isEnteringOTP, setIsEnteringOTP] = React.useState(false);
   const [checkIfUserRegistered] = useLazyQuery<CheckIfUserOnboardedQuery>(
     CHECK_IF_USER_ONBOARDED,
   );
@@ -39,15 +39,28 @@ export default function SignIn() {
   }, [phoneNum]);
 
   const openVerifyOTPModal = () => {
-    setIsVerifyingOTP(true);
+    setIsEnteringOTP(true);
   };
   const closeModal = () => {
-    Keyboard.dismiss();
-    setIsVerifyingOTP(false);
+    setIsEnteringOTP(false);
     setIsAuthenticating(false);
   };
 
-  async function checkIfUserNeedsRegistration() {
+  const onStartAuth = () => {
+    closeModal();
+  };
+  const onValidOTP = async () => {
+    initializeApp();
+  };
+  const onInvalidOTP = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Invalid OTP',
+      text2: 'Please try again',
+    });
+  };
+
+  async function initializeApp() {
     try {
       // see if user needs onboarding
       const validUserResp = await checkIfUserRegistered({
@@ -93,17 +106,7 @@ export default function SignIn() {
 
   return (
     <>
-      {isAuthenticating ? (
-        <View
-          style={{
-            display: 'flex',
-            flex: 1,
-            justifyContent: 'center',
-          }}
-        >
-          <ActivityIndicator />
-        </View>
-      ) : (
+      {isAuthenticating ? null : (
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -155,14 +158,16 @@ export default function SignIn() {
       {/* OTP pin input */}
       {isWeb ? (
         <VerifyOTPModalWeb
-          isOpen={isVerifyingOTP}
+          isOpen={isEnteringOTP}
           onClose={closeModal}
           phoneNumber={isValidPhone(formattedPhoneNum) ? formattedPhoneNum : ''}
-          onSubmit={checkIfUserNeedsRegistration}
+          onStartAuth={onStartAuth}
+          onValidOTP={onValidOTP}
+          onInvalidOTP={onInvalidOTP}
         />
       ) : (
         <VerifyOTPModal
-          isOpen={isVerifyingOTP}
+          isOpen={isEnteringOTP}
           onClose={closeModal}
           phoneNumber={isValidPhone(formattedPhoneNum) ? formattedPhoneNum : ''}
         />

@@ -5,143 +5,96 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@web/components/ui/dialog';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Keyboard } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '@lib/supabase';
 import { useSession } from '@context/auth';
-import Toast from 'react-native-toast-message';
+import { OTP_REGEX } from '@utils/regex';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   phoneNumber?: string;
-  onSubmit?: () => void;
+  onStartAuth?: () => void;
+  onValidOTP?: () => void;
+  onInvalidOTP?: () => void;
+};
+
+const checkValidOTP = (otp: string) => {
+  return OTP_REGEX.test(otp);
 };
 
 export function VerifyOTPModalWeb({
   isOpen,
   onClose,
   phoneNumber,
-  onSubmit,
+  onStartAuth,
+  onValidOTP,
+  onInvalidOTP,
 }: Props) {
-  const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [otp, setOtp] = useState('');
   const { setSession } = useSession();
-  const inputRefs = Array.from({ length: 6 }, () =>
-    useRef<HTMLInputElement>(null),
-  );
 
-  const handleInputBoxChange = (
-    element: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-  ) => {
-    const value = element.target.value;
-    // Check if the last character is a number
-    if (value === '' || /^[0-9]$/i.test(value.charAt(value.length - 1))) {
-      const newOtp = [...otp];
-      newOtp[index] = value.substring(value.length - 1, value.length);
-      setOtp(newOtp);
-
-      // Automatically focus the next input box, or blur the last one
-      if (value) {
-        if (index < 5) {
-          inputRefs[index + 1].current?.focus();
-        } else {
-          element.target.blur(); // Remove focus when the last box is filled
-        }
-      }
-    }
-  };
-
-  const handlInputBoxBackSpace = (
-    element: React.KeyboardEvent<HTMLInputElement>,
-    index: number,
-  ) => {
-    if (element.key === 'Backspace' && index > 0) {
-      inputRefs[index - 1].current?.focus();
-    }
-  };
-
-  const resetBoxes = () => {
-    setOtp(new Array(6).fill(''));
-    inputRefs[0].current?.focus();
+  const resetOtp = () => {
+    setOtp('');
   };
 
   const handleClose = () => {
     onClose();
-    resetBoxes();
+    resetOtp();
   };
 
   useEffect(() => {
-    const isValidOTP = otp.every((digit) => !!digit);
+    const isValidOTP = checkValidOTP(otp);
     // submit code and show laoder here
     if (isValidOTP && phoneNumber) {
-      setIsVerifying(true);
+      Keyboard.dismiss();
+      onStartAuth?.();
       supabase.auth
         .verifyOtp({
           phone: phoneNumber,
-          token: otp.join(''),
+          token: otp,
           type: 'sms',
         })
         .then((authResponse) => {
           const session = authResponse?.data?.session;
           if (session) {
             setSession(session);
-            onSubmit?.()
+            onValidOTP?.();
             return;
           }
           // something went wrong
-          Toast.show({
-            type: 'error',
-            text1: 'Error signing in',
-            text2: 'Something went wrong',
-          });
+          onInvalidOTP?.();
         })
         .catch((err) => {
-          Toast.show({
-            type: 'error',
-            text1: 'Error signing in',
-            text2: err?.message || 'Something went wrong',
-          });
+          onInvalidOTP?.();
         })
         .finally(() => {
           // clear input boxes
-          setOtp(new Array(6).fill(''))
-          setIsVerifying(false);
+          resetOtp();
         });
     }
   }, [otp]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-sm px-12">
+      <DialogContent className="w-[95%] md:w-full px-10 flex flex-col justify-center">
         <DialogHeader className="flex items-center">
           <DialogTitle>Verification code</DialogTitle>
           <DialogDescription>
             Please enter the code you recieved via text
           </DialogDescription>
         </DialogHeader>
-        {isVerifying ? (
-          <ActivityIndicator />
-        ) : (
-          <div>
-            {/* Number input boxes */}
-            <div className="flex justify-between h-12 gap-1 w-full">
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleInputBoxChange(e, index)}
-                  onKeyDown={(e) => handlInputBoxBackSpace(e, index)}
-                  ref={inputRefs[index]}
-                  className="w-10 text-center text-lg border border-gray-200 rounded"
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="flex justify-center flex-col items-center">
+          <input
+            type="text"
+            placeholder="123456"
+            maxLength={6}
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            className="w-full md:w-[300px] border-b focus:outline-none focus:border-gray-700 text-center text-2x text-lg tracking-[32px] pb-1"
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
