@@ -17,7 +17,8 @@
     "ios": {
       "bundleIdentifier": "com.vinkli.app",
       "supportsTablet": true,
-      "requireFullScreen": true
+      "requireFullScreen": true,
+      "associatedDomains": ["applinks:beta.vinkli.com", "applinks:app.vinkli.com"]
     },
     "android": {
       "adaptiveIcon": {
